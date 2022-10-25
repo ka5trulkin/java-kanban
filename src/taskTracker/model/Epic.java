@@ -3,47 +3,52 @@ package taskTracker.model;
 import java.util.ArrayList;
 
 public class Epic extends Task{
-    private String nameEpicTask;
-    private int counter;
-    private ArrayList<SubTask> subTasks = new ArrayList<>();
+    private String epicName;
+    private int counterSubtask;
+    private ArrayList<SubTask> subtasks = new ArrayList<>();
 
 
-    public String getNameEpicTask() {
-        return nameEpicTask;
+    public String getEpicName() {
+        return epicName;
     }
 
-    public void setNameEpicTask(String nameEpicTask) {
-        this.nameEpicTask = nameEpicTask;
+    public void setEpicName(String epicName) {
+        this.epicName = epicName;
     }
 
-    public ArrayList<SubTask> getSubTasks() {
-        return subTasks;
+    public int getCounterSubtask() {
+        return counterSubtask;
     }
 
-    public void setSubTasks(ArrayList<SubTask> subTasks) {
-        this.subTasks = subTasks;
+    public void setCounterSubtask() {
+        counterSubtask++;
     }
 
-    public int getCounter() {
-        return counter;
+    public ArrayList<SubTask> getSubtasks() {
+        return subtasks;
     }
 
-    public void setCounter(int counter) {
-        this.counter = counter;
+    public void setSubtasks(ArrayList<SubTask> subtasks) {
+        this.subtasks = subtasks;
     }
 
-    public Epic(String nameEpicTask, String task) {
-        super(task);
-        this.nameEpicTask = nameEpicTask;
+    public Epic(String nameSubtask, String epicName) {
+        super(nameSubtask);
+        this.epicName = epicName;
         setId(super.getIdValue(Hash.EPIC.hashCode()));
-        counter = subTasks.size();
+        subtasks.add(new SubTask(nameSubtask));
+        counterSubtask = subtasks.size();
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "subTasks=" + subTasks +
-                ", counter=" + counter +
+                "nameEpic='" + epicName + '\'' +
+                "id=" + getId() +
+                ", status=" + getStatus() +
+                ", isDone=" + isDone() +
+                ", counterSubtask=" + counterSubtask +
+                ", subtasks=" + subtasks.size() +
                 '}';
     }
 }

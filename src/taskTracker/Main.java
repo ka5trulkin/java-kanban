@@ -1,5 +1,8 @@
 package taskTracker;
 
+import taskTracker.model.Epic;
+import taskTracker.model.Status;
+import taskTracker.model.SubTask;
 import taskTracker.model.Task;
 import taskTracker.service.TaskManager;
 
@@ -10,84 +13,68 @@ public class Main {
     public static void main(String[] args) {
         TaskManager manager = new TaskManager();
         ArrayList<Task> taskManager = new ArrayList<>();
-        Task task1 = new Task("Поесть");
-        Task task2 = new Task("Поспать");
+        ArrayList<Epic> epicManager = new ArrayList<>();
+
+        Task task1 = new Task("Проснуться");
+        Task task2 = new Task("Поесть");
         Task task3 = new Task("Поспать");
-//        Epic epic1 = new Epic("Эпик1", "Проверка методов Эпической задачи 1");
-//        Epic epic2 = new Epic("Эпик1", "Проверка методов Эпической задачи 2");
-//        SubTask subTask1 = new SubTask("Эпик1", "Проверка методов Эпической задачи 1");
-//        SubTask subTask2 = new SubTask("Эпик1", "Проверка методов Эпической задачи 1");
+        Epic epic1 = new Epic("Проснуться", "Прожить сегодняшний день");
+        SubTask subTask1 = new SubTask("Поесть");
+        SubTask subTask2 = new SubTask("Поспасть");
+        Epic epic2 = new Epic("Снова проснуться", "Прожить завтрашний день");
+        SubTask subTask3 = new SubTask("Снова поесть");
+        SubTask subTask4 = new SubTask("Снова поспасть");
 
-        manager.setStandardTask(taskManager, task1);
-        taskManager.get(0).setDone();
-        manager.setStandardTask(taskManager, task2);
-        manager.setStandardTask(taskManager, task3);
-        for (int index = 0; index < taskManager.size(); index++) {
-            System.out.println("Задача № " + (index + 1) + " "
-                    + taskManager.get(index).getTaskName() + " " + taskManager.get(index).toString());
-        }
-        System.out.println("Размер массива: " + taskManager.size());
-        System.out.println(manager.getTaskList(taskManager));
+        System.out.println(epic1.toString());
+        System.out.println(epic1.getSubtasks().get(0).toString() + System.lineSeparator());
 
-        manager.getTaskById(taskManager, 117946027);
+        manager.addEpic(epicManager, epic1);
+        manager.addEpic(epicManager, epic2);
+        System.out.println(epicManager.toString());
+        manager.addSubtaskToEpic(epicManager,-2029203213 , subTask1);
+        manager.addSubtaskToEpic(epicManager,-2029203213, subTask2);
+        System.out.println(epicManager.toString());
+        System.out.println(epic1.getSubtasks().toString() + System.lineSeparator());
 
-        manager.deleteTaskList(taskManager);
-        System.out.println("Размер массива: " + taskManager.size());
-        System.out.println(manager.getTaskList(taskManager));
+        System.out.println("Список Эпиков с Подзадачами: " + manager.getEpicList(epicManager));
+        manager.addSubtaskToEpic(epicManager,-1201755597, subTask3);
+        manager.addSubtaskToEpic(epicManager,-1201755597, subTask4);
+        System.out.println(epicManager.toString());
+        System.out.println(manager.getEpicById(epicManager, -2029203213));
+        manager.addSubtaskToEpic(epicManager, -2029203213, subTask1);
+        manager.addSubtaskToEpic(epicManager, -2029203213, subTask4);
+        System.out.println("Список Эпиков с Подзадачами: " + manager.getEpicList(epicManager) + System.lineSeparator());
+
+        manager.deleteAllEpic(epicManager);
+        System.out.println(epicManager.toString());
+        manager.addSubtaskToEpic(epicManager,1201755597, subTask3);
 
 
 
-//        taskManager.getTask().changeStatus(Status.IN_PROGRESS);
-//        System.out.println(taskManager.getTask().get(0));
-
-//        taskManager.getTask().changeStatus(Status.DONE);
-//        System.out.println(taskManager.getTask().);
 
 
-//        System.out.println("epic1 размер листа: " + epic1.getSubTasks().size() + System.lineSeparator() +
-//                "epic1 счетчик: " +  epic1.getCounter() + System.lineSeparator() +
-//                epic1.getTask() + System.lineSeparator());
+
+//        manager.updateTask(taskManager, 117946027, task2);
+//        manager.addTask(taskManager, task1);
+//        taskManager.get(0).setDone();
+//        manager.addTask(taskManager, task2);
+//        manager.addTask(taskManager, task3);
+//        for (int index = 0; index < taskManager.size(); index++) {
+//            System.out.println("Задача № " + (index + 1) + " "
+//                    + taskManager.get(index).getTaskName() + " " + taskManager.get(index).toString());
+//        }
+//        System.out.println("Размер массива: " + taskManager.size());
+//        System.out.println(manager.getTaskList(taskManager));
+//        manager.getTaskById(taskManager, 117946027);
+//        task2.setStatus(Status.IN_PROGRESS);
+//        manager.updateTask(taskManager, 117946027, task2);
+//        manager.updateTask(taskManager, 0, task2);
+//        System.out.println("Статус задачи: " + task2.getTaskName() + " - " + task2.getStatus());
+//        manager.deleteTaskById(taskManager, 1855353638);
 //
-//        System.out.println("toString task1: " + task1.toString() + System.lineSeparator() +
-//                "toString task2: " +  task2.toString() + System.lineSeparator() +
-//                "toString epic1: " +  epic1.toString() + System.lineSeparator() +
-//                "toString epic2: " +  epic2.toString() + System.lineSeparator() +
-//                "toString subTask1: " +  subTask1.toString() + System.lineSeparator() +
-//                "toString subTask2: " +  subTask2.toString() + System.lineSeparator());
-//
-//
-//        System.out.println("Статус task1: " + task1.getStatus() + System.lineSeparator() +
-//                "Статус task2: " +  task2.getStatus() + System.lineSeparator() +
-//                "Статус epic1: " +  epic1.getStatus() + System.lineSeparator() +
-//                "Статус epic2: " +  epic2.getStatus() + System.lineSeparator() +
-//                "Статус subTask1: " +  subTask1.getStatus() + System.lineSeparator() +
-//                "Статус subTask2: " +  subTask2.getStatus() + System.lineSeparator());
-//
-//        task1.changeStatus(Status.IN_PROGRESS);
-//        task2.changeStatus(Status.DONE);
-//        epic2.changeStatus(Status.DONE);
-//        subTask1.changeStatus(Status.IN_PROGRESS);
-//
-//        System.out.println("Статус task1: " + task1.getStatus() + System.lineSeparator() +
-//                "Статус task2: " +  task2.getStatus() + System.lineSeparator() +
-//                "Статус epic1: " +  epic1.getStatus() + System.lineSeparator() +
-//                "Статус epic2: " +  epic2.getStatus() + System.lineSeparator() +
-//                "Статус subTask1: " +  subTask1.getStatus() + System.lineSeparator() +
-//                "Статус subTask2: " +  subTask2.getStatus() + System.lineSeparator());
-//
-//        System.out.println("isDone task1: " + task1.isDone() + System.lineSeparator() +
-//                "isDone task2: " +  task2.isDone() + System.lineSeparator() +
-//                "isDone epic1: " +  epic1.isDone() + System.lineSeparator() +
-//                "isDone epic2: " +  epic2.isDone() + System.lineSeparator() +
-//                "isDone subTask1: " +  subTask1.isDone() + System.lineSeparator() +
-//                "isDone subTask2: " +  subTask2.isDone() + System.lineSeparator());
-//
-//        System.out.println("ID task1: " + task1.getId() + System.lineSeparator() +
-//                "ID task2: " + task2.getId() + System.lineSeparator() +
-//                "ID epic1: " + epic1.getId() + System.lineSeparator() +
-//                "ID epic2: " + epic2.getId() + System.lineSeparator() +
-//                "ID subTask1: " + subTask1.getId() + System.lineSeparator() +
-//                "ID subTask2: " + subTask2.getId() + System.lineSeparator());
-
+//        System.out.println("Размер массива: " + taskManager.size());
+//        manager.deleteAllTasks(taskManager);
+//        System.out.println("Размер массива: " + taskManager.size());
+//        manager.updateTask(taskManager, 117946027, task2);
     }
 }
