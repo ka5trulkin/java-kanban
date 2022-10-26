@@ -52,30 +52,32 @@ public class Task {
         return status;
     }
 
-    public void setStatus(Status status) {
+    private void setStatus(Status status) {
         if (status != null) {
             this.status = status;
         }
     }
 
-    public boolean isDone() {
+    public void setStatusInProgress() {
+        this.status = Status.IN_PROGRESS;
+    }
 
+    public boolean isDone() {
         return isDone;
     }
 
     public void setDone() {
         isDone = true;
+        status = Status.DONE;
+        System.out.println(Status.DONE);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Task task1 = (Task) o;
-        return id == task1.id
-                && isDone == task1.isDone
-                && Objects.equals(taskName, task1.taskName)
-                && status == task1.status;
+        Task task = (Task) o;
+        return id == task.id && isDone == task.isDone && Objects.equals(taskName, task.taskName) && status == task.status;
     }
 
     @Override

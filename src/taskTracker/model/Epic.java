@@ -1,6 +1,7 @@
 package taskTracker.model;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task{
     private String epicName;
@@ -20,8 +21,12 @@ public class Epic extends Task{
         return counterSubtask;
     }
 
-    public void setCounterSubtask() {
-        counterSubtask++;
+    public void setCounterSubtaskUp(boolean isTrue) {
+        if (isTrue) {
+            counterSubtask++;
+        } else {
+            counterSubtask--;
+        }
     }
 
     public ArrayList<SubTask> getSubtasks() {
@@ -32,12 +37,37 @@ public class Epic extends Task{
         this.subtasks = subtasks;
     }
 
+    @Override
+    protected int getIdValue(int hashClass) {
+        int hashCount = 31;
+        int hash = hashClass;
+        if (epicName != null) {
+            hash += epicName.hashCode();
+        }
+        hash *= hashCount;
+        return hash;
+    }
+
     public Epic(String nameSubtask, String epicName) {
         super(nameSubtask);
         this.epicName = epicName;
         setId(super.getIdValue(Hash.EPIC.hashCode()));
         subtasks.add(new SubTask(nameSubtask));
         counterSubtask = subtasks.size();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return counterSubtask == epic.counterSubtask && Objects.equals(epicName, epic.epicName) && Objects.equals(subtasks, epic.subtasks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), epicName, counterSubtask, subtasks);
     }
 
     @Override
