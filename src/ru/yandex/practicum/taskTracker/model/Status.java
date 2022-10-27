@@ -1,11 +1,11 @@
-package taskTracker.model;
+package ru.yandex.practicum.taskTracker.model;
 
 public enum Status {
     NEW("Задача открыта"),
     IN_PROGRESS("Задача выполняется"),
     DONE("Задача выполнена");
 
-    final String name;
+    private final String name;
 
     Status(String name) {
         this.name = name;
