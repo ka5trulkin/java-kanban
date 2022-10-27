@@ -42,9 +42,7 @@ public class Task {
     public void setStatus(Status status) {
         if (status != null) {
             this.status = status;
-            if (status == Status.DONE) {
-                setDone(true);
-            }
+            setDone(status == Status.DONE && !(isDone));
         }
     }
 
@@ -52,7 +50,7 @@ public class Task {
         return isDone;
     }
 
-    public void setDone(boolean done) {
+    private void setDone(boolean done) {
         isDone = done;
     }
 

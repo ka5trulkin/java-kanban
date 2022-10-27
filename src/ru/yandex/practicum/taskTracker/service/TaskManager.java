@@ -1,5 +1,6 @@
 package ru.yandex.practicum.taskTracker.service;
 
+import ru.yandex.practicum.taskTracker.model.Status;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.model.Epic;
@@ -71,14 +72,15 @@ public class TaskManager {
     // Создание подзадачи
     public void addNewSubtask(Subtask subtask, int idEpic) {
         if (subtask != null) {
-            int newId = setId();
+            int idSubtask = subtask.getId();
 
-            subtasks.put(subtask.getId(), subtask);
-            epics.get(idEpic).getEpicSubtasks().put(newId, subtasks.get(newId));
+            subtask.setIdEpic(idEpic);
+            subtasks.put(idSubtask, subtask);
+            epics.get(idEpic).getEpicSubtasks().put(idSubtask, subtasks.get(idSubtask));
         }
     }
 
-    // Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра
+    // Обновление задачи
     public void updateTasks(Task task) {
         if (task != null) {
             tasks.remove(task.getId());
@@ -86,39 +88,61 @@ public class TaskManager {
         }
     }
 
+    // Обновление эпика
     public void updateEpics(Epic epic) {
         if (epic != null) {
-            int key = epic.getId();
+            int epicId = epic.getId();
             int counter = 0;
 
-            epics.remove(key);
-            epics.put(key, epic);
+            epics.remove(epicId);
+            epics.put(epicId, epic);
             for (Subtask value : epic.getEpicSubtasks().values()) {
                 if (value.isDone()) {
                     counter++;
                 }
             }
             if (epic.getEpicSubtasks().size() == counter) {
-                epics.get(key).setDone(true);
+                epics.get(epicId).setStatus(Status.DONE);
+            } else if (epics.get(epicId).getEpicSubtasks().size() > 0) {
+                epics.get(epicId).setStatus(Status.IN_PROGRESS);
+            } else {
+                epics.get(epicId).setStatus(Status.NEW);
             }
         }
     }
 
-    // Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра
+    // Обновление подзадачи
     public void updateSubtasks(Subtask subtask) {
         if (subtask != null) {
-            int idSubtask = subtask.getId();
+            int counter = 0;
+            int subtaskId = subtask.getId();
+            HashMap<Integer, Subtask> getEpicSubtasks = epics.get(subtask.getIdEpic()).getEpicSubtasks();
 
-            subtasks.remove(idSubtask);
-            subtasks.put(idSubtask, subtask);
+            subtasks.remove(subtaskId);
+            subtasks.put(subtaskId, subtask);
+            getEpicSubtasks.remove(subtaskId);
+            getEpicSubtasks.put(subtaskId, subtask);
+            for (Subtask value : getEpicSubtasks.values()) {
+                if (value.isDone()) {
+                    counter++;
+                }
+            }
+            if (getEpicSubtasks.size() == counter) {
+                epics.get(subtask.getIdEpic()).setStatus(Status.DONE);
+            } else if (getEpicSubtasks.size() > 0) {
+                epics.get(subtask.getIdEpic()).setStatus(Status.IN_PROGRESS);
+            } else {
+                epics.get(subtask.getIdEpic()).setStatus(Status.NEW);
+            }
         }
     }
 
     @Override
     public String toString() {
         return "TaskManager{" +
-                ", TASKS=" + tasks + System.lineSeparator() +
-                ", EPICS=" + epics +
+                "tasks=" + tasks +
+                ", epics=" + epics +
+                ", subtasks=" + subtasks +
                 '}';
     }
 }

@@ -1,15 +1,18 @@
 package ru.yandex.practicum.taskTracker.model;
 
 public class Subtask extends Task {
-    private final int idEpic;
+    private int idEpic;
 
-    public Subtask(String taskName, String description, int idSubtask, int idEpic) {
-        super(taskName, description, idSubtask);
-        this.idEpic = idEpic;
+    public Subtask(String taskName, String description, int id) {
+        super(taskName, description, id);
     }
 
     public int getIdEpic() {
         return idEpic;
+    }
+
+    public void setIdEpic(int idEpic) {
+        this.idEpic = idEpic;
     }
 
     @Override
