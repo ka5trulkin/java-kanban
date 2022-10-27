@@ -1,5 +1,9 @@
 package ru.yandex.practicum.taskTracker;
 
+import ru.yandex.practicum.taskTracker.model.Epic;
+import ru.yandex.practicum.taskTracker.model.Status;
+import ru.yandex.practicum.taskTracker.model.Subtask;
+import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.service.TaskManager;
 
 public class Main {
@@ -13,21 +17,35 @@ public class Main {
                 + taskManager.getSubtasks() + System.lineSeparator());
 
 
-        taskManager.addNewTask("Исправить код", "Исправить все ошибки, выявленные при ревью");
-        taskManager.addNewEpic("Исправить код", "Исправить все ошибки, выявленные при ревью");
+        Task task1 = new Task("Исправить код", "Исправить все ошибки, выявленные при ревью",
+                taskManager.setId());
+        Epic epic1 = new Epic("Исправить код", "Исправить все ошибки, выявленные при ревью",
+                taskManager.setId());
         System.out.println(taskManager.getEpics().toString() + System.lineSeparator());
 
-        taskManager.addNewSubtask("Исправить класс Task", "Тут могла быть ваша реклама!", 2);
+        Subtask subtask = new Subtask("Исправить класс Task", "Тут могла быть ваша реклама!", 2);
         taskManager.addNewSubtask("Исправить класс Epic", "Сегодня действуют скидки на рекламу!", 2);
         taskManager.addNewSubtask("Исправить класс Subtask", "Миллиарды уже купили нашу рекламу, почему не Вы?", 2);
         System.out.println(taskManager.toString() + System.lineSeparator());
 
-        taskManager.addNewEpic("Проверить второй эпик", "Проверить работоспособность второго эпика");
+//        taskManager.addNewEpic("Проверить второй эпик", "Проверить работоспособность второго эпика");
         System.out.println(taskManager.getEpics());
-        taskManager.addNewSubtask("Проверить подзадачу № 1", "Описание подзадачи № 1", 6);
-        taskManager.addNewSubtask("Проверить подзадачу № 2", "Описание подзадачи № 2", 6);
-        taskManager.addNewSubtask("Проверить подзадачу № 3", "Описание подзадачи № 3", 6);
+//        taskManager.addNewSubtask("Проверить подзадачу № 1", "Описание подзадачи № 1", 6);
+//        taskManager.addNewSubtask("Проверить подзадачу № 2", "Описание подзадачи № 2", 6);
+//        taskManager.addNewSubtask("Проверить подзадачу № 3", "Описание подзадачи № 3", 6);
         System.out.println(taskManager.toString() + System.lineSeparator());
+
+//        taskManager.getSubTaskById(3).setStatus(Status.DONE);
+//        System.out.println(taskManager.getSubTaskById(3).toString());
+//        System.out.println(taskManager.getEpicById(2).toString());
+//        Subtask subtask = new Subtask("Проверить обнову", "Рекламы не будет!", 3, 2);
+//        taskManager.updateSubtasks(subtask);
+//        System.out.println(taskManager.getSubTaskById(3).toString());
+//        System.out.println(taskManager.getEpicById(2).toString() + System.lineSeparator());
+
+
+
+
 
 
         taskManager.clearAllTasks();

@@ -40,7 +40,12 @@ public class Task {
     }
 
     public void setStatus(Status status) {
-        this.status = status;
+        if (status != null) {
+            this.status = status;
+            if (status == Status.DONE) {
+                setDone(true);
+            }
+        }
     }
 
     public boolean isDone() {

@@ -12,7 +12,7 @@ public class TaskManager {
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
 
-    private int setId() {
+    public int setId() {
         idCounter++;
         return idCounter;
     }
@@ -55,39 +55,62 @@ public class TaskManager {
     }
 
     // Создание задачи
-    public void addNewTask(String taskName, String description) {
-        if ((taskName != null) && (description != null)) {
-            Task task = new Task(taskName, description, setId());
-
+    public void addNewTask(Task task) {
+        if (task != null) {
             tasks.put(task.getId(), task);
         }
     }
 
     // Создание эпика
-    public void addNewEpic(String taskName, String description) {
-        if ((taskName != null) && (description != null)) {
-            Epic epic = new Epic(taskName, description, setId());
-
+    public void addNewEpic(Epic epic) {
+        if (epic != null) {
             epics.put(epic.getId(), epic);
         }
     }
 
     // Создание подзадачи
-    public void addNewSubtask(String taskName, String description, int idEpic) {
-        if ((taskName != null) && (description != null)) {
+    public void addNewSubtask(Subtask subtask, int idEpic) {
+        if (subtask != null) {
             int newId = setId();
-            Subtask subTask = new Subtask(taskName, description, newId, idEpic);
 
-            subtasks.put(newId, subTask);
+            subtasks.put(subtask.getId(), subtask);
             epics.get(idEpic).getEpicSubtasks().put(newId, subtasks.get(newId));
         }
     }
 
     // Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра
-    public void updateTasks(Subtask subtask) {
+    public void updateTasks(Task task) {
+        if (task != null) {
+            tasks.remove(task.getId());
+            tasks.put(task.getId(), task);
+        }
+    }
+
+    public void updateEpics(Epic epic) {
+        if (epic != null) {
+            int key = epic.getId();
+            int counter = 0;
+
+            epics.remove(key);
+            epics.put(key, epic);
+            for (Subtask value : epic.getEpicSubtasks().values()) {
+                if (value.isDone()) {
+                    counter++;
+                }
+            }
+            if (epic.getEpicSubtasks().size() == counter) {
+                epics.get(key).setDone(true);
+            }
+        }
+    }
+
+    // Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра
+    public void updateSubtasks(Subtask subtask) {
         if (subtask != null) {
-            subtasks.remove(subtask.getId());
-            subtasks.put(subtask.getId(), subtask);
+            int idSubtask = subtask.getId();
+
+            subtasks.remove(idSubtask);
+            subtasks.put(idSubtask, subtask);
         }
     }
 
