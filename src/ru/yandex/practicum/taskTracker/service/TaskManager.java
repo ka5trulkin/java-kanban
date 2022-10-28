@@ -148,6 +148,7 @@ public class TaskManager {
 
     public void deleteSubtaskById(int subtaskId) {
         int epicId = subtasks.get(subtaskId).getIdEpic();
+        epics.get(epicId).getEpicSubtaskInfo().remove(subtaskId);
         subtasks.remove(subtaskId);
         checkEpicStatus(epicId);
     }
