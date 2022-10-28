@@ -6,17 +6,13 @@ import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.model.Epic;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class TaskManager {
     private int idCounter = 0;
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-
-    public int setId() {
-        idCounter++;
-        return idCounter;
-    }
 
     // Получение списка всех задач
     public HashMap<Integer, Task> getTasks() {
@@ -133,6 +129,7 @@ public class TaskManager {
     // Удаление подзадачи по идентификатору
     public void deleteSubtaskById(int subtaskId) {
         int epicId = subtasks.get(subtaskId).getIdEpic();
+
         epics.get(epicId).getEpicSubtaskInfo().remove(subtaskId);
         subtasks.remove(subtaskId);
         checkEpicStatus(epicId);
@@ -141,6 +138,7 @@ public class TaskManager {
     // Получение списка всех подзадач определённого эпика
     public HashMap<Integer, Subtask> getSubtasksFromEpic(int epicId) {
         HashMap<Integer, Subtask> result = new HashMap<>();
+
         for (Integer subtaskId : epics.get(epicId).getEpicSubtaskInfo().keySet()) {
             result.put(subtaskId,subtasks.get(subtaskId));
         }
@@ -166,10 +164,29 @@ public class TaskManager {
         }
     }
 
+    public int setId() {
+        idCounter++;
+        return idCounter;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TaskManager that = (TaskManager) o;
+        return idCounter == that.idCounter && Objects.equals(tasks, that.tasks) && Objects.equals(epics, that.epics) && Objects.equals(subtasks, that.subtasks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idCounter, tasks, epics, subtasks);
+    }
+
     @Override
     public String toString() {
         return "TaskManager{" +
-                "tasks=" + tasks +
+                "idCounter=" + idCounter +
+                ", tasks=" + tasks +
                 ", epics=" + epics +
                 ", subtasks=" + subtasks +
                 '}';
