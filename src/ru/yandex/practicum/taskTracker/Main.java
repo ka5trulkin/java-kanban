@@ -81,6 +81,9 @@ public class Main {
         System.out.println(taskManager.getSubtasks().toString());
         System.out.println(taskManager.getEpicById(2).toString() + System.lineSeparator());
 
+        System.out.println(taskManager.getSubtasks());
+        System.out.println(taskManager.getSubtasksFromEpic(2));
+
 
 //        taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
 //        taskManager.updateEpics(epic1);

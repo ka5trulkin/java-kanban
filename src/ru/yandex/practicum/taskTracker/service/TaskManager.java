@@ -120,6 +120,34 @@ public class TaskManager {
         }
     }
 
+    // Удаление задачи по идентификатору
+    public void deleteTaskById(int taskId) {
+        tasks.remove(taskId);
+    }
+
+    // Удаление эпика по идентификатору
+    public void deleteEpicById(int epicId) {
+        epics.remove(epicId);
+    }
+
+    // Удаление подзадачи по идентификатору
+    public void deleteSubtaskById(int subtaskId) {
+        int epicId = subtasks.get(subtaskId).getIdEpic();
+        epics.get(epicId).getEpicSubtaskInfo().remove(subtaskId);
+        subtasks.remove(subtaskId);
+        checkEpicStatus(epicId);
+    }
+
+    // Получение списка всех подзадач определённого эпика
+    public HashMap<Integer, Subtask> getSubtasksFromEpic(int epicId) {
+        HashMap<Integer, Subtask> result = new HashMap<>();
+        for (Integer subtaskId : epics.get(epicId).getEpicSubtaskInfo().keySet()) {
+            result.put(subtaskId,subtasks.get(subtaskId));
+        }
+        return result;
+    }
+
+    // Проверка статуса эпика
     public void checkEpicStatus (int epicId) {
         int counter = 0;
         Epic epic = epics.get(epicId);
@@ -136,21 +164,6 @@ public class TaskManager {
         } else {
             epic.setStatus(Status.NEW);
         }
-    }
-
-    public void deleteTaskById(int taskId) {
-        tasks.remove(taskId);
-    }
-
-    public void deleteEpicById(int epicId) {
-        epics.remove(epicId);
-    }
-
-    public void deleteSubtaskById(int subtaskId) {
-        int epicId = subtasks.get(subtaskId).getIdEpic();
-        epics.get(epicId).getEpicSubtaskInfo().remove(subtaskId);
-        subtasks.remove(subtaskId);
-        checkEpicStatus(epicId);
     }
 
     @Override
