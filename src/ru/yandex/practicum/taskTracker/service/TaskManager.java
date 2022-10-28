@@ -111,35 +111,41 @@ public class TaskManager {
 //        }
 //    }
 //
-//    // Обновление подзадачи
-//    public void updateSubtasks(Subtask subtask) {
-//        if (subtask != null) {
-//            int counter = 0;
-//            int subtaskId = subtask.getId();
-//            HashMap<Integer, Subtask> getEpicSubtasks = epics.get(subtask.getIdEpic()).getEpicSubtaskInfo();
-//
-//            subtasks.remove(subtaskId);
-//            subtasks.put(subtaskId, subtask);
-//            getEpicSubtasks.remove(subtaskId);
-//            getEpicSubtasks.put(subtaskId, subtask);
-//            for (Subtask value : getEpicSubtasks.values()) {
-//                if (value.isDone()) {
-//                    counter++;
-//                }
-//            }
-//            if (getEpicSubtasks.size() == counter) {
-//                epics.get(subtask.getIdEpic()).setStatus(Status.DONE);
-//            } else if (getEpicSubtasks.size() > 0) {
-//                epics.get(subtask.getIdEpic()).setStatus(Status.IN_PROGRESS);
-//            } else {
-//                epics.get(subtask.getIdEpic()).setStatus(Status.NEW);
-//            }
-//        }
-//    }
-//
-//    public void deleteTaskById(int taskId) {
-//        tasks.remove(taskId);
-//    }
+    // Обновление подзадачи
+    public void updateSubtasks(Subtask subtask) {
+        if (subtask != null) {
+            int subtaskId = subtask.getId();
+            HashMap<Integer, Status> getEpicSubtasks = epics.get(subtask.getIdEpic()).getEpicSubtaskInfo();
+
+            subtasks.remove(subtaskId);
+            subtasks.put(subtaskId, subtask);
+            getEpicSubtasks.remove(subtaskId);
+            getEpicSubtasks.put(subtaskId, subtasks.get(subtaskId).getStatus());
+            checkEpicStatus(subtask.getIdEpic());
+        }
+    }
+
+    public void checkEpicStatus (int epicId) {
+        int counter = 0;
+        Epic epic = epics.get(epicId);
+
+        for (Status value : epic.getEpicSubtaskInfo().values()) {
+            if (value == Status.DONE) {
+                counter++;
+            }
+        }
+        if (epic.getEpicSubtaskInfo().size() == counter) {
+            epic.setStatus(Status.DONE);
+        } else if (epic.getEpicSubtaskInfo().size() > 0) {
+            epic.setStatus(Status.IN_PROGRESS);
+        } else {
+            epic.setStatus(Status.NEW);
+        }
+    }
+
+    public void deleteTaskById(int taskId) {
+        tasks.remove(taskId);
+    }
 
     @Override
     public String toString() {
