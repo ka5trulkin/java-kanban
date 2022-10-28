@@ -89,28 +89,23 @@ public class TaskManager {
     }
 
     // Обновление эпика
-//    public void updateEpics(Epic epic) {
-//        if (epic != null) {
-//            int epicId = epic.getId();
-//            int counter = 0;
-//
-//            epics.remove(epicId);
-//            epics.put(epicId, epic);
-//            for (Subtask value : epic.getEpicSubtaskInfo().values()) {
-//                if (value.isDone()) {
-//                    counter++;
-//                }
-//            }
-//            if (epic.getEpicSubtaskInfo().size() == counter) {
-//                epics.get(epicId).setStatus(Status.DONE);
-//            } else if (epics.get(epicId).getEpicSubtaskInfo().size() > 0) {
-//                epics.get(epicId).setStatus(Status.IN_PROGRESS);
-//            } else {
-//                epics.get(epicId).setStatus(Status.NEW);
-//            }
-//        }
-//    }
-//
+    public void updateEpics(Epic epic) {
+        if (epic != null) {
+            int epicId = epic.getId();
+
+            epics.remove(epicId);
+            epics.put(epicId, epic);
+            checkEpicStatus(epicId);
+            for (Subtask value : subtasks.values()) {
+                Status subtaskStatusInEpic = epics.get(value.getIdEpic()).getEpicSubtaskInfo().get(value.getId());
+
+                if (value.getStatus() != subtaskStatusInEpic) {
+                    value.setStatus(subtaskStatusInEpic);
+                }
+            }
+        }
+    }
+
     // Обновление подзадачи
     public void updateSubtasks(Subtask subtask) {
         if (subtask != null) {
