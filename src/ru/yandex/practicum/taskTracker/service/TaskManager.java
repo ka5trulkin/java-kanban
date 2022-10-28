@@ -142,6 +142,10 @@ public class TaskManager {
         tasks.remove(taskId);
     }
 
+    public void deleteEpicById(int epicId) {
+        epics.remove(epicId);
+    }
+
     @Override
     public String toString() {
         return "TaskManager{" +
