@@ -3,20 +3,20 @@ package ru.yandex.practicum.taskTracker.model;
 import java.util.HashMap;
 
 public class Epic extends Task{
-    private final HashMap<Integer, Subtask> epicSubtasks = new HashMap<>();
+    private final HashMap<Integer, Status> epicSubtaskInfo = new HashMap<>();
 
     public Epic(String taskName, String description, int id) {
         super(taskName, description, id);
     }
 
-    public HashMap<Integer, Subtask> getEpicSubtasks() {
-        return epicSubtasks;
+    public HashMap<Integer, Status> getEpicSubtaskInfo() {
+        return epicSubtaskInfo;
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "EPIC_SUBTASKS=" + epicSubtasks +
+                "epicSubtasks=" + epicSubtaskInfo +
                 "} " + super.toString();
     }
 }
