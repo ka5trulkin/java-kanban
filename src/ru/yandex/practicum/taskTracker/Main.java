@@ -70,7 +70,6 @@ public class Main {
         System.out.println(taskManager.getSubTaskById(5).toString());
         System.out.println(taskManager.getEpicById(2).toString() + System.lineSeparator());
 
-        taskManager.deleteSubtaskById(3);
         System.out.println(taskManager.getSubtasks().toString());
         System.out.println(taskManager.getEpicById(2).toString() + System.lineSeparator());
 
