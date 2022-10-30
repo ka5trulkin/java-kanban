@@ -55,11 +55,13 @@ public class TaskManager {
         tasks.clear();
     }
 
+    // Удаление всех эпиков
     public void deleteAllEpics() {
         epics.clear();
         subtasks.clear();
     }
 
+    // Удаление всех подзадач
     public void deleteAllSubtasks() {
         subtasks.clear();
         for (Epic value : epics.values()) {
@@ -71,18 +73,18 @@ public class TaskManager {
     }
 
     // Получение задания по идентификатору
-    public Task getTaskById(int idTask) {
-        return tasks.get(idTask);
+    public Task getTaskById(int taskId) {
+        return tasks.get(taskId);
     }
 
     // Получение эпика по идентификатору
-    public Epic getEpicById(int idEpic) {
-        return epics.get(idEpic);
+    public Epic getEpicById(int epicId) {
+        return epics.get(epicId);
     }
 
     // Получение подзадачи по идентификатору
-    public Subtask getSubTaskById(int idSubTask) {
-        return subtasks.get(idSubTask);
+    public Subtask getSubTaskById(int subtaskId) {
+        return subtasks.get(subtaskId);
     }
 
     // Создание задачи
@@ -124,20 +126,18 @@ public class TaskManager {
             epics.put(epic.getId(), epic);
         }
     }
-//
-//    // Обновление подзадачи
-//    public void updateSubtasks(Subtask subtask) {
-//        if (subtask != null) {
-//            int subtaskId = subtask.getId();
-//            HashMap<Integer, Status> getEpicSubtasks = epics.get(subtask.getIdEpic()).getSubtasks();
-//
-//            subtasks.remove(subtaskId);
-//            subtasks.put(subtaskId, subtask);
-//            getEpicSubtasks.remove(subtaskId);
-//            getEpicSubtasks.put(subtaskId, subtasks.get(subtaskId).getStatus());
-//            checkEpicStatus(subtask.getIdEpic());
-//        }
-//    }
+
+    // Обновление подзадачи
+    public void updateSubtasks(Subtask subtask) {
+        if ((subtask != null) && (subtasks.containsKey(subtask.getId()))) {
+            int subtaskId = subtask.getId();
+            int epicId = subtask.getEpicId();
+
+            subtasks.put(subtaskId, subtask);
+            epics.get(epicId).putSubtask(subtaskId, subtask);
+            checkEpicStatus(epicId);
+        }
+    }
 //
 //    // Удаление задачи по идентификатору
 //    public void deleteTaskById(int taskId) {

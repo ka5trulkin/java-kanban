@@ -14,8 +14,8 @@ public class Epic extends Task{
         return subtasks;
     }
 
-    public void putSubtask(int idSubtask, Subtask subtask) {
-        subtasks.put(idSubtask, subtask);
+    public void putSubtask(int subtaskId, Subtask subtask) {
+        subtasks.put(subtaskId, subtask);
     }
 
     public void deleteSubtasks() {
