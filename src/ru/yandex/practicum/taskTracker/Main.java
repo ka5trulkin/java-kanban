@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = new TaskManager();
-        getInfo(taskManager);
+        printInfo(taskManager);
 
         Task task1 = new Task("Просто задача", "Просто Мария создала просто задачу",
                 taskManager.setId());
@@ -21,7 +21,7 @@ public class Main {
                 taskManager.setId());
         taskManager.addNewEpic(epic1);
 
-        getInfo(taskManager);
+        printInfo(taskManager);
 
 
         Subtask subtask1 = new Subtask("Исправить класс Task", "Тут могла быть ваша реклама!",
@@ -38,7 +38,7 @@ public class Main {
         Epic epic2 = new Epic("Проверить второй эпик", "Проверить работоспособность второго эпика",
                 taskManager.setId());
         taskManager.addNewEpic(epic2);
-        getInfo(taskManager);
+        printInfo(taskManager);
 
         Subtask subtask4 = new Subtask("Проверить подзадачу № 1", "Описание подзадачи № 1",
                 taskManager.setId(), 6);
@@ -49,20 +49,24 @@ public class Main {
         Subtask subtask6 = new Subtask("Проверить подзадачу № 3", "Описание подзадачи № 3",
                 taskManager.setId(), 6);
         taskManager.addNewSubtask(subtask6);
-       getInfo(taskManager);
+       printInfo(taskManager);
 
        taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
        taskManager.getSubTaskById(5).setStatus(Status.DONE);
-       getInfo(taskManager);
+       printInfo(taskManager);
 
         System.out.println(taskManager.getTaskById(1));
         Task task2 = new Task("Задача 2", "Проверить обновление задачи", 1);
         taskManager.updateTasks(task2);
-        System.out.println(taskManager.getTaskById(1));
+        System.out.println(taskManager.getTaskById(1) + System.lineSeparator());
 
-        taskManager.getEpics().remove(2);
-        Epic epic3 = taskManager.getEpicById(2);
-        System.out.println(epic3);
+        taskManager.deleteAllEpics();
+        printInfo(taskManager);
+
+//        Epic epic3 = taskManager.getEpicById(2);
+//        System.out.println(epic3);
+//        taskManager.deleteAllSubtasks();
+//        printInfo(taskManager);
 
 //
 //        taskManager.getSubTaskById(3).setStatus(Status.DONE);
@@ -98,7 +102,7 @@ public class Main {
 //        System.out.println(taskManager.getEpics().toString());
     }
 
-    static void getInfo(TaskManager taskManager) {
+    static void printInfo(TaskManager taskManager) {
         System.out.println(taskManager.getTasks() + System.lineSeparator()
                 + taskManager.getEpics() + System.lineSeparator()
                 + taskManager.getSubtasks() + System.lineSeparator());

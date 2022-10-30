@@ -7,7 +7,6 @@ import ru.yandex.practicum.taskTracker.model.Epic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class TaskManager {
     private int idCounter = 0;
@@ -52,10 +51,20 @@ public class TaskManager {
     }
 
     // Удаление всех задач
-    public void clearAllTasks() {
+    public void deleteAllTasks() {
         tasks.clear();
+    }
+
+    public void deleteAllEpics() {
         epics.clear();
         subtasks.clear();
+    }
+
+    public void deleteAllSubtasks() {
+        subtasks.clear();
+        for (Epic value : epics.values()) {
+            value.deleteSubtasks();
+        }
     }
 
     // Получение задания по идентификатору

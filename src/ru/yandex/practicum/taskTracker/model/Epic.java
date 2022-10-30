@@ -18,8 +18,8 @@ public class Epic extends Task{
         subtasks.put(idSubtask, subtask);
     }
 
-    public void deleteSubtask(int idSubtask) {
-        subtasks.remove(idSubtask);
+    public void deleteSubtasks() {
+        subtasks.clear();
     }
 
     @Override
