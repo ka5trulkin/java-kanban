@@ -3,18 +3,15 @@ package ru.yandex.practicum.taskTracker.model;
 import java.util.Objects;
 
 public class Subtask extends Task {
-    private int idEpic;
+    private final int epicId;
 
-    public Subtask(String taskName, String description, int id) {
+    public Subtask(String taskName, String description, int id, int epicId) {
         super(taskName, description, id);
+        this.epicId = epicId;
     }
 
-    public int getIdEpic() {
-        return idEpic;
-    }
-
-    public void setIdEpic(int idEpic) {
-        this.idEpic = idEpic;
+    public int getEpicId() {
+        return epicId;
     }
 
     @Override
@@ -23,18 +20,18 @@ public class Subtask extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
-        return idEpic == subtask.idEpic;
+        return epicId == subtask.epicId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), idEpic);
+        return Objects.hash(super.hashCode(), epicId);
     }
 
     @Override
     public String toString() {
         return "Subtask{" +
-                "idEpic=" + idEpic +
+                "epicId=" + epicId +
                 "} " + super.toString();
     }
 }

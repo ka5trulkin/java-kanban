@@ -7,7 +7,7 @@ public class Task {
     private String description;
     private Status status = Status.NEW;
     private boolean isDone = false;
-    private int id;
+    private final int id;
 
     public Task(String taskName, String description, int id) {
         this.taskName = taskName;
@@ -58,9 +58,9 @@ public class Task {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+//    public void setId(int id) {
+//        this.id = id;
+//    }
 
     @Override
     public boolean equals(Object o) {
