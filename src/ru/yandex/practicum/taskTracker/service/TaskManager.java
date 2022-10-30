@@ -65,6 +65,9 @@ public class TaskManager {
         for (Epic value : epics.values()) {
             value.deleteSubtasks();
         }
+        for (Epic value : epics.values()) {
+            value.setStatus(Status.NEW);
+        }
     }
 
     // Получение задания по идентификатору
