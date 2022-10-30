@@ -14,6 +14,14 @@ public class Epic extends Task{
         return subtasks;
     }
 
+    public void putSubtask(int idSubtask, Subtask subtask) {
+        subtasks.put(idSubtask, subtask);
+    }
+
+    public void deleteSubtask(int idSubtask) {
+        subtasks.remove(idSubtask);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
