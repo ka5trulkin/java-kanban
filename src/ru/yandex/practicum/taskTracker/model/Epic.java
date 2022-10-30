@@ -18,7 +18,11 @@ public class Epic extends Task{
         subtasks.put(subtaskId, subtask);
     }
 
-    public void deleteSubtasks() {
+    public void removeSubtask(int subtaskId) {
+        subtasks.remove(subtaskId);
+    }
+
+    public void clearSubtasks() {
         subtasks.clear();
     }
 
@@ -39,7 +43,7 @@ public class Epic extends Task{
     @Override
     public String toString() {
         return "Epic{" +
-                "epicSubtaskInfo=" + subtasks +
+                "subtasks=" + subtasks +
                 "} " + super.toString();
     }
 }
