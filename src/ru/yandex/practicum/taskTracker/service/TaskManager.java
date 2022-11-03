@@ -7,12 +7,14 @@ import ru.yandex.practicum.taskTracker.model.Epic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TaskManager {
     private static int idCounter = 0;
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final Map<Integer, Task> tasks = new HashMap<>();
+    private final Map<Integer, Epic> epics = new HashMap<>();
+    private final Map<Integer, Subtask> subtasks = new HashMap<>();
 
     // Проверка статуса эпика
     private void checkEpicStatus (int epicId) {
@@ -36,17 +38,17 @@ public class TaskManager {
     }
 
     // Получение списка всех задач
-    public ArrayList<Task> getTasks() {
+    public List<Task> getTasks() {
         return new ArrayList<>(tasks.values());
     }
 
     // Получение списка всех эпиков
-    public ArrayList<Epic> getEpics() {
-        return new  ArrayList<>(epics.values());
+    public List<Epic> getEpics() {
+        return new ArrayList<>(epics.values());
     }
 
     // Получение списка всех подзадач
-    public ArrayList<Subtask> getSubtasks() {
+    public List<Subtask> getSubtasks() {
         return new ArrayList<>(subtasks.values());
     }
 
@@ -166,8 +168,8 @@ public class TaskManager {
     }
 
     // Получение списка всех подзадач определённого эпика
-    public ArrayList<Subtask> getSubtasksFromEpic(int epicId) {
-        ArrayList<Subtask> result = new ArrayList<>();
+    public List<Subtask> getSubtasksFromEpic(int epicId) {
+        List<Subtask> result = new ArrayList<>();
 
         if (epics.containsKey(epicId)) {
             for (Integer subtaskId : epics.get(epicId).getSubtasksId()) {
