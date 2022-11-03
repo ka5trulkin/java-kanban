@@ -1,6 +1,6 @@
 package ru.yandex.practicum.taskTracker.model;
 
-import ru.yandex.practicum.taskTracker.service.TaskManager;
+import ru.yandex.practicum.taskTracker.service.InMemoryTaskManager;
 
 import java.util.Objects;
 
@@ -13,14 +13,14 @@ public class Task {
     public Task(String taskName, String description) {
         this.taskName = taskName;
         this.description = description;
-        this.id = TaskManager.setId();
+        this.id = InMemoryTaskManager.setId();
         this.status = Status.NEW;
     }
 
     public Task(String taskName, String description, Status status) {
         this.taskName = taskName;
         this.description = description;
-        this.id = TaskManager.setId();
+        this.id = InMemoryTaskManager.setId();
         this.status = status;
     }
 
