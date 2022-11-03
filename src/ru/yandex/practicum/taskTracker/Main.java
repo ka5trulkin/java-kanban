@@ -21,38 +21,32 @@ public class Main {
         taskManager.getSubtasks();
         taskManager.getEpics();
 
-        Task task1 = new Task("Просто задача", "Просто Мария создала просто задачу",
-                taskManager.setId());
+        Task task1 = new Task("Просто задача", "Просто Мария создала просто задачу");
         taskManager.addNewTask(task1);
-        Epic epic1 = new Epic("Исправить код", "Исправить все ошибки, выявленные при ревью",
-                taskManager.setId());
+        Epic epic1 = new Epic("Исправить код", "Исправить все ошибки, выявленные при ревью");
         taskManager.addNewEpic(epic1);
         printInfo(taskManager);
 
-        Subtask subtask1 = new Subtask("Исправить класс Task", "Тут могла быть ваша реклама!",
-                taskManager.setId(),2);
+        Subtask subtask1 = new Subtask("Исправить класс Task", "Тут могла быть ваша реклама!"
+                ,2);
         taskManager.addNewSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Исправить класс Epic", "Сегодня действуют скидки на рекламу!",
-                taskManager.setId(), 2);
+        Subtask subtask2 = new Subtask("Исправить класс Epic", "Сегодня действуют скидки на рекламу!"
+                , 2);
         taskManager.addNewSubtask(subtask2);
         Subtask subtask3 = new Subtask("Исправить класс Subtask",
-                "Миллиарды уже купили нашу рекламу, почему не Вы?", taskManager.setId(), 2);
+                "Миллиарды уже купили нашу рекламу, почему не Вы?", 2);
         taskManager.addNewSubtask(subtask3);
         System.out.println(taskManager.toString() + System.lineSeparator());
 
-        Epic epic2 = new Epic("Проверить второй эпик", "Проверить работоспособность второго эпика",
-                taskManager.setId());
+        Epic epic2 = new Epic("Проверить второй эпик", "Проверить работоспособность второго эпика");
         taskManager.addNewEpic(epic2);
         printInfo(taskManager);
 
-        Subtask subtask4 = new Subtask("Проверить подзадачу № 1", "Описание подзадачи № 1",
-                taskManager.setId(), 6);
+        Subtask subtask4 = new Subtask("Проверить подзадачу № 1", "Описание подзадачи № 1", 6);
         taskManager.addNewSubtask(subtask4);
-        Subtask subtask5 = new Subtask("Проверить подзадачу № 2", "Описание подзадачи № 2",
-                taskManager.setId(), 6);
+        Subtask subtask5 = new Subtask("Проверить подзадачу № 2", "Описание подзадачи № 2", 6);
         taskManager.addNewSubtask(subtask5);
-        Subtask subtask6 = new Subtask("Проверить подзадачу № 3", "Описание подзадачи № 3",
-                taskManager.setId(), 6);
+        Subtask subtask6 = new Subtask("Проверить подзадачу № 3", "Описание подзадачи № 3", 6);
         taskManager.addNewSubtask(subtask6);
        printInfo(taskManager);
 
@@ -66,7 +60,6 @@ public class Main {
        printInfo(taskManager);
 
        taskManager.getSubTaskById(4).setStatus(Status.DONE);
-       taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
        taskManager.updateEpic(epic1);
        printInfo(taskManager);
 

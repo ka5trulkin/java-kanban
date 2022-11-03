@@ -1,5 +1,7 @@
 package ru.yandex.practicum.taskTracker.model;
 
+import ru.yandex.practicum.taskTracker.service.TaskManager;
+
 import java.util.Objects;
 
 public class Task {
@@ -8,17 +10,17 @@ public class Task {
     private Status status;
     private final int id;
 
-    public Task(String taskName, String description, int id) {
+    public Task(String taskName, String description) {
         this.taskName = taskName;
         this.description = description;
-        this.id = id;
+        this.id = TaskManager.setId();
         this.status = Status.NEW;
     }
 
-    public Task(String taskName, String description, int id, Status status) {
+    public Task(String taskName, String description, Status status) {
         this.taskName = taskName;
         this.description = description;
-        this.id = id;
+        this.id = TaskManager.setId();
         this.status = status;
     }
 

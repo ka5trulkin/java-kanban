@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TaskManager {
-    private int idCounter = 0;
+    private static int idCounter = 0;
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
@@ -177,7 +177,7 @@ public class TaskManager {
         return result;
     }
 
-    public int setId() {
+    public static int setId() {
         idCounter++;
         return idCounter;
     }
