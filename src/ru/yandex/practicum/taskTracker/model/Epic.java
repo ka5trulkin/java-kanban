@@ -1,29 +1,34 @@
 package ru.yandex.practicum.taskTracker.model;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task{
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final List<Integer> subtasksId = new ArrayList<>();
 
     public Epic(String taskName, String description, int id) {
         super(taskName, description, id);
     }
 
-    public HashMap<Integer, Subtask> getSubtasks() {
-        return subtasks;
+    public List<Integer> getSubtasksId() {
+        return subtasksId;
     }
 
-    public void putSubtask(int subtaskId, Subtask subtask) {
-        subtasks.put(subtaskId, subtask);
+    public void addSubtask(int subtaskId) {
+        if (!(subtasksId.contains(subtaskId))) {
+            subtasksId.add(subtaskId);
+        }
     }
 
     public void removeSubtask(int subtaskId) {
-        subtasks.remove(subtaskId);
+        if (subtasksId.contains(subtaskId)) {
+            subtasksId.remove((Integer) subtaskId);
+        }
     }
 
     public void clearSubtasks() {
-        subtasks.clear();
+        subtasksId.clear();
     }
 
     @Override
@@ -32,18 +37,18 @@ public class Epic extends Task{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(subtasks, epic.subtasks);
+        return Objects.equals(subtasksId, epic.subtasksId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), subtasks);
+        return Objects.hash(super.hashCode(), subtasksId);
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "subtasks=" + subtasks +
+                "subtasksId=" + subtasksId +
                 "} " + super.toString();
     }
 }

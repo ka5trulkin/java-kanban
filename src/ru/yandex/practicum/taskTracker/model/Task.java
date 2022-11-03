@@ -5,57 +5,49 @@ import java.util.Objects;
 public class Task {
     private String taskName;
     private String description;
-    private Status status = Status.NEW;
-    private boolean isDone = false;
+    private Status status;
     private final int id;
 
     public Task(String taskName, String description, int id) {
         this.taskName = taskName;
         this.description = description;
         this.id = id;
+        this.status = Status.NEW;
+    }
+
+    public Task(String taskName, String description, int id, Status status) {
+        this.taskName = taskName;
+        this.description = description;
+        this.id = id;
+        this.status = status;
     }
 
     public String getTaskName() {
         return taskName;
     }
 
-    public void setTaskName(String taskName) {
-        if (taskName != null) {
-            this.taskName = taskName;
-        }
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        if (description != null) {
-            this.description = description;
-        }
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
-        if (status != null) {
-            this.status = status;
-            setDone(status == Status.DONE && !(isDone));
-        }
-    }
-
-    public boolean isDone() {
-        return isDone;
-    }
-
-    private void setDone(boolean done) {
-        isDone = done;
-    }
-
     public int getId() {
         return id;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
@@ -63,16 +55,12 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return isDone == task.isDone
-                && id == task.id
-                && Objects.equals(taskName, task.taskName)
-                && Objects.equals(description, task.description)
-                && status == task.status;
+        return id == task.id && Objects.equals(taskName, task.taskName) && Objects.equals(description, task.description) && status == task.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskName, description, status, isDone, id);
+        return Objects.hash(taskName, description, status, id);
     }
 
     @Override
@@ -81,7 +69,6 @@ public class Task {
                 "taskName='" + taskName + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", isDone=" + isDone +
                 ", id=" + id +
                 '}';
     }

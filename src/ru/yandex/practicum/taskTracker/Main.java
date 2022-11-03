@@ -13,6 +13,8 @@ public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = new TaskManager();
 
+        taskManager.removeTaskById(10);
+
         printInfo(taskManager);
 
         taskManager.getTasks();
@@ -55,18 +57,36 @@ public class Main {
        printInfo(taskManager);
 
        taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
+       printInfo(taskManager);
+       taskManager.getSubTaskById(3).setStatus(Status.DONE);
+       printInfo(taskManager);
+
+       taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
        taskManager.getSubTaskById(5).setStatus(Status.DONE);
        printInfo(taskManager);
 
-        System.out.println("Все подзадачи" + taskManager.getSubtasks().toString() + System.lineSeparator());
+       taskManager.getSubTaskById(4).setStatus(Status.DONE);
+       taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
+       taskManager.updateEpic(epic1);
+       printInfo(taskManager);
 
-        System.out.println(taskManager.getTaskById(1));
-        Task task2 = new Task("Задача 2", "Проверить обновление задачи", 1);
-        taskManager.updateTasks(task2);
-        System.out.println(taskManager.getTaskById(1) + System.lineSeparator());
+//       taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
+//       taskManager.updateEpic(epic1);
+//       printInfo(taskManager);
 
-        taskManager.clearAllEpics();
-        printInfo(taskManager);
+       taskManager.removeSubtaskById(3);
+       printInfo(taskManager);
+
+
+//        System.out.println("Все подзадачи" + taskManager.getSubtasks().toString() + System.lineSeparator());
+//
+//        System.out.println(taskManager.getTaskById(1));
+//        Task task2 = new Task("Задача 2", "Проверить обновление задачи", 1);
+//        taskManager.updateTask(task2);
+//        System.out.println(taskManager.getTaskById(1) + System.lineSeparator());
+//
+//        taskManager.clearAllEpics();
+//        printInfo(taskManager);
     }
 
     static void printInfo(TaskManager taskManager) {
