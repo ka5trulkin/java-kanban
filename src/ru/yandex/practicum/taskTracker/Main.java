@@ -97,7 +97,8 @@ public class Main {
        taskManager.getEpicById(6);
        taskManager.getEpicById(2);
 
-        System.out.println(taskManager.getHistory().size() + System.lineSeparator() + taskManager.getHistory().toString());
+        System.out.println(taskManager.getHistory().size() + System.lineSeparator()
+                + taskManager.getHistory().toString());
 
 
 

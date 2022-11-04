@@ -83,9 +83,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearAllSubtasks() {
         subtasks.clear();
-        for (Epic value : epics.values()) {
-            value.clearSubtasks();
-            value.setStatus(Status.NEW);
+        for (Epic epic : epics.values()) {
+            epic.clearSubtasks();
+            epic.setStatus(Status.NEW);
         }
     }
 
