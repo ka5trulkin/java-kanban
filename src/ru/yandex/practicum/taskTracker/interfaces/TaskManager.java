@@ -7,6 +7,8 @@ import ru.yandex.practicum.taskTracker.model.Subtask;
 import java.util.List;
 
 public interface TaskManager {
+    List<Task> getHistory();
+
     List<Task> getTasks();
 
     List<Epic> getEpics();
