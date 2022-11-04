@@ -70,6 +70,11 @@ public class Main {
        taskManager.removeSubtaskById(3);
        printInfo(taskManager);
 
+       Subtask subtaskTest = taskManager.getSubTaskById(4);
+       subtaskTest.setTaskName("Проверка метода Set()");
+       taskManager.updateSubtask(subtaskTest);
+       printInfo(taskManager);
+
 
 //        System.out.println("Все подзадачи" + taskManager.getSubtasks().toString() + System.lineSeparator());
 //
