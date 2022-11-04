@@ -6,17 +6,14 @@ import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.model.Epic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private static int idCounter = 0;
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
-    private final List<Task> history = new ArrayList<>();
+    private final LinkedList<Task> history = new LinkedList<>();
 
     private void checkEpicStatus (int epicId) {
         int counter = 0;
@@ -47,7 +44,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (history.size() < 10) {
             history.add(task);
         } else {
-            history.remove(0);
+            history.removeFirst();
             history.add(task);
         }
     }
