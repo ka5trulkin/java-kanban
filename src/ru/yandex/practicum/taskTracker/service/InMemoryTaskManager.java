@@ -1,5 +1,6 @@
 package ru.yandex.practicum.taskTracker.service;
 
+import ru.yandex.practicum.taskTracker.interfaces.HistoryManager;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Status;
 import ru.yandex.practicum.taskTracker.model.Subtask;
@@ -13,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
-    private final LinkedList<Task> history = new LinkedList<>();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     private void checkEpicStatus (int epicId) {
         int counter = 0;
@@ -40,18 +41,9 @@ public class InMemoryTaskManager implements TaskManager {
         return idCounter;
     }
 
-    private void addToHistory(Task task) {
-        if (history.size() < 10) {
-            history.add(task);
-        } else {
-            history.removeFirst();
-            history.add(task);
-        }
-    }
-
     @Override
-    public List<Task> getHistory() {
-        return history;
+    public HistoryManager getHistoryManager() { // Метод для проверки работоспособности HistoryManager
+        return historyManager;
     }
 
     @Override
@@ -91,19 +83,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(int taskId) {
-        addToHistory(tasks.get(taskId));
+        historyManager.add(tasks.get(taskId));
         return tasks.get(taskId);
     }
 
     @Override
     public Epic getEpicById(int epicId) {
-        addToHistory(epics.get(epicId));
+        historyManager.add(epics.get(epicId));
         return epics.get(epicId);
     }
 
     @Override
     public Subtask getSubTaskById(int subtaskId) {
-        addToHistory(subtasks.get(subtaskId));
+        historyManager.add(subtasks.get(subtaskId));
         return subtasks.get(subtaskId);
     }
 

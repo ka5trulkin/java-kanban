@@ -5,13 +5,9 @@ import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Status;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
-import ru.yandex.practicum.taskTracker.service.InMemoryTaskManager;
 import ru.yandex.practicum.taskTracker.service.Managers;
 
 public class Main {
-
-    // Доброго дня! Надеюсь в этот раз справился получше...
-
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
 
@@ -50,20 +46,20 @@ public class Main {
         taskManager.addNewSubtask(subtask5);
         Subtask subtask6 = new Subtask("Проверить подзадачу № 3", "Описание подзадачи № 3", 6);
         taskManager.addNewSubtask(subtask6);
-       printInfo(taskManager);
+        printInfo(taskManager);
 
-       taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
-       printInfo(taskManager);
-       taskManager.getSubTaskById(3).setStatus(Status.DONE);
-       printInfo(taskManager);
+        taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
+        printInfo(taskManager);
+        taskManager.getSubTaskById(3).setStatus(Status.DONE);
+        printInfo(taskManager);
 
-       taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
-       taskManager.getSubTaskById(5).setStatus(Status.DONE);
-       printInfo(taskManager);
+        taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
+        taskManager.getSubTaskById(5).setStatus(Status.DONE);
+        printInfo(taskManager);
 
-       taskManager.getSubTaskById(4).setStatus(Status.DONE);
-       taskManager.updateEpic(epic1);
-       printInfo(taskManager);
+        taskManager.getSubTaskById(4).setStatus(Status.DONE);
+        taskManager.updateEpic(epic1);
+        printInfo(taskManager);
 
 //       taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
 //       taskManager.updateEpic(epic1);
@@ -99,10 +95,8 @@ public class Main {
        taskManager.getEpicById(6);
        taskManager.getEpicById(2);
 
-        System.out.println(taskManager.getHistory().size() + System.lineSeparator()
-                + taskManager.getHistory().toString());
-
-
+        System.out.println(taskManager.getHistoryManager().getHistory().size() + System.lineSeparator()
+                + taskManager.getHistoryManager().getHistory().toString());
 
 //        System.out.println("Все подзадачи" + taskManager.getSubtasks().toString() + System.lineSeparator());
 //
