@@ -75,6 +75,9 @@ public class Main {
        taskManager.updateSubtask(subtaskTest);
        printInfo(taskManager);
 
+       taskManager.removeSubtaskById(4);
+       printInfo(taskManager);
+
 
 //        System.out.println("Все подзадачи" + taskManager.getSubtasks().toString() + System.lineSeparator());
 //
