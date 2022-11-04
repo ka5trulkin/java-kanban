@@ -1,17 +1,19 @@
 package ru.yandex.practicum.taskTracker;
 
+import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Status;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.service.InMemoryTaskManager;
+import ru.yandex.practicum.taskTracker.service.Managers;
 
 public class Main {
 
     // Доброго дня! Надеюсь в этот раз справился получше...
 
     public static void main(String[] args) {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         taskManager.removeTaskById(10);
 
@@ -113,7 +115,7 @@ public class Main {
 //        printInfo(taskManager);
     }
 
-    static void printInfo(InMemoryTaskManager taskManager) {
+    static void printInfo(TaskManager taskManager) {
         System.out.println(taskManager.getTasks() + System.lineSeparator()
                 + taskManager.getEpics() + System.lineSeparator()
                 + taskManager.getSubtasks() + System.lineSeparator());
