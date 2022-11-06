@@ -61,10 +61,6 @@ public class Main {
         taskManager.updateEpic(epic1);
         printInfo(taskManager);
 
-//       taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
-//       taskManager.updateEpic(epic1);
-//       printInfo(taskManager);
-
        taskManager.removeSubtaskById(3);
        printInfo(taskManager);
 

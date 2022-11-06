@@ -21,7 +21,7 @@ public class Epic extends Task{
         }
     }
 
-    public void removeSubtask(int subtaskId) { // Подскажите, реализация таким способом не ошибка?
+    public void removeSubtask(int subtaskId) {
         if (subtasksId.remove(Integer.valueOf(subtaskId))) {
             return;
         }
