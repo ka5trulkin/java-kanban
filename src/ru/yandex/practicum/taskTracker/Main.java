@@ -76,7 +76,6 @@ public class Main {
        taskManager.removeSubtaskById(4);
        printInfo(taskManager);
 
-       taskManager.getTaskById(1);
        taskManager.getSubTaskById(9);
        taskManager.getSubTaskById(7);
        taskManager.getSubTaskById(8);
@@ -95,18 +94,9 @@ public class Main {
        taskManager.getEpicById(6);
        taskManager.getEpicById(2);
 
-        System.out.println(taskManager.getHistoryManager().getHistory().size() + System.lineSeparator()
-                + taskManager.getHistoryManager().getHistory().toString());
-
-//        System.out.println("Все подзадачи" + taskManager.getSubtasks().toString() + System.lineSeparator());
-//
-//        System.out.println(taskManager.getTaskById(1));
-//        Task task2 = new Task("Задача 2", "Проверить обновление задачи", 1);
-//        taskManager.updateTask(task2);
-//        System.out.println(taskManager.getTaskById(1) + System.lineSeparator());
-//
-//        taskManager.clearAllEpics();
-//        printInfo(taskManager);
+        System.out.println(taskManager.getHistoryFromManager().size() + System.lineSeparator()
+                + taskManager.getHistoryFromManager().toString());
+        printInfo(taskManager);
     }
 
     static void printInfo(TaskManager taskManager) {

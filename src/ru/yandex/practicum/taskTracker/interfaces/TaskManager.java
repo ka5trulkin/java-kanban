@@ -7,7 +7,7 @@ import ru.yandex.practicum.taskTracker.model.Subtask;
 import java.util.List;
 
 public interface TaskManager {
-    HistoryManager getHistoryManager(); // Метод для проверки работоспособности HistoryManager
+    List<Task> getHistoryFromManager(); // Метод для проверки работоспособности HistoryManager
 
     List<Task> getTasks();
 
