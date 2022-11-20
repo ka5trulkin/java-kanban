@@ -41,6 +41,8 @@ public class InMemoryTaskManager implements TaskManager {
         return idCounter;
     }
 
+
+
     @Override
     public List<Task> getHistoryFromManager() { // Метод для проверки работоспособности HistoryManager
         return historyManager.getHistory();

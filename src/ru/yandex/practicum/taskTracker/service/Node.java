@@ -1,15 +1,18 @@
 package ru.yandex.practicum.taskTracker.service;
 
+import java.util.Objects;
+
 public class Node <T> {
     private T data;
     private Node<T> next;
     private Node<T> prev;
 
+    public Node() {}
+
     public Node(T data) {
         this.data = data;
         this.next = null;
         this.prev = null;
-
     }
 
     public Node(Node<T> prev, T data, Node<T> next){
@@ -47,5 +50,18 @@ public class Node <T> {
         return "Node{" +
                 "data=" + data +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node<?> node = (Node<?>) o;
+        return Objects.equals(data, node.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(data);
     }
 }

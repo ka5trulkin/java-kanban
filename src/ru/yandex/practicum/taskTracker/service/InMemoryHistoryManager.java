@@ -3,10 +3,7 @@ package ru.yandex.practicum.taskTracker.service;
 import ru.yandex.practicum.taskTracker.interfaces.HistoryManager;
 import ru.yandex.practicum.taskTracker.model.Task;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final CustomLinkedList<Task> history = new CustomLinkedList<>();
@@ -15,8 +12,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         if (task != null) {
             int idTask = task.getId();
-            if (task.equals(history.get(idTask))) {
-                history.removeNode(history.getNodeById(idTask));
+
+            if (history.contains(idTask)) {
+                remove(idTask);
             }
             history.linkLast(task, task.getId());
         }
@@ -26,18 +24,19 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id) {
         if (history.getNodeById(id) != null) {
             history.removeNode(history.getNodeById(id));
+            history.getNodeList().remove(id);
         }
     }
 
     @Override
     public List<Task> getHistory() {
-        return history;
+        return history.toArrayList();
     }
 }
 
 class CustomLinkedList<T> {
-    public Node<T> head;
-    public Node<T> tail;
+    private Node<T> head;
+    private Node<T> tail;
     private int size = 0;
     final private Map<Integer, Node<T>> nodeList = new HashMap<>();
 
@@ -55,18 +54,59 @@ class CustomLinkedList<T> {
     }
 
     void removeNode(Node<T> node) {
-        for (Integer id : nodeList.keySet()) {
-            if (nodeList.get(id).equals(node)) {
-                nodeList.remove(id);
+        if (node.equals(head)) {
+            if (node.getNext() != null) {
+                head = node.getNext();
+                head.setPrev(null);
+                if (head.getNext() == null) {
+                    tail = null;
+                }
+            } else {
+                head = null;
+                tail = null;
             }
+        } else if (node.equals(tail)) {
+            tail = node.getPrev();
+            if (head.equals(tail)) {
+                head.setNext(null);
+                tail = null;
+            }
+        } else {
+            node.getPrev().setNext(node.getNext());
+            node.getNext().setPrev(node.getPrev());
         }
+        size--;
+    }
+
+    public Map<Integer, Node<T>> getNodeList() {
+        return nodeList;
     }
 
     Node<T> getNodeById(int id) {
         return nodeList.get(id);
     }
 
-    T get(Integer id) {
-        return nodeList.get(id).getData();
+    boolean contains(Integer id) {
+        return nodeList.containsKey(id);
+    }
+
+    public Node<T> getHead() {
+        return head;
+    }
+
+    public Node<T> getTail() {
+        return tail;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    List<T> toArrayList() {
+        List<T> result = new ArrayList<>();
+        for (Node<T> node = head; node != null; node = node.getNext()) {
+            result.add(node.getData());
+        }
+        return result;
     }
 }

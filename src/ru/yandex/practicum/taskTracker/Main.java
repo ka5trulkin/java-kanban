@@ -55,6 +55,13 @@ public class Main {
 
         taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
         taskManager.getSubTaskById(5).setStatus(Status.DONE);
+
+        System.out.println(taskManager.getHistoryFromManager().size());
+        for (Task task : taskManager.getHistoryFromManager()) {
+            System.out.println(task);
+        }
+        System.out.println();
+
         printInfo(taskManager);
 
         taskManager.getSubTaskById(4).setStatus(Status.DONE);
@@ -90,9 +97,22 @@ public class Main {
        taskManager.getEpicById(6);
        taskManager.getEpicById(2);
 
-        System.out.println(taskManager.getHistoryFromManager().size() + System.lineSeparator()
-                + taskManager.getHistoryFromManager().toString());
-        printInfo(taskManager);
+        System.out.println(taskManager.getHistoryFromManager().size());
+        for (Task task : taskManager.getHistoryFromManager()) {
+            System.out.println(task);
+        }
+
+        taskManager.getSubTaskById(4);
+        System.out.println(taskManager.getHistoryFromManager().size());
+        for (Task task : taskManager.getHistoryFromManager()) {
+            System.out.println(task);
+        }
+
+        System.out.println(System.lineSeparator()
+                + taskManager.getHistoryFromManager().);
+
+
+//        printInfo(taskManager);
     }
 
     static void printInfo(TaskManager taskManager) {
