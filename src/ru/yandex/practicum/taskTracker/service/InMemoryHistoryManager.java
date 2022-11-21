@@ -24,7 +24,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id) {
         if (history.getNodeById(id) != null) {
             history.removeNode(history.getNodeById(id));
-            history.getNodeList().remove(id);
+            history.getNodeMap().remove(id);
         }
     }
 
@@ -38,12 +38,12 @@ class CustomLinkedList<T> {
     private Node<T> head;
     private Node<T> tail;
     private int size = 0;
-    final private Map<Integer, Node<T>> nodeList = new HashMap<>();
+    final private Map<Integer, Node<T>> nodeMap = new HashMap<>();
 
     void linkLast(T data, int id) {
         final Node<T> t = tail;
         final Node<T> newNode = new Node<>(t, data, null);
-        nodeList.put(id, newNode);
+        nodeMap.put(id, newNode);
         tail = newNode;
         if (t == null) {
             head = newNode;
@@ -78,16 +78,16 @@ class CustomLinkedList<T> {
         size--;
     }
 
-    public Map<Integer, Node<T>> getNodeList() {
-        return nodeList;
+    public Map<Integer, Node<T>> getNodeMap() {
+        return nodeMap;
     }
 
     Node<T> getNodeById(int id) {
-        return nodeList.get(id);
+        return nodeMap.get(id);
     }
 
     boolean contains(Integer id) {
-        return nodeList.containsKey(id);
+        return nodeMap.containsKey(id);
     }
 
     public Node<T> getHead() {

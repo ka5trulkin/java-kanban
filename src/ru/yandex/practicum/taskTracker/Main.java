@@ -108,8 +108,14 @@ public class Main {
             System.out.println(task);
         }
 
-        System.out.println(System.lineSeparator()
-                + taskManager.getHistoryFromManager().);
+        taskManager.removeSubtaskById(9);
+        taskManager.removeSubtaskById(7);
+
+        System.out.println();
+        for (Task task : taskManager.getHistoryFromManager()) {
+            System.out.println(task);
+        }
+
 
 
 //        printInfo(taskManager);
