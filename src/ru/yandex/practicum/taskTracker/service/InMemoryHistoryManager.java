@@ -43,6 +43,7 @@ class CustomLinkedList<T> {
     void linkLast(T data, int id) {
         final Node<T> t = tail;
         final Node<T> newNode = new Node<>(t, data, null);
+
         nodeMap.put(id, newNode);
         tail = newNode;
         if (t == null) {

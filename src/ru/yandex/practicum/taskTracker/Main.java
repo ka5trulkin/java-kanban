@@ -71,10 +71,10 @@ public class Main {
        taskManager.removeSubtaskById(3);
        printInfo(taskManager);
 
-       Subtask subtaskTest = taskManager.getSubTaskById(4);
-       subtaskTest.setTaskName("Проверка метода Set()");
-       taskManager.updateSubtask(subtaskTest);
-       printInfo(taskManager);
+//       Subtask subtaskTest = taskManager.getSubTaskById(4);
+//       subtaskTest.setTaskName("Проверка метода Set()");
+//       taskManager.updateSubtask(subtaskTest);
+//       printInfo(taskManager);
 
        taskManager.removeSubtaskById(4);
        printInfo(taskManager);
@@ -108,17 +108,20 @@ public class Main {
             System.out.println(task);
         }
 
-        taskManager.removeSubtaskById(9);
-        taskManager.removeSubtaskById(7);
+        taskManager.removeTaskById(1);
+        taskManager.removeTaskById(1);
+        taskManager.removeSubtaskById(4);
+        taskManager.removeSubtaskById(4);
 
         System.out.println();
+        System.out.println(taskManager.getHistoryFromManager().size());
         for (Task task : taskManager.getHistoryFromManager()) {
             System.out.println(task);
         }
+        System.out.println();
 
 
 
-//        printInfo(taskManager);
     }
 
     static void printInfo(TaskManager taskManager) {
