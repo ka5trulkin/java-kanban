@@ -68,6 +68,7 @@ class CustomLinkedList<T> {
             }
         } else if (node.equals(tail)) {
             tail = node.getPrev();
+            tail.setNext(null);
             if (head.equals(tail)) {
                 head.setNext(null);
                 tail = null;

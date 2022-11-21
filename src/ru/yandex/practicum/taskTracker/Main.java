@@ -26,7 +26,7 @@ public class Main {
         printInfo(taskManager);
 
         Subtask subtask1 = new Subtask("Исправить класс Task", "Тут могла быть ваша реклама!"
-                ,2);
+                , 2);
         taskManager.addNewSubtask(subtask1);
         Subtask subtask2 = new Subtask("Исправить класс Epic", "Сегодня действуют скидки на рекламу!"
                 , 2);
@@ -56,54 +56,42 @@ public class Main {
         taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
         taskManager.getSubTaskById(5).setStatus(Status.DONE);
 
-        System.out.println(taskManager.getHistoryFromManager().size());
+        System.out.println(lineCount(1)
+                + System.lineSeparator()
+                + taskManager.getHistoryFromManager().size());
         for (Task task : taskManager.getHistoryFromManager()) {
             System.out.println(task);
         }
-        System.out.println();
 
-        printInfo(taskManager);
+        taskManager.getSubTaskById(9);
+        taskManager.getSubTaskById(7);
+        taskManager.getSubTaskById(8);
+        taskManager.getEpicById(6);
+        taskManager.getEpicById(2);
+        taskManager.getTaskById(1);
+        taskManager.getSubTaskById(9);
+        taskManager.getSubTaskById(7);
+        taskManager.getSubTaskById(8);
+        taskManager.getEpicById(6);
+        taskManager.getEpicById(2);
+        taskManager.getTaskById(1);
+        taskManager.getSubTaskById(9);
+        taskManager.getSubTaskById(7);
+        taskManager.getSubTaskById(8);
+        taskManager.getEpicById(6);
+        taskManager.getEpicById(2);
 
-        taskManager.getSubTaskById(4).setStatus(Status.DONE);
-        taskManager.updateEpic(epic1);
-        printInfo(taskManager);
-
-       taskManager.removeSubtaskById(3);
-       printInfo(taskManager);
-
-//       Subtask subtaskTest = taskManager.getSubTaskById(4);
-//       subtaskTest.setTaskName("Проверка метода Set()");
-//       taskManager.updateSubtask(subtaskTest);
-//       printInfo(taskManager);
-
-       taskManager.removeSubtaskById(4);
-       printInfo(taskManager);
-
-       taskManager.getSubTaskById(9);
-       taskManager.getSubTaskById(7);
-       taskManager.getSubTaskById(8);
-       taskManager.getEpicById(6);
-       taskManager.getEpicById(2);
-       taskManager.getTaskById(1);
-       taskManager.getSubTaskById(9);
-       taskManager.getSubTaskById(7);
-       taskManager.getSubTaskById(8);
-       taskManager.getEpicById(6);
-       taskManager.getEpicById(2);
-       taskManager.getTaskById(1);
-       taskManager.getSubTaskById(9);
-       taskManager.getSubTaskById(7);
-       taskManager.getSubTaskById(8);
-       taskManager.getEpicById(6);
-       taskManager.getEpicById(2);
-
-        System.out.println(taskManager.getHistoryFromManager().size());
+        System.out.println(lineCount(2)
+                + System.lineSeparator()
+                + taskManager.getHistoryFromManager().size());
         for (Task task : taskManager.getHistoryFromManager()) {
             System.out.println(task);
         }
 
         taskManager.getSubTaskById(4);
-        System.out.println(taskManager.getHistoryFromManager().size());
+        System.out.println(lineCount(3)
+                + System.lineSeparator()
+                + taskManager.getHistoryFromManager().size());
         for (Task task : taskManager.getHistoryFromManager()) {
             System.out.println(task);
         }
@@ -113,15 +101,24 @@ public class Main {
         taskManager.removeSubtaskById(4);
         taskManager.removeSubtaskById(4);
 
-        System.out.println();
+        System.out.println(lineCount(4));
         System.out.println(taskManager.getHistoryFromManager().size());
         for (Task task : taskManager.getHistoryFromManager()) {
             System.out.println(task);
         }
         System.out.println();
 
+        taskManager.removeEpicById(2);
 
+        System.out.println(lineCount(5));
+        System.out.println(taskManager.getHistoryFromManager().size());
+        for (Task task : taskManager.getHistoryFromManager()) {
+            System.out.println(task);
+        }
+    }
 
+    static String lineCount(int counter) {
+        return "\uD83D\uDC47 " + counter + " \uD83D\uDC40";
     }
 
     static void printInfo(TaskManager taskManager) {
