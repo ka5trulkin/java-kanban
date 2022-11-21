@@ -3,17 +3,9 @@ package ru.yandex.practicum.taskTracker.service;
 import java.util.Objects;
 
 public class Node <T> {
-    private T data;
+    private final T data;
     private Node<T> next;
     private Node<T> prev;
-
-    public Node() {}
-
-    public Node(T data) {
-        this.data = data;
-        this.next = null;
-        this.prev = null;
-    }
 
     public Node(Node<T> prev, T data, Node<T> next){
         this.data = data;
@@ -23,10 +15,6 @@ public class Node <T> {
 
     public T getData() {
         return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
     }
 
     public Node<T> getNext() {

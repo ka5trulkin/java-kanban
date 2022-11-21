@@ -10,7 +10,6 @@ import ru.yandex.practicum.taskTracker.model.Epic;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private static int idCounter = 0;
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
@@ -34,11 +33,6 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setStatus(Status.NEW);
             }
         }
-    }
-
-    public static int setId() {
-        idCounter++;
-        return idCounter;
     }
 
     @Override
