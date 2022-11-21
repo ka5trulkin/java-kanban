@@ -1,6 +1,8 @@
 package ru.yandex.practicum.taskTracker.service;
 
 import ru.yandex.practicum.taskTracker.interfaces.HistoryManager;
+import ru.yandex.practicum.taskTracker.model.Epic;
+import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
 import java.util.*;
@@ -25,6 +27,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (history.getNodeById(id) != null) {
             history.removeNode(history.getNodeById(id));
             history.getNodeMap().remove(id);
+        }
+    }
+
+    @Override
+    public void clearAll(List<Integer> idList) {
+        for (Integer id : idList) {
+            remove(id);
         }
     }
 
@@ -67,7 +76,7 @@ class CustomLinkedList<T> {
                 tail = null;
             }
         } else if (node.equals(tail)) {
-            tail = node.getPrev();
+            tail = tail.getPrev();
             tail.setNext(null);
             if (head.equals(tail)) {
                 head.setNext(null);
