@@ -60,7 +60,7 @@ class CustomLinkedList<T> {
     }
 
     void removeNode(Node<T> node) {
-        if (node.equals(head)) {
+        if (node == head) {
             if (node.getNext() != null) {
                 head = node.getNext();
                 head.setPrev(null);
@@ -71,7 +71,7 @@ class CustomLinkedList<T> {
                 head = null;
                 tail = null;
             }
-        } else if (node.equals(tail)) {
+        } else if (node == tail) {
             tail = tail.getPrev();
             tail.setNext(null);
             if (head.equals(tail)) {
