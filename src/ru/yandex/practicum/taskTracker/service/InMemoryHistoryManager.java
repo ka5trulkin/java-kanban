@@ -46,15 +46,15 @@ class CustomLinkedList<T> {
     private final Map<Integer, Node<T>> nodeMap = new HashMap<>();
 
     void linkLast(T data, int id) {
-        final Node<T> t = tail;
-        final Node<T> newNode = new Node<>(t, data, null);
+        final Node<T> prevNode = tail;
+        final Node<T> newNode = new Node<>(prevNode, data, null);
 
         nodeMap.put(id, newNode);
         tail = newNode;
-        if (t == null) {
+        if (prevNode == null) {
             head = newNode;
         } else {
-            t.setNext(newNode);
+            prevNode.setNext(newNode);
         }
         size++;
     }
