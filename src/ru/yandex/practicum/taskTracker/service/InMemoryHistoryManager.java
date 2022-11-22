@@ -43,7 +43,7 @@ class CustomLinkedList<T> {
     private Node<T> head;
     private Node<T> tail;
     private int size = 0;
-    final private Map<Integer, Node<T>> nodeMap = new HashMap<>();
+    private final Map<Integer, Node<T>> nodeMap = new HashMap<>();
 
     void linkLast(T data, int id) {
         final Node<T> t = tail;
