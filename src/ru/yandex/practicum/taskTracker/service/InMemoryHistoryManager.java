@@ -131,5 +131,4 @@ class CustomLinkedList<T> {
             this.prev = prev;
         }
     }
-
 }
