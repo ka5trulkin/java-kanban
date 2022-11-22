@@ -54,17 +54,17 @@ class CustomLinkedList<T> {
         if (prevNode == null) {
             head = newNode;
         } else {
-            prevNode.setNext(newNode);
+            prevNode.next = newNode;
         }
         size++;
     }
 
     void removeNode(Node<T> node) {
         if (node == head) {
-            if (node.getNext() != null) {
-                head = node.getNext();
-                head.setPrev(null);
-                if (head.getNext() == null) {
+            if (node.next != null) {
+                head = node.next;
+                head.prev = null;
+                if (head.next == null) {
                     tail = null;
                 }
             } else {
@@ -72,15 +72,15 @@ class CustomLinkedList<T> {
                 tail = null;
             }
         } else if (node == tail) {
-            tail = tail.getPrev();
-            tail.setNext(null);
+            tail = tail.prev;
+            tail.next = null;
             if (head.equals(tail)) {
-                head.setNext(null);
+                head.next = null;
                 tail = null;
             }
         } else {
-            node.getPrev().setNext(node.getNext());
-            node.getNext().setPrev(node.getPrev());
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
         }
         size--;
     }
@@ -114,9 +114,22 @@ class CustomLinkedList<T> {
         Node<T> node = head;
 
         while (node != null) {
-            result.add(node.getData());
-            node = node.getNext();
+            result.add(node.data);
+            node = node.next;
         }
         return result;
     }
+
+    private static class Node <T> {
+        private final T data;
+        private Node<T> next;
+        private Node<T> prev;
+
+        public Node(Node<T> prev, T data, Node<T> next) {
+            this.data = data;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
 }
