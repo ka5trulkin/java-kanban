@@ -111,8 +111,11 @@ class CustomLinkedList<T> {
 
     List<T> toArrayList() {
         List<T> result = new ArrayList<>();
-        for (Node<T> node = head; node != null; node = node.getNext()) {
+        Node<T> node = head;
+
+        while (node != null) {
             result.add(node.getData());
+            node = node.getNext();
         }
         return result;
     }
