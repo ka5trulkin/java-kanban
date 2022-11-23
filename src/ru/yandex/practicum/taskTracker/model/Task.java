@@ -24,8 +24,7 @@ public class Task {
     }
 
     public static int setId() {
-        idCounter++;
-        return idCounter;
+        return ++idCounter;
     }
 
     public String getTaskName() {
