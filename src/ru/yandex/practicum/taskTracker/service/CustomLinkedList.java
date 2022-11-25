@@ -11,20 +11,6 @@ class CustomLinkedList<T> {
     private int size = 0;
     private final Map<Integer, Node<T>> nodeMap = new HashMap<>();
 
-    void linkLast(T data, int id) {
-        final Node<T> prevNode = tail;
-        final Node<T> newNode = new Node<>(prevNode, data, null);
-
-        nodeMap.put(id, newNode);
-        tail = newNode;
-        if (prevNode == null) {
-            head = newNode;
-        } else {
-            prevNode.next = newNode;
-        }
-        size++;
-    }
-
     private void removeNode(Node<T> node) {
         if (node == head) {
             if (node.next != null) {
@@ -50,6 +36,24 @@ class CustomLinkedList<T> {
         size--;
     }
 
+    private Node<T> linkLast(T data) {
+        final Node<T> prevNode = tail;
+        final Node<T> newNode = new Node<>(prevNode, data, null);
+
+        tail = newNode;
+        if (prevNode == null) {
+            head = newNode;
+        } else {
+            prevNode.next = newNode;
+        }
+        size++;
+        return newNode;
+    }
+
+    public void add(int id, T data) {
+        nodeMap.put(id, linkLast(data));
+    }
+
     public void remove(int id) {
         if (nodeMap.get(id) != null) {
             Node<T> node = nodeMap.get(id);
@@ -59,7 +63,7 @@ class CustomLinkedList<T> {
         }
     }
 
-    List<T> toArrayList() {
+    public List<T> toArrayList() {
         List<T> result = new ArrayList<>();
         Node<T> node = head;
 

@@ -13,33 +13,24 @@ public class Main {
     public static void main(String[] args) {
         createTasks();
         printInfo(1);
-        taskManager.getTasks();
+        printInfo(taskManager);
+        taskManager.getSubTaskById(4);
         printInfo(2);
-        taskManager.getEpics();
+        printInfo(taskManager);
+        taskManager.removeTaskById(1);
+        taskManager.removeTaskById(1);
+        taskManager.removeSubtaskById(4);
+        taskManager.removeSubtaskById(4);
         printInfo(3);
-        taskManager.getSubtasks();
+        printInfo(taskManager);
+        taskManager.removeEpicById(2);
         printInfo(4);
-        taskManager.clearAllSubtasks();
+        printInfo(taskManager);
+        taskManager.clearAllEpics();
         printInfo(5);
         printInfo(taskManager);
-//        printInfo(taskManager);
-//        taskManager.getSubTaskById(4);
-//        printInfo(2);
-//        printInfo(taskManager);
-//        taskManager.removeTaskById(1);
-//        taskManager.removeTaskById(1);
-//        taskManager.removeSubtaskById(4);
-//        taskManager.removeSubtaskById(4);
-//        printInfo(3);
-//        printInfo(taskManager);
-//        taskManager.removeEpicById(2);
-//        printInfo(4);
-//        printInfo(taskManager);
-//        taskManager.clearAllEpics();
-//        printInfo(5);
-//        printInfo(taskManager);
-//        printInfo(6);
-//        taskManager.getTasks();
+        printInfo(6);
+        taskManager.getTasks();
     }
 
     static void createTasks() {

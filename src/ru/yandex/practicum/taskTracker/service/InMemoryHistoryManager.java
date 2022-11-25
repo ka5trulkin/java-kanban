@@ -14,7 +14,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             int idTask = task.getId();
 
             remove(idTask);
-            history.linkLast(task, idTask);
+            history.add(idTask, task);
         }
     }
 
