@@ -42,25 +42,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getTasks() {
-        for (Task task : tasks.values()) {
-            historyManager.add(task);
-        }
+        tasks.values().forEach(historyManager :: add);
         return new ArrayList<>(tasks.values());
     }
 
     @Override
     public List<Epic> getEpics() {
-        for (Epic epic : epics.values()) {
-            historyManager.add(epic);
-        }
+        epics.values().forEach(historyManager :: add);
         return new ArrayList<>(epics.values());
     }
 
     @Override
     public List<Subtask> getSubtasks() {
-        for (Subtask subtask : subtasks.values()) {
-            historyManager.add(subtask);
-        }
+        subtasks.values().forEach(historyManager :: add);
         return new ArrayList<>(subtasks.values());
     }
 
