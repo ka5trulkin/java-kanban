@@ -24,13 +24,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void clearAll(List<Integer> idList) {
-        for (Integer id : idList) {
-            remove(id);
-        }
-    }
-
-    @Override
     public List<Task> getHistory() {
         return history.toArrayList();
     }
