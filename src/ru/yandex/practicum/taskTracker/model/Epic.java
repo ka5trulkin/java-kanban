@@ -35,6 +35,7 @@ public class Epic extends Task{
 
     public void clearSubtasks() {
         subtasksId.clear();
+        setStatus(Status.NEW);
     }
 
     @Override

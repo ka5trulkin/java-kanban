@@ -19,6 +19,9 @@ public class Main {
         printInfo(3);
         taskManager.getSubtasks();
         printInfo(4);
+        taskManager.clearAllSubtasks();
+        printInfo(5);
+        printInfo(taskManager);
 //        printInfo(taskManager);
 //        taskManager.getSubTaskById(4);
 //        printInfo(2);
