@@ -1,13 +1,9 @@
 package ru.yandex.practicum.taskTracker.service;
 
-import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
+import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -22,19 +18,29 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         FileBackedTasksManager fileBackedTasksManager
                 = new FileBackedTasksManager("src/ru/yandex/practicum/taskTracker/files/backup-task-manager.csv");
         System.out.println(fileBackedTasksManager.backupFile.toString());
-        Subtask subtask = new Subtask("1", "2", 1);
-        fileBackedTasksManager.subtasks.put(subtask.getId(), subtask);
+        Task task1 = new Task("Просто задача", "Просто Мария создала просто задачу");
+        fileBackedTasksManager.addNewTask(task1);
+        Epic epic1 = new Epic("Исправить код", "Исправить все ошибки выявленные при ревью");
+        fileBackedTasksManager.addNewEpic(epic1);
+        Subtask subtask1 = new Subtask("Исправить класс Task", "Тут могла быть ваша реклама!"
+                , 2);
+        fileBackedTasksManager.addNewSubtask(subtask1);
         System.out.println(fileBackedTasksManager.getSubtasks());
-        System.out.println(fileBackedTasksManager.toString(fileBackedTasksManager.getSubTaskById(1)));
-//        fileBackedTasksManager.toString(fileBackedTasksManager.getTaskById())
+        System.out.println(fileBackedTasksManager.taskToString(fileBackedTasksManager.getSubTaskById(3)));
+        System.out.println(fileBackedTasksManager.taskToString(fileBackedTasksManager.getTaskById(1)));
+        System.out.println(fileBackedTasksManager.taskToString(fileBackedTasksManager.getEpicById(2)));
+
     }
 
-    String toString(Task task) {
-        StringBuilder stringBuilder = new StringBuilder(task.getId()
-                + "," + task.getType() + "," + task.getTaskName() + "," + task.getStatus() + task.getDescription());
-        if (task.getType() == Type.SUBTASK) {
-            stringBuilder.append(",").append(task.getEpicId());
-        }
-        return stringBuilder.toString();
+    String taskToString(Task taskOrEpic) {
+        return taskOrEpic.getId()
+                + "," + taskOrEpic.getType()
+                + "," + taskOrEpic.getTaskName()
+                + "," + taskOrEpic.getStatus()
+                + "," + taskOrEpic.getDescription();
+    }
+
+    String taskToString(Subtask subtask) {
+        return this.taskToString((Task) subtask) + "," + subtask.getEpicId();
     }
 }
