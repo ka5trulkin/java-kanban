@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         createTasks();
+        System.out.println(taskManager.getSubTaskById(4).toString());
         printInfo(1);
         printInfo(taskManager);
         taskManager.getSubTaskById(4);

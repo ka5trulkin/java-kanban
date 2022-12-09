@@ -1,5 +1,7 @@
 package ru.yandex.practicum.taskTracker.model;
 
+import ru.yandex.practicum.taskTracker.service.Type;
+
 import java.util.Objects;
 
 public class Task {
@@ -8,6 +10,7 @@ public class Task {
     private Status status;
     private final int id;
     private static int idCounter = 0;
+    protected final Type type = Type.TASK;
 
     public Task(String taskName, String description) {
         this.taskName = taskName;
@@ -21,7 +24,11 @@ public class Task {
         this.status = status;
     }
 
-    public static int setId() {
+    public Type getType() {
+        return type;
+    }
+
+    private static int setId() {
         return ++idCounter;
     }
 
