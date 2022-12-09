@@ -1,22 +1,29 @@
 package ru.yandex.practicum.taskTracker.model;
 
+import ru.yandex.practicum.taskTracker.service.Type;
+
 import java.util.Objects;
 
 public class Subtask extends Task {
     private final int epicId;
 
-    public Subtask(String taskName, String description, int epicId) {
-        super(taskName, description);
+    public Subtask(String taskName, String description, int id, int epicId) {
+        super(taskName, description, id);
         this.epicId = epicId;
     }
 
-    public Subtask(String taskName, String description, int epicId, Status status) {
-        super(taskName, description, status);
+    public Subtask(String taskName, String description, int id, Status status, int epicId) {
+        super(taskName, description, id, status);
         this.epicId = epicId;
     }
 
     public int getEpicId() {
         return epicId;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.SUBTASK;
     }
 
     @Override

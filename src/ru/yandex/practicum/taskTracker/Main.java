@@ -35,26 +35,26 @@ public class Main {
     }
 
     static void createTasks() {
-        Task task1 = new Task("Просто задача", "Просто Мария создала просто задачу");
+        Task task1 = new Task("Просто задача", "Просто Мария создала просто задачу", taskManager.setId());
         taskManager.addNewTask(task1);
-        Epic epic1 = new Epic("Исправить код", "Исправить все ошибки, выявленные при ревью");
+        Epic epic1 = new Epic("Исправить код", "Исправить все ошибки, выявленные при ревью", taskManager.setId());
         taskManager.addNewEpic(epic1);
-        Subtask subtask1 = new Subtask("Исправить класс Task", "Тут могла быть ваша реклама!"
+        Subtask subtask1 = new Subtask("Исправить класс Task", "Тут могла быть ваша реклама!", taskManager.setId()
                 , 2);
         taskManager.addNewSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Исправить класс Epic", "Сегодня действуют скидки на рекламу!"
+        Subtask subtask2 = new Subtask("Исправить класс Epic", "Сегодня действуют скидки на рекламу!", taskManager.setId()
                 , 2);
         taskManager.addNewSubtask(subtask2);
         Subtask subtask3 = new Subtask("Исправить класс Subtask",
-                "Миллиарды уже купили нашу рекламу, почему не Вы?", 2);
+                "Миллиарды уже купили нашу рекламу, почему не Вы?", taskManager.setId(), 2);
         taskManager.addNewSubtask(subtask3);
-        Epic epic2 = new Epic("Проверить второй эпик", "Проверить работоспособность второго эпика");
+        Epic epic2 = new Epic("Проверить второй эпик", "Проверить работоспособность второго эпика", taskManager.setId());
         taskManager.addNewEpic(epic2);
-        Subtask subtask4 = new Subtask("Проверить подзадачу № 1", "Описание подзадачи № 1", 6);
+        Subtask subtask4 = new Subtask("Проверить подзадачу № 1", "Описание подзадачи № 1", taskManager.setId(), 6);
         taskManager.addNewSubtask(subtask4);
-        Subtask subtask5 = new Subtask("Проверить подзадачу № 2", "Описание подзадачи № 2", 6);
+        Subtask subtask5 = new Subtask("Проверить подзадачу № 2", "Описание подзадачи № 2", taskManager.setId(), 6);
         taskManager.addNewSubtask(subtask5);
-        Subtask subtask6 = new Subtask("Проверить подзадачу № 3", "Описание подзадачи № 3", 6);
+        Subtask subtask6 = new Subtask("Проверить подзадачу № 3", "Описание подзадачи № 3", taskManager.setId(), 6);
         taskManager.addNewSubtask(subtask6);
         taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
         taskManager.getSubTaskById(3).setStatus(Status.DONE);

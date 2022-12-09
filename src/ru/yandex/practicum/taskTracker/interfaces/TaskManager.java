@@ -9,6 +9,8 @@ import java.util.List;
 public interface TaskManager {
     List<Task> getHistoryFromManager(); // Метод для проверки работоспособности HistoryManager
 
+    int setId ();
+
     List<Task> getTasks();
 
     List<Epic> getEpics();

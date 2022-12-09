@@ -9,28 +9,26 @@ public class Task {
     private String description;
     private Status status;
     private final int id;
-    private static int idCounter = 0;
-    protected final Type type = Type.TASK;
 
-    public Task(String taskName, String description) {
+    public Task(String taskName, String description, int id) {
         this.taskName = taskName;
         this.description = description;
-        this.id = setId();
+        this.id = id;
         this.status = Status.NEW;
     }
 
-    public Task(String taskName, String description, Status status) {
-        this(taskName, description);
+    public Task(String taskName, String description, int id, Status status) {
+        this(taskName, description, id);
         this.status = status;
     }
 
     public Type getType() {
-        return type;
+        return Type.TASK;
     }
 
-    private static int setId() {
-        return ++idCounter;
-    }
+//    private static int setId() {
+//        return ++idCounter;
+//    }
 
     public String getTaskName() {
         return taskName;
