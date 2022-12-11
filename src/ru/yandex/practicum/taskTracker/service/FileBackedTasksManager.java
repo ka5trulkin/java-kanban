@@ -17,6 +17,10 @@ import java.util.List;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final Path backupFile;
 
+    public FileBackedTasksManager(Path backupFile) {
+        this.backupFile = backupFile;
+    }
+
     private void save() {
         if (!Files.isDirectory(backupFile)) {
             String infoLine = "id,type,name,status,description,epic";
@@ -149,10 +153,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
         return tasksManager;
-    }
-
-    public FileBackedTasksManager(Path backupFile) {
-        this.backupFile = backupFile;
     }
 
     static List<Integer> historyFromString(String fileLine) {
