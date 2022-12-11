@@ -1,40 +1,74 @@
 package ru.yandex.practicum.taskTracker.service;
 
+import ru.yandex.practicum.taskTracker.interfaces.HistoryManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Status;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class FileBackedTasksManager extends InMemoryTaskManager{
     Path backupFile;
 
-    public FileBackedTasksManager(Path backupFile) {
-        this.backupFile = backupFile;
+    public static void main(String[] args) {
+//        Path path = Paths.get("src/ru/yandex/practicum/taskTracker/files/backup-task-manager.csv");
+//        FileBackedTasksManager tasksManager1 = FileBackedTasksManager.loadFromFile(path);
+
     }
 
-    private String taskToString(Task taskOrEpic) {
-        return taskOrEpic.getId()
-                + "," + taskOrEpic.getType()
-                + "," + taskOrEpic.getTaskName()
-                + "," + taskOrEpic.getStatus()
-                + "," + taskOrEpic.getDescription();
+    private void save() {
+        if (!Files.isDirectory(backupFile)) {
+            String infoLine = "id,type,name,status,description,epic";
+
+            try (BufferedWriter bufferedWriter
+                         = new BufferedWriter(new FileWriter(backupFile.toString(), StandardCharsets.UTF_8))) {
+
+                bufferedWriter.write(infoLine + System.lineSeparator()
+                        + tasksToString() + System.lineSeparator()
+                        + historyToString(this.historyManager));
+            } catch (IOException e) {
+                throw new ManagerSaveException("Ошибка записи в файл");
+            }
+        } else {
+            throw new ManagerSaveException("Указанный файл является директорией");
+        }
     }
 
-    private String taskToString(Subtask subtask) {
-        return this.taskToString((Task) subtask) + "," + subtask.getEpicId();
+    private String tasksToString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Task task : tasks.values()) {
+            stringBuilder.append(taskToString(task)).append(System.lineSeparator());
+        }
+        for (Epic epic : epics.values()) {
+            stringBuilder.append(taskToString(epic)).append(System.lineSeparator());
+        }
+        for (Subtask subtask : subtasks.values()) {
+            stringBuilder.append(taskToString(subtask)).append(System.lineSeparator());
+        }
+        return stringBuilder.toString();
     }
 
-    public Task taskFromString(String stringLine) {
+    private String taskToString(Task task) {
+        String result = task.getId()
+                + "," + task.getType()
+                + "," + task.getTaskName()
+                + "," + task.getStatus()
+                + "," + task.getDescription();
+        if (task.getType() == Type.SUBTASK) {
+            Subtask subtask = (Subtask) task;
+            result += "," + subtask.getEpicId();
+        }
+        return result;
+    }
+
+    private Task taskFromString(String stringLine) {
         Task result = null;
         String[] dataFromStringLine = stringLine.split(",");
         int id = Integer.parseInt(dataFromStringLine[0]);
@@ -54,39 +88,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return result;
     }
 
-    public static FileBackedTasksManager loadFromFile(Path backupFile) {
-        FileBackedTasksManager tasksManager = new FileBackedTasksManager(backupFile);
-        String[] fileLines;
-        try {
-            fileLines = Files.readString(backupFile).split("\r?\n");
-        } catch (IOException e) {
-            throw new ManagerReadException();
+    private void fillHistoryManager(List<Integer> history) {
+        for (Integer id : history) {
+            this.getTaskById(id);
+            this.getEpicById(id);
+            this.getSubTaskById(id);
         }
-        int nextLine = 1;
-
-        if (fileLines.length > nextLine) {
-            String fileLine;
-
-            for (int index = nextLine; index < fileLines.length; index++) {
-                fileLine = fileLines[index];
-                if (!fileLine.isBlank()) {
-                   tasksManager.fillTasksManager(fileLine);
-                } else if (fileLine.isBlank() && !fileLines[index + nextLine].isBlank()) {
-                    historyFromString(fileLines[index + nextLine]);
-                    break;
-                }
-            }
-        }
-        return tasksManager;
-    }
-
-    static List<Integer> historyFromString(String fileLine) {
-        List<Integer> list = new ArrayList<>();
-
-        for (String id : fileLine.split(",")) {
-            list.add(Integer.parseInt(id));
-        }
-        return list;
     }
 
     private void fillTasksManager(String fileLine) {
@@ -117,6 +124,32 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         this.subtasks.put(key, task);
     }
 
+    public static FileBackedTasksManager loadFromFile(Path backupFile) {
+        FileBackedTasksManager tasksManager = new FileBackedTasksManager(backupFile);
+        String[] fileLines;
+        int infoLine = 1;
+
+        try {
+            fileLines = Files.readString(backupFile).split("\r?\n");
+        } catch (IOException e) {
+            throw new ManagerReadException("Ошибка чтения файла");
+        }
+        if (fileLines.length > infoLine) {
+            String fileLine;
+
+            for (int index = infoLine; index < fileLines.length; index++) {
+                fileLine = fileLines[index];
+                if (!fileLine.isBlank()) {
+                    tasksManager.fillTasksManager(fileLine);
+                } else if (fileLine.isBlank() && !fileLines[index + infoLine].isBlank()) {
+                    tasksManager.fillHistoryManager(historyFromString(fileLines[index + infoLine]));
+                    break;
+                }
+            }
+        }
+        return tasksManager;
+    }
+
     private Type getType(String backupFileLine) {
         int firstIndex = backupFileLine.indexOf(",") + 1;
         int secondIndex = backupFileLine.indexOf(",", firstIndex);
@@ -124,19 +157,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         return Type.valueOf(type);
     }
 
-    private String fileToString(Path path) {
-        try {
-            return Files.readString(path, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public FileBackedTasksManager(Path backupFile) {
+        this.backupFile = backupFile;
     }
 
-    public static void main(String[] args) {
-        Path path = Paths.get("src/ru/yandex/practicum/taskTracker/files/backup-task-manager.csv");
-        FileBackedTasksManager tasksManager1 = FileBackedTasksManager.loadFromFile(path);
+    static List<Integer> historyFromString(String fileLine) {
+        List<Integer> list = new ArrayList<>();
 
-        System.out.println(tasksManager1.getTasks().toString());
+        for (String id : fileLine.split(",")) {
+            list.add(Integer.parseInt(id));
+        }
+        return list;
+    }
+
+    static String historyToString(HistoryManager manager) {
+        StringBuilder historyLine = new StringBuilder();
+        for (Task task : manager.getHistory()) {
+            historyLine.append(task.getId()).append(",");
+        }
+        if (historyLine.length() > 0){
+            historyLine.deleteCharAt(historyLine.length() - 1);
+        }
+        return historyLine.toString();
     }
 }

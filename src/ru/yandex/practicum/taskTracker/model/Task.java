@@ -76,7 +76,7 @@ public class Task {
         return "Task{" +
                 "taskName='" + taskName + '\'' +
                 ", description='" + description + '\'' +
-                ", status=" + status +
+                ", status=" + status.getName() +
                 ", id=" + id +
                 '}';
     }
