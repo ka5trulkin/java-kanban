@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    Path backupFile;
+    private final Path backupFile;
 
     private void save() {
         if (!Files.isDirectory(backupFile)) {
