@@ -26,10 +26,6 @@ public class Task {
         return Type.TASK;
     }
 
-//    private static int setId() {
-//        return ++idCounter;
-//    }
-
     public String getTaskName() {
         return taskName;
     }
