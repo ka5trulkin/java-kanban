@@ -14,6 +14,7 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final File backupFile;
+    private final String lineSeparator = "\r?\n";
 
     public FileBackedTasksManager(File backupFile) {
         this.backupFile = backupFile;
@@ -138,21 +139,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         int infoLine = 1;
 
         try {
-            fileLines = Files.readString(backupFile.toPath()).split("\r?\n");
+            fileLines = Files.readString(backupFile.toPath()).split(tasksManager.lineSeparator);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (fileLines.length > infoLine) {
-            String fileLine;
+        String fileLine;
 
-            for (int index = infoLine; index < fileLines.length; index++) {
-                fileLine = fileLines[index];
-                if (!fileLine.isBlank()) {
-                    tasksManager.fillTasksManager(fileLine);
-                } else if (fileLine.isBlank() && !fileLines[index + infoLine].isBlank()) {
-                    tasksManager.fillHistoryManager(historyFromString(fileLines[index + infoLine]));
-                    break;
-                }
+        for (int index = infoLine; index < fileLines.length; index++) {
+            fileLine = fileLines[index];
+            if (!fileLine.isBlank()) {
+                tasksManager.fillTasksManager(fileLine);
+            } else if (!fileLines[index + infoLine].isBlank()) {
+                tasksManager.fillHistoryManager(historyFromString(fileLines[index + infoLine]));
+                break;
             }
         }
         return tasksManager;
