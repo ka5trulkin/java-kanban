@@ -62,7 +62,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private Task taskFromString(String stringLine) {
-        Task result = null;
+        Task result;
         String[] dataFromStringLine = stringLine.split(",");
         int id = Integer.parseInt(dataFromStringLine[0]);
         Type type = Type.valueOf(dataFromStringLine[1]);
@@ -70,15 +70,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Status status = Status.valueOf(dataFromStringLine[3]);
         String description = dataFromStringLine[4];
 
-        if (type == Type.TASK) {
-            result = new Task(name, description, id, status);
-        } else if (type == Type.EPIC) {
-            result = new Epic(name, description, id, status);
-        } else if (type == Type.SUBTASK) {
-            int epicId = Integer.parseInt(dataFromStringLine[5]);
-            result = new Subtask(name, description, id, status, epicId);
+        switch (type) {
+            case TASK:
+                result = new Task(name, description, id, status);
+                return result;
+            case EPIC:
+                result = new Epic(name, description, id, status);
+                return result;
+            case SUBTASK:
+                int epicId = Integer.parseInt(dataFromStringLine[5]);
+                result = new Subtask(name, description, id, status, epicId);
+                return result;
         }
-        return result;
+        throw new RuntimeException();
     }
 
     private void fillHistoryManager(List<Integer> history) {
