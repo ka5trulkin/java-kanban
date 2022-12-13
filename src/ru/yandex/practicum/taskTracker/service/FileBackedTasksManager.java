@@ -35,19 +35,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private String tasksToString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("id,type,name,status,description,epic");
-        stringBuilder.append(System.lineSeparator());
+        stringBuilder.append("id,type,name,status,description,epic")
+                .append(System.lineSeparator());
         for (Task task : tasks.values()) {
-            stringBuilder.append(taskToString(task));
-            stringBuilder.append(System.lineSeparator());
+            stringBuilder.append(taskToString(task))
+                    .append(System.lineSeparator());
         }
         for (Epic epic : epics.values()) {
-            stringBuilder.append(taskToString(epic));
-            stringBuilder.append(System.lineSeparator());
+            stringBuilder.append(taskToString(epic))
+                    .append(System.lineSeparator());
         }
         for (Subtask subtask : subtasks.values()) {
-            stringBuilder.append(taskToString(subtask));
-            stringBuilder.append(System.lineSeparator());
+            stringBuilder.append(taskToString(subtask))
+                    .append(System.lineSeparator());
         }
         return stringBuilder.toString();
     }
