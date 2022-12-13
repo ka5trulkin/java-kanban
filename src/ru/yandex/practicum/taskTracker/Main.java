@@ -106,6 +106,5 @@ public class Main {
         for (Task task : taskManager.getHistoryFromManager()) {
             System.out.println(task);
         }
-
     }
 }
