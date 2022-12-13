@@ -10,7 +10,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
@@ -22,32 +21,33 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private void save() {
         if (backupFile.isFile()) {
-            String infoLine = "id,type,name,status,description,epic";
-
             try (BufferedWriter bufferedWriter
                          = new BufferedWriter(new FileWriter(backupFile.toString(), StandardCharsets.UTF_8))) {
-
-                bufferedWriter.write(infoLine + System.lineSeparator()
-                        + tasksToString() + System.lineSeparator()
+                bufferedWriter.write(tasksToString()
+                        + System.lineSeparator()
                         + historyToString(this.historyManager));
             } catch (IOException e) {
                 throw new ManagerSaveException("Ошибка записи в файл");
             }
-        } else {
-            throw new ManagerSaveException("Указанный файл является директорией");
         }
     }
 
     private String tasksToString() {
         StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("id,type,name,status,description,epic");
+        stringBuilder.append(System.lineSeparator());
         for (Task task : tasks.values()) {
-            stringBuilder.append(taskToString(task)).append(System.lineSeparator());
+            stringBuilder.append(taskToString(task));
+            stringBuilder.append(System.lineSeparator());
         }
         for (Epic epic : epics.values()) {
-            stringBuilder.append(taskToString(epic)).append(System.lineSeparator());
+            stringBuilder.append(taskToString(epic));
+            stringBuilder.append(System.lineSeparator());
         }
         for (Subtask subtask : subtasks.values()) {
-            stringBuilder.append(taskToString(subtask)).append(System.lineSeparator());
+            stringBuilder.append(taskToString(subtask));
+            stringBuilder.append(System.lineSeparator());
         }
         return stringBuilder.toString();
     }
