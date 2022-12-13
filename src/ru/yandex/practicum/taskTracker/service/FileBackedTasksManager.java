@@ -94,12 +94,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void fillTasksManager(String fileLine) {
-        if (getType(fileLine) == Type.TASK) {
-            fillTasks(fileLine);
-        } else if (getType(fileLine) == Type.EPIC) {
-            fillEpics(fileLine);
-        } else if (getType(fileLine) == Type.SUBTASK) {
-            fillSubtasks(fileLine);
+        switch (getType(fileLine)) {
+            case TASK:
+                fillTasks(fileLine);
+                break;
+            case EPIC:
+                fillEpics(fileLine);
+                break;
+            case SUBTASK:
+                fillSubtasks(fileLine);
+                break;
         }
     }
 
