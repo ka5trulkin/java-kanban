@@ -1,7 +1,5 @@
 package ru.yandex.practicum.taskTracker.model;
 
-import ru.yandex.practicum.taskTracker.service.Type;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,9 +31,7 @@ public class Epic extends Task{
     }
 
     public void removeSubtask(int subtaskId) {
-        if (subtasksId.remove(Integer.valueOf(subtaskId))) {
-            return;
-        }
+        subtasksId.remove(Integer.valueOf(subtaskId));
     }
 
     public void setSubtask(int subtaskId) {

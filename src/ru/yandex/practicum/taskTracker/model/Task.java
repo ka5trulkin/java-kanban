@@ -1,7 +1,5 @@
 package ru.yandex.practicum.taskTracker.model;
 
-import ru.yandex.practicum.taskTracker.service.Type;
-
 import java.util.Objects;
 
 public class Task {
