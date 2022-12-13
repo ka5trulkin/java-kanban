@@ -14,6 +14,7 @@ public class Main {
     public static void main(String[] args) {
         File file = new File ("src/ru/yandex/practicum/taskTracker/files/backup-task-manager.csv");
         FileBackedTasksManager taskManager = FileBackedTasksManager.loadFromFile(file);
+        System.out.println("Пуста ли история просмотров? = " + taskManager.getHistoryFromManager().isEmpty());
 
         Task task1 = new Task(
                 "Просто задача", "Просто Мария создала просто задачу", taskManager.setId());
