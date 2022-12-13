@@ -54,6 +54,10 @@ public class Task {
         this.status = status;
     }
 
+    public Integer getParentEpicID() {
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
