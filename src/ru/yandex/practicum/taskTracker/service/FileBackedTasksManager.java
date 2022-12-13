@@ -136,6 +136,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public static FileBackedTasksManager loadFromFile(File backupFile) {
         FileBackedTasksManager tasksManager = new FileBackedTasksManager(backupFile);
         String[] fileLines;
+        String fileLine;
         int infoLine = 1;
 
         try {
@@ -143,8 +144,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String fileLine;
-
         for (int index = infoLine; index < fileLines.length; index++) {
             fileLine = fileLines[index];
             if (!fileLine.isBlank()) {
