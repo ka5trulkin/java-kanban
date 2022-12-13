@@ -9,20 +9,19 @@ import ru.yandex.practicum.taskTracker.model.Task;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final Path backupFile;
+    private final File backupFile;
 
-    public FileBackedTasksManager(Path backupFile) {
+    public FileBackedTasksManager(File backupFile) {
         this.backupFile = backupFile;
     }
 
     private void save() {
-        if (!Files.isDirectory(backupFile)) {
+        if (backupFile.isFile()) {
             String infoLine = "id,type,name,status,description,epic";
 
             try (BufferedWriter bufferedWriter
@@ -129,15 +128,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return Type.valueOf(type);
     }
 
-    public static FileBackedTasksManager loadFromFile(Path backupFile) {
+    public static FileBackedTasksManager loadFromFile(File backupFile) {
         FileBackedTasksManager tasksManager = new FileBackedTasksManager(backupFile);
         String[] fileLines;
         int infoLine = 1;
 
         try {
-            fileLines = Files.readString(backupFile).split("\r?\n");
+            fileLines = Files.readString(backupFile.toPath()).split("\r?\n");
         } catch (IOException e) {
-            throw new ManagerReadException("Ошибка чтения файла");
+            throw new RuntimeException(e);
         }
         if (fileLines.length > infoLine) {
             String fileLine;
@@ -287,102 +286,5 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void removeSubtaskById(int subtaskId) {
         super.removeSubtaskById(subtaskId);
         save();
-    }
-
-    public static void main(String[] args) {
-        Path path = Paths.get("src/ru/yandex/practicum/taskTracker/files/backup-task-manager.csv");
-        FileBackedTasksManager taskManager = FileBackedTasksManager.loadFromFile(path);
-
-        Task task1 = new Task(
-                "Просто задача", "Просто Мария создала просто задачу", taskManager.setId());
-        taskManager.addNewTask(task1);
-        Epic epic1 = new Epic(
-                "Исправить код", "Исправить все ошибки выявленные при ревью", taskManager.setId());
-        taskManager.addNewEpic(epic1);
-        Subtask subtask1 = new Subtask(
-                "Исправить класс Task", "Тут могла быть ваша реклама!", taskManager.setId()
-                , 2);
-        taskManager.addNewSubtask(subtask1);
-        Subtask subtask2 = new Subtask(
-                "Исправить класс Epic", "Сегодня действуют скидки на рекламу!", taskManager.setId()
-                , 2);
-        taskManager.addNewSubtask(subtask2);
-        Subtask subtask3 = new Subtask("Исправить класс Subtask",
-                "Миллиарды уже купили нашу рекламу почему не Вы?", taskManager.setId(), 2);
-        taskManager.addNewSubtask(subtask3);
-        Epic epic2 = new Epic("Проверить второй эпик",
-                "Проверить работоспособность второго эпика", taskManager.setId());
-        taskManager.addNewEpic(epic2);
-        Subtask subtask4 = new Subtask("Проверить подзадачу № 1",
-                "Описание подзадачи № 1", taskManager.setId(), 6);
-        taskManager.addNewSubtask(subtask4);
-        Subtask subtask5 = new Subtask("Проверить подзадачу № 2",
-                "Описание подзадачи № 2", taskManager.setId(), 6);
-        taskManager.addNewSubtask(subtask5);
-        Subtask subtask6 = new Subtask("Проверить подзадачу № 3",
-                "Описание подзадачи № 3", taskManager.setId(), 6);
-        taskManager.getSubTaskById(9);
-        taskManager.getSubTaskById(8);
-        taskManager.getSubTaskById(7);
-        taskManager.getEpicById(6);
-        taskManager.getSubTaskById(5);
-        taskManager.getSubTaskById(3);
-        taskManager.getEpicById(2);
-        taskManager.getTaskById(1);
-        System.out.println(System.lineSeparator()
-                + "Вывод данных после заполнения задач:" + System.lineSeparator()
-                + "ID задач из истории просмотров:");
-        for (Task task : taskManager.historyManager.getHistory()) {
-            System.out.print(task.getId() + " ");
-        }
-        System.out.println();
-        for (Task task : taskManager.getHistoryFromManager()) {
-            System.out.println(task);
-        }
-        taskManager.addNewSubtask(subtask6);
-        taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
-        taskManager.getSubTaskById(3).setStatus(Status.DONE);
-        taskManager.getSubTaskById(3).setStatus(Status.IN_PROGRESS);
-        taskManager.getSubTaskById(5).setStatus(Status.DONE);
-        taskManager.getSubTaskById(9);
-        taskManager.getSubTaskById(7);
-        taskManager.getSubTaskById(8);
-        taskManager.getEpicById(6);
-        taskManager.getEpicById(2);
-        taskManager.getTaskById(1);
-        taskManager.getSubTaskById(9);
-        taskManager.getSubTaskById(7);
-        taskManager.getSubTaskById(8);
-        taskManager.getEpicById(6);
-        taskManager.getEpicById(2);
-        taskManager.getTaskById(1);
-        taskManager.getSubTaskById(9);
-        taskManager.getSubTaskById(7);
-        taskManager.getSubTaskById(8);
-        taskManager.getEpicById(6);
-        taskManager.getEpicById(2);
-        System.out.println(System.lineSeparator() + "ID задач после вызова:");
-        for (Task task : taskManager.historyManager.getHistory()) {
-            System.out.print(task.getId() + " ");
-        }
-        System.out.println();
-        FileBackedTasksManager taskManager2 = new FileBackedTasksManager(path);
-
-        System.out.println(System.lineSeparator() + "ID задач из истории просмотров нового объекта:");
-        for (Task task : taskManager2.historyManager.getHistory()) {
-            System.out.print(task.getId() + " ");
-        }
-        System.out.println();
-        FileBackedTasksManager taskManager3 = FileBackedTasksManager.loadFromFile(path);
-
-        System.out.println("ID задач из истории просмотров восстановленного файла:");
-        for (Task task : taskManager3.historyManager.getHistory()) {
-            System.out.print(task.getId() + " ");
-        }
-        System.out.println(System.lineSeparator() + "Вывод данных о задачах восстановленного файла:");
-        for (Task task : taskManager.getHistoryFromManager()) {
-            System.out.println(task);
-        }
-
     }
 }
