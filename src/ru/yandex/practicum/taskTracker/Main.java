@@ -89,14 +89,14 @@ public class Main {
             System.out.print(task.getId() + " ");
         }
         System.out.println();
-        FileBackedTasksManager taskManager2 = new FileBackedTasksManager(file);
+        TaskManager taskManager2 = new FileBackedTasksManager(file);
 
         System.out.println(System.lineSeparator() + "ID задач из истории просмотров нового объекта:");
         for (Task task : taskManager2.getHistoryFromManager()) {
             System.out.print(task.getId() + " ");
         }
         System.out.println();
-        FileBackedTasksManager taskManager3 = FileBackedTasksManager.loadFromFile(file);
+        TaskManager taskManager3 = Managers.getDefault();
 
         System.out.println("ID задач из истории просмотров восстановленного файла:");
         for (Task task : taskManager3.getHistoryFromManager()) {
