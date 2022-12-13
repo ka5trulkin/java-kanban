@@ -13,7 +13,7 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) {
         File file = new File ("src/ru/yandex/practicum/taskTracker/files/backup-task-manager.csv");
-        FileBackedTasksManager taskManager = FileBackedTasksManager.loadFromFile(file);
+        TaskManager taskManager = Managers.getDefault();
         System.out.println("Пуста ли история просмотров? = " + taskManager.getHistoryFromManager().isEmpty());
 
         Task task1 = new Task(
