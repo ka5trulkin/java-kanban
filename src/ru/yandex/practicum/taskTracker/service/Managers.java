@@ -7,8 +7,7 @@ import java.io.File;
 
 public final class Managers {
     public static TaskManager getDefault() {
-        return FileBackedTasksManager
-                .loadFromFile(new File("src/ru/yandex/practicum/taskTracker/files/backup-task-manager.csv"));
+        return new FileBackedTasksManager(new File("resource/backup-task-manager.csv"));
     }
 
     public static HistoryManager getDefaultHistory() {

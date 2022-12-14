@@ -12,6 +12,7 @@ import java.util.List;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final File backupFile;
     private final String lineSeparator = "\r?\n";
+    private final String infoLine = "id,type,name,status,description,epic";
 
     public FileBackedTasksManager(File backupFile) {
         this.backupFile = backupFile;
@@ -21,9 +22,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         if (backupFile.isFile()) {
             try (BufferedWriter bufferedWriter
                          = new BufferedWriter(new FileWriter(backupFile.toString(), StandardCharsets.UTF_8))) {
-                bufferedWriter.write(tasksToString()
-                        + System.lineSeparator()
-                        + historyToString(this.historyManager));
+                bufferedWriter.write(tasksToString());
+                bufferedWriter.write(historyToString(this.historyManager));
             } catch (IOException e) {
                 throw new ManagerSaveException("Ошибка записи в файл");
             }
@@ -33,20 +33,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private String tasksToString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("id,type,name,status,description,epic")
-                .append(System.lineSeparator());
+        stringBuilder.append(infoLine);
+        stringBuilder.append(System.lineSeparator());
         for (Task task : tasks.values()) {
-            stringBuilder.append(taskToString(task))
-                    .append(System.lineSeparator());
+            stringBuilder.append(taskToString(task));
         }
         for (Epic epic : epics.values()) {
-            stringBuilder.append(taskToString(epic))
-                    .append(System.lineSeparator());
+            stringBuilder.append(taskToString(epic));
         }
         for (Subtask subtask : subtasks.values()) {
-            stringBuilder.append(taskToString(subtask))
-                    .append(System.lineSeparator());
+            stringBuilder.append(taskToString(subtask));
         }
+        stringBuilder.append(System.lineSeparator());
         return stringBuilder.toString();
     }
 
@@ -56,7 +54,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 + "," + task.getTaskName()
                 + "," + task.getStatus()
                 + "," + task.getDescription()
-                + "," + task.getParentEpicID();
+                + "," + task.getParentEpicID()
+                + System.lineSeparator();
     }
 
     private Task taskFromString(String stringLine) {
@@ -79,8 +78,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 int epicId = Integer.parseInt(dataFromStringLine[5]);
                 result = new Subtask(name, description, id, status, epicId);
                 return result;
+            default:
+                throw new IllegalStateException("Неизвестный тип задачи: " + type);
         }
-        throw new RuntimeException();
     }
 
     private void fillHistoryManager(List<Integer> history) {
@@ -92,7 +92,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void fillTasksManager(String fileLine) {
-        switch (getType(fileLine)) {
+        switch (taskFromString(fileLine).getType()) {
             case TASK:
                 fillTasks(fileLine);
                 break;
@@ -123,30 +123,25 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.subtasks.put(key, task);
     }
 
-    private Type getType(String backupFileLine) {
-        int firstIndex = backupFileLine.indexOf(",") + 1;
-        int secondIndex = backupFileLine.indexOf(",", firstIndex);
-        String type = backupFileLine.substring(firstIndex, secondIndex);
-        return Type.valueOf(type);
-    }
-
     public static FileBackedTasksManager loadFromFile(File backupFile) {
         FileBackedTasksManager tasksManager = new FileBackedTasksManager(backupFile);
         String[] fileLines;
         String fileLine;
-        int infoLine = 1;
+        String historyLine;
+        int dataLine = 1;
 
         try {
             fileLines = Files.readString(backupFile.toPath()).split(tasksManager.lineSeparator);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException("Ошибка чтения " + backupFile);
         }
-        for (int index = infoLine; index < fileLines.length; index++) {
+        for (int index = dataLine; index < fileLines.length; index++) {
             fileLine = fileLines[index];
+            historyLine = fileLines[index + dataLine];
             if (!fileLine.isBlank()) {
                 tasksManager.fillTasksManager(fileLine);
-            } else if (!fileLines[index + infoLine].isBlank()) {
-                tasksManager.fillHistoryManager(historyFromString(fileLines[index + infoLine]));
+            } else if (!historyLine.isBlank()) {
+                tasksManager.fillHistoryManager(historyFromString(historyLine));
                 break;
             }
         }
@@ -164,14 +159,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static String historyToString(HistoryManager manager) {
         if (!manager.getHistory().isEmpty()) {
-            int firstTask = 0;
-            int secondTask = 1;
             StringBuilder historyBuilder = new StringBuilder();
+            List<Task> history = manager.getHistory();
 
-            historyBuilder.append(manager.getHistory().get(firstTask).getId());
-            for (int index = secondTask; index < manager.getHistory().size(); index++) {
-                historyBuilder.append(",")
-                        .append(manager.getHistory().get(index).getId());
+            historyBuilder.append(history.get(0).getId());
+            for (int index = 1; index < history.size(); index++) {
+                historyBuilder.append(",");
+                historyBuilder.append(history.get(index).getId());
             }
             return historyBuilder.toString();
         } else return "";

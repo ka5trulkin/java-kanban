@@ -12,7 +12,7 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        File file = new File ("src/ru/yandex/practicum/taskTracker/files/backup-task-manager.csv");
+        File file = new File ("resource/backup-task-manager.csv");
         TaskManager taskManager = Managers.getDefault();
         System.out.println("Пуста ли история просмотров? = " + taskManager.getHistoryFromManager().isEmpty());
 
@@ -96,7 +96,7 @@ public class Main {
             System.out.print(task.getId() + " ");
         }
         System.out.println();
-        TaskManager taskManager3 = Managers.getDefault();
+        TaskManager taskManager3 = FileBackedTasksManager.loadFromFile(file);
 
         System.out.println("ID задач из истории просмотров восстановленного файла:");
         for (Task task : taskManager3.getHistoryFromManager()) {
