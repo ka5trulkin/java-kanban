@@ -15,9 +15,9 @@ class SubtaskTest {
 
     @Test
     void getType() {
-        Type type = Type.SUBTASK;
+        Type subtaskType = Type.SUBTASK;
 
-        assertEquals(type, subtask.getType());
+        assertEquals(subtaskType, subtask.getType());
     }
 
     @Test
