@@ -7,7 +7,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
-    final Epic epic = new Epic("Эпик для теста", "Протестировать Эпик", 1);
+    final Epic epic = new Epic("Эпик для теста", "Описание эпика", 1);
     final int listSize = 0;
     final int subtaskId = 2;
 

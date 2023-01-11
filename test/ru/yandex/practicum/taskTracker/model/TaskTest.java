@@ -37,9 +37,9 @@ class TaskTest {
 
     @Test
     void getId() {
-        int subtaskId = 1;
+        int taskId = 1;
 
-        assertEquals(subtaskId, task.getId());
+        assertEquals(taskId, task.getId());
     }
 
     @Test
