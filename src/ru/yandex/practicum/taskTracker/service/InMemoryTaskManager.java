@@ -42,11 +42,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getHistoryFromManager() { // Метод для проверки работоспособности HistoryManager
-        return historyManager.getHistory();
-    }
-
-    @Override
     public List<Task> getTasks() {
         tasks.values().forEach(historyManager :: add);
         return new ArrayList<>(tasks.values());

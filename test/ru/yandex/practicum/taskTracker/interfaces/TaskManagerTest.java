@@ -7,10 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
-    void getHistoryFromManager() {
-    }
-
-    @Test
     void setId() {
     }
 
