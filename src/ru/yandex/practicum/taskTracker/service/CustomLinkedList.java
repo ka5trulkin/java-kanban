@@ -12,26 +12,20 @@ class CustomLinkedList<T> {
     private final Map<Integer, Node<T>> nodeMap = new HashMap<>();
 
     private void removeNode(Node<T> node) {
-        if (node == head) {
-            if (node.next != null) {
-                head = node.next;
-                head.prev = null;
-                if (head.next == null) {
-                    tail = null;
-                }
-            } else {
-                head = null;
-                tail = null;
-            }
-        } else if (node == tail) {
-            tail = tail.prev;
-            tail.next = null;
-            if (head == tail) {
-                tail = null;
-            }
+        final Node<T> next = node.next;
+        final Node<T> prev = node.prev;
+
+        if (prev == null) {
+            head = next;
         } else {
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
+            prev.next = next;
+            node.prev = null;
+        }
+        if (next == null) {
+            tail = prev;
+        } else {
+            next.prev = prev;
+            node.next = null;
         }
         size--;
     }

@@ -26,7 +26,7 @@ public class InMemoryTaskManager implements TaskManager {
                     counter++;
                 }
             }
-            if (epic.getSubtasksId().size() == counter) {
+            if ((epic.getSubtasksId().size() == counter) && (counter > 0)) {
                 epic.setStatus(Status.DONE);
             } else if (epic.getSubtasksId().size() > 0) {
                 epic.setStatus(Status.IN_PROGRESS);

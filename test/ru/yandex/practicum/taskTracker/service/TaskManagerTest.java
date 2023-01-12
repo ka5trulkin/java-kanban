@@ -41,146 +41,62 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void setId() {
-        int idCounterMostBe = 1;
-
-        assertEquals(idCounterMostBe, manager.setId());
-        idCounterMostBe = 2;
-        assertEquals(idCounterMostBe, manager.setId());
-    }
+    abstract void setId();
 
     @Test
-    void getTasks() {
-        assertEquals(Collections.emptyList(), manager.getTasks());
-        fillManager();
-        assertEquals(tasksList, manager.getTasks());
-    }
+    abstract void getTasks();
 
     @Test
-    void getEpics() {
-        assertEquals(Collections.emptyList(), manager.getEpics());
-        fillManager();
-        assertEquals(epicsList, manager.getEpics());
-    }
+    abstract void getEpics();
 
     @Test
-    void getSubtasks() {
-        assertEquals(Collections.emptyList(), manager.getSubtasks());
-        fillManager();
-        assertEquals(subtasksList, manager.getSubtasks());
-    }
+    abstract void getSubtasks();
 
     @Test
-    void clearAllTasks() {
-        fillManager();
-        assertEquals(tasksList, manager.getTasks());
-        manager.clearAllTasks();
-        assertEquals(Collections.emptyList(), manager.getTasks());
-    }
+    abstract void clearAllTasks();
 
     @Test
-    void clearAllEpics() {
-        fillManager();
-        assertEquals(epicsList, manager.getEpics());
-        manager.clearAllEpics();
-        assertEquals(Collections.emptyList(), manager.getEpics());
-    }
+    abstract void clearAllEpics();
 
     @Test
-    void clearAllSubtasks() {
-        fillManager();
-        assertEquals(subtasksList, manager.getSubtasks());
-        manager.clearAllSubtasks();
-        assertEquals(Collections.emptyList(), manager.getSubtasks());
-    }
+    abstract void clearAllSubtasks();
 
     @Test
-    void getTaskById() {
-        fillManager();
-        assertEquals(task, manager.getTaskById(idTask));
-    }
+    abstract void getTaskById();
 
     @Test
-    void getEpicById() {
-        fillManager();
-        assertEquals(epic, manager.getEpicById(idEpic));
-    }
+    abstract void getEpicById();
 
     @Test
-    void getSubTaskById() {
-        fillManager();
-        assertEquals(subtask, manager.getSubTaskById(idSubtask));
-    }
+    abstract void getSubTaskById();
 
     @Test
-    void addNewTask() {
-        manager.addNewTask(task);
-        assertEquals(Collections.singletonList(task), manager.getTasks());
-    }
+    abstract void addNewTask();
 
     @Test
-    void addNewEpic() {
-        manager.addNewEpic(epic);
-        assertEquals(Collections.singletonList(epic), manager.getEpics());
-    }
+    abstract void addNewEpic();
 
     @Test
-    void addNewSubtask() {
-        manager.addNewEpic(epic);
-        manager.addNewSubtask(subtask);
-        assertEquals(Collections.singletonList(subtask), manager.getSubtasks());
-    }
+    abstract void addNewSubtask();
 
     @Test
-    void updateTask() {
-        fillManager();
-        task = new Task(task.getTaskName(), newDescription, idTask);
-        manager.updateTask(task);
-        assertEquals(newDescription, manager.getTaskById(idTask).getDescription());
-    }
+    abstract void updateTask();
 
     @Test
-    void updateEpic() {
-        fillManager();
-        epic = new Epic(epic.getTaskName(), newDescription, idEpic);
-        manager.updateEpic(epic);
-        assertEquals(newDescription, manager.getEpicById(idEpic).getDescription());
-    }
+    abstract void updateEpic();
 
     @Test
-    void updateSubtask() {
-        fillManager();
-        subtask = new Subtask(subtask.getTaskName(), newDescription, idSubtask, subtask.getEpicId());
-        manager.updateSubtask(subtask);
-    }
+    abstract void updateSubtask();
 
     @Test
-    void removeTaskById() {
-        fillManager();
-        assertEquals(task, manager.getTaskById(idTask));
-        manager.removeTaskById(idTask);
-        assertNull(manager.getTaskById(idTask));
-    }
+    abstract void removeTaskById();
 
     @Test
-    void removeEpicById() {
-        fillManager();
-        assertEquals(epic, manager.getEpicById(idEpic));
-        manager.removeEpicById(idEpic);
-        assertNull(manager.getEpicById(idEpic));
-    }
+    abstract void removeEpicById();
 
     @Test
-    void removeSubtaskById() {
-        fillManager();
-        assertEquals(subtask, manager.getSubTaskById(idSubtask));
-        manager.removeSubtaskById(idSubtask);
-        assertNull(manager.getSubTaskById(idSubtask));
-    }
+    abstract void removeSubtaskById();
 
     @Test
-    void getSubtasksFromEpic() {
-        fillManager();
-        assertEquals(subtasksList, manager.getSubtasksFromEpic(idEpic));
-    }
+    abstract void getSubtasksFromEpic();
 }
