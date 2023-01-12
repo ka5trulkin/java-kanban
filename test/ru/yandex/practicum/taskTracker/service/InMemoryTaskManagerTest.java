@@ -27,7 +27,6 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     void checkEpicStatus() {
         manager.addNewEpic(epic);
         manager.updateEpic(epic);
-        System.out.println(manager.getEpics());
         assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus());
         assertEquals(Collections.emptyList(), manager.getSubtasks());
         fillManager();
@@ -42,7 +41,6 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
             changeSubtaskStatus(subtaskFromManager, Status.IN_PROGRESS);
         }
         assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
-        System.out.println(manager.getEpics());
         manager.clearAllSubtasks();
         assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus());
     }
@@ -113,6 +111,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     void getTaskById() {
         fillManager();
         assertEquals(task, manager.getTaskById(idTask));
+        assertNull(manager.getTaskById(idNonexistent));
     }
 
     @Override
@@ -120,6 +119,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     void getEpicById() {
         fillManager();
         assertEquals(epic, manager.getEpicById(idEpic));
+        assertNull(manager.getEpicById(idNonexistent));
     }
 
     @Override
@@ -127,6 +127,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     void getSubTaskById() {
         fillManager();
         assertEquals(subtask, manager.getSubTaskById(idSubtask));
+        assertNull(manager.getSubTaskById(idNonexistent));
     }
 
     @Override
@@ -175,6 +176,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         fillManager();
         subtask = new Subtask(subtask.getTaskName(), newDescription, idSubtask, subtask.getEpicId());
         manager.updateSubtask(subtask);
+        assertEquals(newDescription, manager.getSubTaskById(idSubtask).getDescription());
     }
 
     @Override
@@ -209,5 +211,6 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     void getSubtasksFromEpic() {
         fillManager();
         assertEquals(subtasksList, manager.getSubtasksFromEpic(idEpic));
+        assertEquals(Collections.emptyList(), manager.getSubtasksFromEpic(idNonexistent));
     }
 }

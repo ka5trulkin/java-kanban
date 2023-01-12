@@ -7,13 +7,10 @@ import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 abstract class TaskManagerTest<T extends TaskManager> {
-    InMemoryTaskManager manager = new InMemoryTaskManager();
+    final InMemoryTaskManager manager = new InMemoryTaskManager();
     String newDescription = "Новое описание задачи";
     List<Task> tasksList = Arrays.asList(
             new Task("Задача 1", "Описание задачи 1", 1),
@@ -30,9 +27,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
     Task task = tasksList.get(0);
     Epic epic = epicsList.get(0);
     Subtask subtask = subtasksList.get(0);
-    int idTask = task.getId();
-    int idEpic = epic.getId();
-    int idSubtask = subtask.getId();
+    final int idTask = task.getId();
+    final int idEpic = epic.getId();
+    final int idSubtask = subtask.getId();
+    final int idNonexistent = 777;
 
     void fillManager() {
         tasksList.forEach(manager :: addNewTask);
