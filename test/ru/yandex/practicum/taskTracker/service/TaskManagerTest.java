@@ -1,16 +1,18 @@
 package ru.yandex.practicum.taskTracker.service;
 
-import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 abstract class TaskManagerTest<T extends TaskManager> {
-    final InMemoryTaskManager manager = new InMemoryTaskManager();
     String newDescription = "Новое описание задачи";
     List<Task> tasksList = Arrays.asList(
             new Task("Задача 1", "Описание задачи 1", 1),
@@ -32,69 +34,138 @@ abstract class TaskManagerTest<T extends TaskManager> {
     final int idSubtask = subtask.getId();
     final int idNonexistent = 777;
 
-    void fillManager() {
+    void fillManager(T manager) {
         tasksList.forEach(manager :: addNewTask);
         epicsList.forEach(manager :: addNewEpic);
         subtasksList.forEach(manager :: addNewSubtask);
     }
 
-    @Test
-    abstract void setId();
+    void setId(T manager) {
+        int idCounterMostBe = 1;
 
-    @Test
-    abstract void getTasks();
+        assertEquals(idCounterMostBe, manager.setId());
+        idCounterMostBe = 2;
+        assertEquals(idCounterMostBe, manager.setId());
+    }
 
-    @Test
-    abstract void getEpics();
+    void getTasks(T manager) {
+        assertEquals(Collections.emptyList(), manager.getTasks());
+        fillManager(manager);
+        assertEquals(tasksList, manager.getTasks());
+    }
 
-    @Test
-    abstract void getSubtasks();
+    void getEpics(T manager) {
+        assertEquals(Collections.emptyList(), manager.getEpics());
+        fillManager(manager);
+        assertEquals(epicsList, manager.getEpics());
+    }
 
-    @Test
-    abstract void clearAllTasks();
+    void getSubtasks(T manager) {
+        assertEquals(Collections.emptyList(), manager.getSubtasks());
+        fillManager(manager);
+        assertEquals(subtasksList, manager.getSubtasks());
+    }
 
-    @Test
-    abstract void clearAllEpics();
+    void clearAllTasks(T manager) {
+        fillManager(manager);
+        assertEquals(tasksList, manager.getTasks());
+        manager.clearAllTasks();
+        assertEquals(Collections.emptyList(), manager.getTasks());
+    }
 
-    @Test
-    abstract void clearAllSubtasks();
+    void clearAllEpics(T manager) {
+        fillManager(manager);
+        assertEquals(epicsList, manager.getEpics());
+        manager.clearAllEpics();
+        assertEquals(Collections.emptyList(), manager.getEpics());
+    }
 
-    @Test
-    abstract void getTaskById();
+    void clearAllSubtasks(T manager) {
+        fillManager(manager);
+        assertEquals(subtasksList, manager.getSubtasks());
+        manager.clearAllSubtasks();
+        assertEquals(Collections.emptyList(), manager.getSubtasks());
+    }
 
-    @Test
-    abstract void getEpicById();
+    void getTaskById(T manager) {
+        fillManager(manager);
+        assertEquals(task, manager.getTaskById(idTask));
+        assertNull(manager.getTaskById(idNonexistent));
+    }
 
-    @Test
-    abstract void getSubTaskById();
+    void getEpicById(T manager) {
+        fillManager(manager);
+        assertEquals(epic, manager.getEpicById(idEpic));
+        assertNull(manager.getEpicById(idNonexistent));
+    }
 
-    @Test
-    abstract void addNewTask();
+    void getSubTaskById(T manager) {
+        fillManager(manager);
+        assertEquals(subtask, manager.getSubTaskById(idSubtask));
+        assertNull(manager.getSubTaskById(idNonexistent));
+    }
 
-    @Test
-    abstract void addNewEpic();
+    void addNewTask(T manager) {
+        manager.addNewTask(task);
+        assertEquals(Collections.singletonList(task), manager.getTasks());
+    }
 
-    @Test
-    abstract void addNewSubtask();
+    void addNewEpic(T manager) {
+        manager.addNewEpic(epic);
+        assertEquals(Collections.singletonList(epic), manager.getEpics());
+    }
 
-    @Test
-    abstract void updateTask();
+    void addNewSubtask(T manager) {
+        manager.addNewEpic(epic);
+        manager.addNewSubtask(subtask);
+        assertEquals(Collections.singletonList(subtask), manager.getSubtasks());
+    }
 
-    @Test
-    abstract void updateEpic();
+    void updateTask(T manager) {
+        fillManager(manager);
+        task = new Task(task.getTaskName(), newDescription, idTask);
+        manager.updateTask(task);
+        assertEquals(newDescription, manager.getTaskById(idTask).getDescription());
+    }
 
-    @Test
-    abstract void updateSubtask();
+    void updateEpic(T manager) {
+        fillManager(manager);
+        epic = new Epic(epic.getTaskName(), newDescription, idEpic);
+        manager.updateEpic(epic);
+        assertEquals(newDescription, manager.getEpicById(idEpic).getDescription());
+    }
 
-    @Test
-    abstract void removeTaskById();
+    void updateSubtask(T manager) {
+        fillManager(manager);
+        subtask = new Subtask(subtask.getTaskName(), newDescription, idSubtask, subtask.getEpicId());
+        manager.updateSubtask(subtask);
+        assertEquals(newDescription, manager.getSubTaskById(idSubtask).getDescription());
+    }
 
-    @Test
-    abstract void removeEpicById();
+    void removeTaskById(T manager) {
+        fillManager(manager);
+        assertEquals(task, manager.getTaskById(idTask));
+        manager.removeTaskById(idTask);
+        assertNull(manager.getTaskById(idTask));
+    }
 
-    @Test
-    abstract void removeSubtaskById();
+    void removeEpicById(T manager) {
+        fillManager(manager);
+        assertEquals(epic, manager.getEpicById(idEpic));
+        manager.removeEpicById(idEpic);
+        assertNull(manager.getEpicById(idEpic));
+    }
 
-    @Test
-    abstract void getSubtasksFromEpic();
+    void removeSubtaskById(T manager) {
+        fillManager(manager);
+        assertEquals(subtask, manager.getSubTaskById(idSubtask));
+        manager.removeSubtaskById(idSubtask);
+        assertNull(manager.getSubTaskById(idSubtask));
+    }
+
+    void getSubtasksFromEpic(T manager) {
+        fillManager(manager);
+        assertEquals(subtasksList, manager.getSubtasksFromEpic(idEpic));
+        assertEquals(Collections.emptyList(), manager.getSubtasksFromEpic(idNonexistent));
+    }
 }
