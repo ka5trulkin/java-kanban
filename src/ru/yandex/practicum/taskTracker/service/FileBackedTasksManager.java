@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
@@ -123,6 +124,32 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.subtasks.put(key, task);
     }
 
+    private static List<Integer> historyFromString(String fileLine) {
+        if (fileLine.isBlank()) {
+            return Collections.emptyList();
+        }
+        List<Integer> list = new ArrayList<>();
+
+        for (String id : fileLine.split(",")) {
+            list.add(Integer.parseInt(id));
+        }
+        return list;
+    }
+
+    private static String historyToString(HistoryManager manager) {
+        if (!manager.getHistory().isEmpty()) {
+            StringBuilder historyBuilder = new StringBuilder();
+            List<Task> history = manager.getHistory();
+
+            historyBuilder.append(history.get(0).getId());
+            for (int index = 1; index < history.size(); index++) {
+                historyBuilder.append(",");
+                historyBuilder.append(history.get(index).getId());
+            }
+            return historyBuilder.toString();
+        } else return "";
+    }
+
     public static FileBackedTasksManager loadFromFile(File backupFile) {
         FileBackedTasksManager tasksManager = new FileBackedTasksManager(backupFile);
         String[] fileLines;
@@ -146,29 +173,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
         return tasksManager;
-    }
-
-    static List<Integer> historyFromString(String fileLine) {
-        List<Integer> list = new ArrayList<>();
-
-        for (String id : fileLine.split(",")) {
-            list.add(Integer.parseInt(id));
-        }
-        return list;
-    }
-
-    public static String historyToString(HistoryManager manager) {
-        if (!manager.getHistory().isEmpty()) {
-            StringBuilder historyBuilder = new StringBuilder();
-            List<Task> history = manager.getHistory();
-
-            historyBuilder.append(history.get(0).getId());
-            for (int index = 1; index < history.size(); index++) {
-                historyBuilder.append(",");
-                historyBuilder.append(history.get(index).getId());
-            }
-            return historyBuilder.toString();
-        } else return "";
     }
 
     @Override

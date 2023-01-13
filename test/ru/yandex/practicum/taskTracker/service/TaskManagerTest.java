@@ -26,9 +26,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
             new Subtask("Подзадача 1", "Описание подзадачи 1", 5, 3),
             new Subtask("Подзадача 2", "Описание подзадачи 2", 6, 3)
     );
-    Task task = tasksList.get(0);
-    Epic epic = epicsList.get(0);
-    Subtask subtask = subtasksList.get(0);
+    final int firstTaskInList = 0;
+    Task task = tasksList.get(firstTaskInList);
+    Epic epic = epicsList.get(firstTaskInList);
+    Subtask subtask = subtasksList.get(firstTaskInList);
     final int idTask = task.getId();
     final int idEpic = epic.getId();
     final int idSubtask = subtask.getId();
