@@ -16,6 +16,7 @@ public class Task {
         this.taskName = taskName;
         this.description = description;
         this.id = id;
+        this.status = Status.NEW;
     }
 
     public Task(String taskName,
@@ -26,7 +27,6 @@ public class Task {
         this(taskName,description,id);
         this.startTime = startTime;
         this.duration = duration;
-        this.status = Status.NEW;
     }
 
     public Task(String taskName,

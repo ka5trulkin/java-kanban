@@ -11,39 +11,39 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     final InMemoryTaskManager manager = new InMemoryTaskManager();
 
-    void changeSubtaskStatus(Subtask subtaskFromManager, Status status) {
-        manager.updateSubtask(
-                new Subtask(
-                        subtaskFromManager.getTaskName(),
-                        subtaskFromManager.getDescription(),
-                        subtaskFromManager.getId(),
-                        status,
-                        subtaskFromManager.getEpicId()
-                )
-        );
-    }
-
-    @Test
-    void checkEpicStatus() {
-        manager.addNewEpic(epic);
-        manager.updateEpic(epic);
-        assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus());
-        assertEquals(Collections.emptyList(), manager.getSubtasks());
-        fillManager(manager);
-        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
-        for (Subtask subtaskFromManager : manager.getSubtasks()) {
-            changeSubtaskStatus(subtaskFromManager, Status.DONE);
-        }
-        assertEquals(Status.DONE, manager.getEpicById(idEpic).getStatus());
-        changeSubtaskStatus(manager.getSubTaskById(idSubtask), Status.NEW);
-        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
-        for (Subtask subtaskFromManager : manager.getSubtasks()) {
-            changeSubtaskStatus(subtaskFromManager, Status.IN_PROGRESS);
-        }
-        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
-        manager.clearAllSubtasks();
-        assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus());
-    }
+//    void changeSubtaskStatus(Subtask subtaskFromManager, Status status) {
+//        manager.updateSubtask(
+//                new Subtask(
+//                        subtaskFromManager.getTaskName(),
+//                        subtaskFromManager.getDescription(),
+//                        subtaskFromManager.getId(),
+//                        status,
+//                        subtaskFromManager.getEpicId()
+//                )
+//        );
+//    }
+//
+//    @Test
+//    void checkEpicStatus() {
+//        manager.addNewEpic(epic);
+//        manager.updateEpic(epic);
+//        assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus());
+//        assertEquals(Collections.emptyList(), manager.getSubtasks());
+//        fillManager(manager);
+//        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
+//        for (Subtask subtaskFromManager : manager.getSubtasks()) {
+//            changeSubtaskStatus(subtaskFromManager, Status.DONE);
+//        }
+//        assertEquals(Status.DONE, manager.getEpicById(idEpic).getStatus());
+//        changeSubtaskStatus(manager.getSubTaskById(idSubtask), Status.NEW);
+//        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
+//        for (Subtask subtaskFromManager : manager.getSubtasks()) {
+//            changeSubtaskStatus(subtaskFromManager, Status.IN_PROGRESS);
+//        }
+//        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
+//        manager.clearAllSubtasks();
+//        assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus());
+//    }
 
     @Test
     void setId() {

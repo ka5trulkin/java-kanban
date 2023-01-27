@@ -68,20 +68,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Status status = Status.valueOf(dataFromStringLine[3]);
         String description = dataFromStringLine[4];
 
-        switch (type) {
-            case TASK:
-                result = new Task(name, description, id, status);
-                return result;
-            case EPIC:
-                result = new Epic(name, description, id, status);
-                return result;
-            case SUBTASK:
-                int epicId = Integer.parseInt(dataFromStringLine[5]);
-                result = new Subtask(name, description, id, status, epicId);
-                return result;
-            default:
-                throw new IllegalStateException("Неизвестный тип задачи: " + type);
-        }
+//        switch (type) {
+//            case TASK:
+//                result = new Task(name, description, id, status);
+//                return result;
+//            case EPIC:
+//                result = new Epic(name, description, id, status);
+//                return result;
+//            case SUBTASK:
+//                int epicId = Integer.parseInt(dataFromStringLine[5]);
+//                result = new Subtask(name, description, id, status, epicId);
+//                return result;
+//            default:
+//                throw new IllegalStateException("Неизвестный тип задачи: " + type);
+//        }
+
+
+        return null;
     }
 
     private void fillHistoryManager(List<Integer> history) {

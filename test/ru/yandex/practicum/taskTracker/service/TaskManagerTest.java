@@ -5,6 +5,8 @@ import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,16 +16,38 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 abstract class TaskManagerTest<T extends TaskManager> {
     List<Task> tasksList = Arrays.asList(
-            new Task("Задача 1", "Описание задачи 1", 1),
-            new Task("Задача 2", "Описание задачи 2", 2)
+            new Task(
+                    "Задача 1",
+                    "Описание задачи 1",
+                    LocalDateTime.now(),
+                    Duration.ofMinutes(15),
+                    1),
+            new Task(
+                    "Задача 2",
+                    "Описание задачи 2",
+                    LocalDateTime.now().plusMinutes(15),
+                    Duration.ofMinutes(15),
+                    2)
     );
     List<Epic> epicsList = Arrays.asList(
             new Epic("Эпик 1", "Описание эпика 1", 3),
             new Epic("Эпик 2", "Описание эпика 2", 4)
     );
     List<Subtask> subtasksList = Arrays.asList(
-            new Subtask("Подзадача 1", "Описание подзадачи 1", 5, 3),
-            new Subtask("Подзадача 2", "Описание подзадачи 2", 6, 3)
+            new Subtask(
+                    "Подзадача 1",
+                    "Описание подзадачи 1",
+                    LocalDateTime.now(),
+                    Duration.ofMinutes(15),
+                    5,
+                    3),
+            new Subtask(
+                    "Подзадача 2",
+                    "Описание подзадачи 2",
+                    LocalDateTime.now().plusMinutes(15),
+                    Duration.ofMinutes(15),
+                    6,
+                    3)
     );
     String newDescription = "Новое описание задачи";
     final int firstTaskInList = 0;
@@ -124,7 +148,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     void updateTask(T manager) {
         fillManager(manager);
-        task = new Task(task.getTaskName(), newDescription, idTask);
+        task = new Task(task.getTaskName(), newDescription, task.getStartTime(), task.getDuration(), idTask);
         manager.updateTask(task);
         assertEquals(newDescription, manager.getTaskById(idTask).getDescription());
     }
@@ -138,7 +162,12 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     void updateSubtask(T manager) {
         fillManager(manager);
-        subtask = new Subtask(subtask.getTaskName(), newDescription, idSubtask, subtask.getEpicId());
+        subtask = new Subtask(
+                subtask.getTaskName(),
+                newDescription, subtask.getStartTime(),
+                subtask.getDuration(),
+                idSubtask,
+                subtask.getEpicId());
         manager.updateSubtask(subtask);
         assertEquals(newDescription, manager.getSubTaskById(idSubtask).getDescription());
     }
