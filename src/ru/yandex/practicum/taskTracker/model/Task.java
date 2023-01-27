@@ -2,37 +2,40 @@ package ru.yandex.practicum.taskTracker.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Objects;
 
 public class Task {
     private String taskName;
     private String description;
-    private final Duration duration;
-    private final LocalDateTime startTime;
+    private LocalDateTime startTime;
+    private Duration duration;
     private final int id;
     private Status status;
 
-    public Task(String taskName,
-                String description,
-                Duration duration,
-                LocalDateTime startTime,
-                int id) {
+    protected Task(String taskName, String description, int id) {
         this.taskName = taskName;
         this.description = description;
-        this.duration = duration;
-        this.startTime = startTime;
         this.id = id;
+    }
+
+    public Task(String taskName,
+                String description,
+                LocalDateTime startTime,
+                Duration duration,
+                int id) {
+        this(taskName,description,id);
+        this.startTime = startTime;
+        this.duration = duration;
         this.status = Status.NEW;
     }
 
     public Task(String taskName,
                 String description,
-                Duration duration,
                 LocalDateTime startTime,
+                Duration duration,
                 int id,
                 Status status) {
-        this(taskName, description, duration, startTime, id);
+        this(taskName, description, startTime, duration, id);
         this.status = status;
     }
 
@@ -72,11 +75,19 @@ public class Task {
         this.description = description;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     public void setStatus(Status status) {
         this.status = status;
     }
 
-    public LocalDateTime endTime(LocalDateTime startTime, Duration duration) {
+    public LocalDateTime getEndTime(LocalDateTime startTime, Duration duration) {
         return startTime.plus(duration);
     }
 

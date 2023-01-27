@@ -1,6 +1,5 @@
 package ru.yandex.practicum.taskTracker.model;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,22 +7,28 @@ import java.util.Objects;
 
 public class Epic extends Task{
     private final List<Integer> subtasksId = new ArrayList<>();
+    private LocalDateTime endTime;
 
     public Epic(String taskName,
                 String description,
-                Duration duration,
-                LocalDateTime startTime,
                 int id) {
-        super(taskName, description, duration, startTime, id);
+        super(taskName,description,id);
     }
 
     public Epic(String taskName,
                 String description,
-                Duration duration,
-                LocalDateTime startTime,
                 int id,
                 Status status) {
-        super(taskName, description, duration, startTime, id, status);
+        super(taskName, description, id);
+        this.setStatus(status);
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override
