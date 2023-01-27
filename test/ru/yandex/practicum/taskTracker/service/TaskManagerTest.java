@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    String newDescription = "Новое описание задачи";
     List<Task> tasksList = Arrays.asList(
             new Task("Задача 1", "Описание задачи 1", 1),
             new Task("Задача 2", "Описание задачи 2", 2)
@@ -26,6 +25,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
             new Subtask("Подзадача 1", "Описание подзадачи 1", 5, 3),
             new Subtask("Подзадача 2", "Описание подзадачи 2", 6, 3)
     );
+    String newDescription = "Новое описание задачи";
     final int firstTaskInList = 0;
     Task task = tasksList.get(firstTaskInList);
     Epic epic = epicsList.get(firstTaskInList);

@@ -1,17 +1,30 @@
 package ru.yandex.practicum.taskTracker.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Subtask extends Task {
     private final int epicId;
 
-    public Subtask(String taskName, String description, int id, int epicId) {
-        super(taskName, description, id);
+    public Subtask(String taskName,
+                   String description,
+                   Duration duration,
+                   LocalDateTime startTime,
+                   int id,
+                   int epicId) {
+        super(taskName, description, duration, startTime, id);
         this.epicId = epicId;
     }
 
-    public Subtask(String taskName, String description, int id, Status status, int epicId) {
-        super(taskName, description, id, status);
+    public Subtask(String taskName,
+                   String description,
+                   Duration duration,
+                   LocalDateTime startTime,
+                   int id,
+                   Status status,
+                   int epicId) {
+        super(taskName, description, duration, startTime, id, status);
         this.epicId = epicId;
     }
 

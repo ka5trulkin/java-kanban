@@ -1,22 +1,38 @@
 package ru.yandex.practicum.taskTracker.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class Task {
     private String taskName;
     private String description;
-    private Status status;
+    private final Duration duration;
+    private final LocalDateTime startTime;
     private final int id;
+    private Status status;
 
-    public Task(String taskName, String description, int id) {
+    public Task(String taskName,
+                String description,
+                Duration duration,
+                LocalDateTime startTime,
+                int id) {
         this.taskName = taskName;
         this.description = description;
+        this.duration = duration;
+        this.startTime = startTime;
         this.id = id;
         this.status = Status.NEW;
     }
 
-    public Task(String taskName, String description, int id, Status status) {
-        this(taskName, description, id);
+    public Task(String taskName,
+                String description,
+                Duration duration,
+                LocalDateTime startTime,
+                int id,
+                Status status) {
+        this(taskName, description, duration, startTime, id);
         this.status = status;
     }
 
@@ -32,12 +48,20 @@ public class Task {
         return description;
     }
 
-    public Status getStatus() {
-        return status;
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
     public int getId() {
         return id;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     public void setTaskName(String taskName) {
@@ -50,6 +74,10 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public LocalDateTime endTime(LocalDateTime startTime, Duration duration) {
+        return startTime.plus(duration);
     }
 
     public Integer getParentEpicID() {
