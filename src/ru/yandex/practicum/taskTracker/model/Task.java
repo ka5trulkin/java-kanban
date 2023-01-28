@@ -87,7 +87,7 @@ public class Task {
         this.status = status;
     }
 
-    public LocalDateTime getEndTime(LocalDateTime startTime, Duration duration) {
+    public LocalDateTime getEndTime() {
         return startTime.plus(duration);
     }
 
@@ -105,7 +105,7 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskName, description, status, id);
+        return Objects.hash(taskName, description, id, status);
     }
 
     @Override
@@ -113,8 +113,8 @@ public class Task {
         return "Task{" +
                 "taskName='" + taskName + '\'' +
                 ", description='" + description + '\'' +
-                ", status=" + status.getName() +
                 ", id=" + id +
+                ", status=" + status.getName() +
                 '}';
     }
 }

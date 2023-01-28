@@ -15,17 +15,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 abstract class TaskManagerTest<T extends TaskManager> {
+    LocalDateTime dateTime = LocalDateTime.of(1978, 07, 28, 01, 21);
     List<Task> tasksList = Arrays.asList(
             new Task(
                     "Задача 1",
                     "Описание задачи 1",
-                    LocalDateTime.now(),
+                    dateTime,
                     Duration.ofMinutes(15),
                     1),
             new Task(
                     "Задача 2",
                     "Описание задачи 2",
-                    LocalDateTime.now().plusMinutes(15),
+                    dateTime.plusMinutes(15),
                     Duration.ofMinutes(15),
                     2)
     );
@@ -37,14 +38,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
             new Subtask(
                     "Подзадача 1",
                     "Описание подзадачи 1",
-                    LocalDateTime.now(),
+                    dateTime,
                     Duration.ofMinutes(15),
                     5,
                     3),
             new Subtask(
                     "Подзадача 2",
                     "Описание подзадачи 2",
-                    LocalDateTime.now().plusMinutes(15),
+                    dateTime.plusMinutes(15),
                     Duration.ofMinutes(15),
                     6,
                     3)

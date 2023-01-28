@@ -32,7 +32,7 @@ public class Epic extends Task{
     }
 
     public void setEndTime() {
-        this.endTime = super.getEndTime(this.getStartTime(), this.getDuration());
+        this.endTime = super.getEndTime();
     }
 
     @Override

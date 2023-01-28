@@ -6,6 +6,8 @@ import ru.yandex.practicum.taskTracker.model.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final File backupFile;
     private final String lineSeparator = "\r?\n";
-    private final String infoLine = "id,type,name,status,description,epic";
+    private final String infoLine = "id,type,name,status,description,startTime,endTime,epic";
 
     public FileBackedTasksManager(File backupFile) {
         this.backupFile = backupFile;
@@ -55,6 +57,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 + "," + task.getTaskName()
                 + "," + task.getStatus()
                 + "," + task.getDescription()
+                + "," + task.getStartTime()
+                + "," + task.getEndTime()
                 + "," + task.getParentEpicID()
                 + System.lineSeparator();
     }
@@ -67,24 +71,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = dataFromStringLine[2];
         Status status = Status.valueOf(dataFromStringLine[3]);
         String description = dataFromStringLine[4];
+        LocalDateTime startTime = LocalDateTime.parse(dataFromStringLine[5]);
+        Duration duration = Duration.between(startTime, LocalDateTime.parse(dataFromStringLine[6]));
 
-//        switch (type) {
-//            case TASK:
-//                result = new Task(name, description, id, status);
-//                return result;
-//            case EPIC:
-//                result = new Epic(name, description, id, status);
-//                return result;
-//            case SUBTASK:
-//                int epicId = Integer.parseInt(dataFromStringLine[5]);
-//                result = new Subtask(name, description, id, status, epicId);
-//                return result;
-//            default:
-//                throw new IllegalStateException("Неизвестный тип задачи: " + type);
-//        }
-
-
-        return null;
+        switch (type) {
+            case TASK:
+                result = new Task(name, description, startTime, duration, id, status);
+                return result;
+            case EPIC:
+                result = new Epic(name, description, id, status);
+                return result;
+            case SUBTASK:
+                int epicId = Integer.parseInt(dataFromStringLine[7]);
+                result = new Subtask(name, description, startTime, duration, id, status, epicId);
+                return result;
+            default:
+                throw new IllegalStateException("Неизвестный тип задачи: " + type);
+        }
     }
 
     private void fillHistoryManager(List<Integer> history) {

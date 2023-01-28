@@ -1,5 +1,5 @@
-id,type,name,status,description,epic
-1,TASK,Задача 1,NEW,Описание задачи 1,null
-2,TASK,Задача 2,NEW,Описание задачи 2,null
-4,EPIC,Эпик 2,NEW,Описание эпика 2,null
+id,type,name,status,description,startTime,endTime,epic
+1,TASK,Задача 1,NEW,Описание задачи 1,1978-07-28T01:21,1978-07-28T01:36,null
+2,TASK,Задача 2,NEW,Описание задачи 2,1978-07-28T01:36,1978-07-28T01:51,null
+4,EPIC,Эпик 2,NEW,Описание эпика 2,2023-01-28T15:14:19.520039400,2023-01-28T15:14:19.520039400,null
 
