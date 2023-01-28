@@ -53,6 +53,11 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     }
 
     @Test
+    void getEpicEndTime() {
+        super.getEpicEndTime(manager);
+    }
+
+    @Test
     void getTasks() {
         super.getTasks(manager);
     }

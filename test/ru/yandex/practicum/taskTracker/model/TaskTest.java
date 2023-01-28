@@ -2,10 +2,18 @@ package ru.yandex.practicum.taskTracker.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
-    final Task task = new Task("Задача 1", "Описание задачи 1", 1);
+    final Task task = new Task(
+            "Задача 1",
+            "Описание задачи 1",
+            LocalDateTime.of(1978, 7, 28, 1, 21),
+            Duration.ofMinutes(15),
+            1);
 
     @Test
     void getType() {
@@ -33,6 +41,12 @@ class TaskTest {
         Status taskStatus = Status.NEW;
 
         assertEquals(taskStatus, task.getStatus());
+    }
+
+    @Test
+    void getEndTime() {
+        LocalDateTime expectedEndDateTime = LocalDateTime.parse("1978-07-28T01:36");
+        assertEquals(expectedEndDateTime, task.getEndTime());
     }
 
     @Test

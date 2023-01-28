@@ -16,7 +16,7 @@ public class Epic extends Task{
         super(taskName,description,id);
         this.setStartTime(LocalDateTime.now());
         this.setDuration(Duration.ZERO);
-        setEndTime();
+        this.endTime = LocalDateTime.now();
     }
 
     public Epic(String taskName,
@@ -31,8 +31,8 @@ public class Epic extends Task{
         return endTime;
     }
 
-    public void setEndTime() {
-        this.endTime = super.getEndTime();
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override

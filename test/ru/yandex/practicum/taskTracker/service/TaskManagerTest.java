@@ -74,6 +74,17 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(idCounterMostBe, manager.setId());
     }
 
+    void getEpicEndTime(T manager) {
+        LocalDateTime expectedEndTime = LocalDateTime.of(2077, 12, 10, 10, 25);
+        Subtask subtask;
+
+        fillManager(manager);
+        subtask = manager.getSubtasks().get(firstTaskInList);
+        subtask.setStartTime(LocalDateTime.of(2077, 12, 10, 10, 10));
+        manager.updateSubtask(subtask);
+        assertEquals(expectedEndTime, manager.getEpics().get(firstTaskInList).getEndTime());
+    }
+
     void getTasks(T manager) {
         assertEquals(Collections.emptyList(), manager.getTasks());
         fillManager(manager);

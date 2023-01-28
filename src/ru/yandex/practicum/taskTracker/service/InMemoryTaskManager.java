@@ -40,7 +40,7 @@ public class InMemoryTaskManager implements TaskManager {
     private void checkEpicTimes(Epic epic) {
         setEpicStartTime(epic);
         setEpicDuration(epic);
-        epic.setEndTime();
+        setEpicEndTime(epic);
     }
 
     private void setEpicStartTime(Epic epic) {
@@ -59,6 +59,24 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStartTime(epicStartTime);
         }
     }
+
+    private void setEpicEndTime(Epic epic) {
+        if (!epic.getSubtasksId().equals(Collections.emptyList())) {
+            LocalDateTime epicEndTime = null;
+
+            for (Integer subtaskId : epic.getSubtasksId()) {
+                LocalDateTime subtaskEndTime = subtasks.get(subtaskId).getEndTime();
+
+                if (epicEndTime == null) {
+                    epicEndTime = subtaskEndTime;
+                } else if (epicEndTime.isBefore(subtaskEndTime)) {
+                    epicEndTime = subtaskEndTime;
+                }
+            }
+            epic.setEndTime(epicEndTime);
+        }
+    }
+
     private void setEpicDuration(Epic epic) {
         if (!epic.getSubtasksId().equals(Collections.emptyList())) {
             Duration duration = null;
