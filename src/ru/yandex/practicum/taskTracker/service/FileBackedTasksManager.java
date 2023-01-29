@@ -38,15 +38,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
         stringBuilder.append(infoLine);
         stringBuilder.append(System.lineSeparator());
-        for (Task task : tasks.values()) {
-            stringBuilder.append(taskToString(task));
-        }
-        for (Epic epic : epics.values()) {
-            stringBuilder.append(taskToString(epic));
-        }
-        for (Subtask subtask : subtasks.values()) {
-            stringBuilder.append(taskToString(subtask));
-        }
+        tasks.values().forEach(task -> stringBuilder.append(taskToString(task)));
+        epics.values().forEach(epic -> stringBuilder.append(taskToString(epic)));
+        subtasks.values().forEach(subtask -> stringBuilder.append(taskToString(subtask)));
         stringBuilder.append(System.lineSeparator());
         return stringBuilder.toString();
     }
