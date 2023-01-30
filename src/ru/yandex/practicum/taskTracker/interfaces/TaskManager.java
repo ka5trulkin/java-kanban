@@ -9,6 +9,8 @@ import java.util.List;
 public interface TaskManager {
     int setId ();
 
+    List<Task> getPrioritizedTasks();
+
     List<Task> getTasks();
 
     List<Epic> getEpics();

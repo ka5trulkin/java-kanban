@@ -17,6 +17,9 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Epic> epics = new HashMap<>();
     protected final Map<Integer, Subtask> subtasks = new HashMap<>();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final Set<Task> prioritizedTasksByStartTime = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+
+
 
     private void checkEpicStatus(Epic epic) {
         int counter = 0;
@@ -97,6 +100,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int setId() {
         return ++idCounter;
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasksByStartTime);
     }
 
     @Override
