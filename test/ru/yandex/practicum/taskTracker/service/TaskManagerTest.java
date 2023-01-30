@@ -98,8 +98,13 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     void getPrioritizedTasks(T manager) {
         Subtask mostBeFirstSubtaskInPrioritizedTasks = subtasksList.get(1);
+        Subtask mostBeLastSubtaskInPrioritizedTasks = subtasksList.get(2);
+        int lastTaskInList;
+
         fillManager(manager);
+        lastTaskInList  = manager.getPrioritizedTasks().size() - 1;
         assertEquals(mostBeFirstSubtaskInPrioritizedTasks, manager.getPrioritizedTasks().get(0));
+        assertEquals(mostBeLastSubtaskInPrioritizedTasks, manager.getPrioritizedTasks().get(lastTaskInList));
     }
 
     void checkTasksToCrossByStartTime(T manager) {
