@@ -29,11 +29,9 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
             throw new RuntimeException(e);
         }
         assertEquals(tasksList, managerTest.getTasks());
-        System.out.println(managerTest.getSubtasks());
         assertEquals(subtasksList, managerTest.getSubtasks());
         epicsList.get(firstTaskInList).setStatus(Status.IN_PROGRESS);
         assertEquals(epicsList, managerTest.getEpics());
-        System.out.println(managerTest.historyManager.getHistory().toString());
         assertEquals(testHistoryManager, managerTest.historyManager.getHistory().toString());
         ManagerSaveException exception = assertThrows(
                 ManagerSaveException.class,

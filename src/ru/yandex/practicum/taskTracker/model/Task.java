@@ -72,7 +72,14 @@ public class Task {
     }
 
     public LocalDateTime getStartTime() {
-        return startTime;
+        if (startTime != null) {
+            return LocalDateTime.of(
+                    startTime.getYear(),
+                    startTime.getMonth(),
+                    startTime.getDayOfMonth(),
+                    startTime.getHour(),
+                    startTime.getMinute());
+        } else return null;
     }
 
     public int getId() {

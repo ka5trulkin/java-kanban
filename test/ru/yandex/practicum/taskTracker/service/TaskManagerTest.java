@@ -51,7 +51,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
             new Subtask(
                     "Подзадача 2",
                     "Описание подзадачи 2",
-                    dateTime.plusMinutes(15),
+                    dateTime.minusMinutes(115),
                     Duration.ofMinutes(15),
                     6,
                     3),
@@ -78,14 +78,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         subtasksList.forEach(manager :: addNewSubtask);
     }
 
-    void setId(T manager) {
-        int idCounterMostBe = 1;
-
-        assertEquals(idCounterMostBe, manager.setId());
-        idCounterMostBe = 2;
-        assertEquals(idCounterMostBe, manager.setId());
-    }
-
     void getEpicEndTime(T manager) {
         LocalDateTime expectedEndTime = LocalDateTime.of(2077, 12, 10, 10, 25);
         Subtask subtask;
@@ -95,6 +87,20 @@ abstract class TaskManagerTest<T extends TaskManager> {
         subtask.setStartTime(LocalDateTime.of(2077, 12, 10, 10, 10));
         manager.updateSubtask(subtask);
         assertEquals(expectedEndTime, manager.getEpics().get(firstTaskInList).getEndTime());
+    }
+
+    void getPrioritizedTasks(T manager) {
+        Subtask mostBeFirstSubtaskInPrioritizedTasks = subtasksList.get(1);
+        fillManager(manager);
+        assertEquals(mostBeFirstSubtaskInPrioritizedTasks, manager.getPrioritizedTasks().get(0));
+    }
+
+    void setId(T manager) {
+        int idCounterMostBe = 1;
+
+        assertEquals(idCounterMostBe, manager.setId());
+        idCounterMostBe = 2;
+        assertEquals(idCounterMostBe, manager.setId());
     }
 
     void getTasks(T manager) {

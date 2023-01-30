@@ -48,13 +48,18 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     }
 
     @Test
-    void setId() {
-        super.setId(manager);
+    void getEpicEndTime() {
+        super.getEpicEndTime(manager);
     }
 
     @Test
-    void getEpicEndTime() {
-        super.getEpicEndTime(manager);
+    void getPrioritizedTasks() {
+        super.getPrioritizedTasks(manager);
+    }
+
+    @Test
+    void setId() {
+        super.setId(manager);
     }
 
     @Test
