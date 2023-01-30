@@ -16,11 +16,9 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
                 new Subtask(
                         subtaskFromManager.getTaskName(),
                         subtaskFromManager.getDescription(),
-                        subtaskFromManager.getStartTime(),
-                        subtaskFromManager.getDuration(),
                         subtaskFromManager.getId(),
-                        status,
-                        subtaskFromManager.getEpicId()
+                        subtaskFromManager.getEpicId(),
+                        status
                 )
         );
     }
@@ -55,6 +53,11 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @Test
     void getPrioritizedTasks() {
         super.getPrioritizedTasks(manager);
+    }
+
+    @Test
+    void checkTasksToCrossByStartTime() {
+        super.checkTasksToCrossByStartTime(manager);
     }
 
     @Test

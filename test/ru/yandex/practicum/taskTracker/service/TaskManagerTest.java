@@ -1,5 +1,6 @@
 package ru.yandex.practicum.taskTracker.service;
 
+import org.junit.jupiter.api.Assertions;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Status;
@@ -14,9 +15,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    LocalDateTime dateTime = LocalDateTime.of(1978, 07, 28, 01, 21);
+    LocalDateTime dateTime = LocalDateTime.of(2022, 7, 28, 1, 21);
     List<Task> tasksList = Arrays.asList(
             new Task(
                     "Задача 1",
@@ -44,7 +46,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
             new Subtask(
                     "Подзадача 1",
                     "Описание подзадачи 1",
-                    dateTime,
+                    dateTime.plusMinutes(20),
                     Duration.ofMinutes(15),
                     5,
                     3),
@@ -73,19 +75,24 @@ abstract class TaskManagerTest<T extends TaskManager> {
     final int idNonexistent = 777;
 
     void fillManager(T manager) {
-        tasksList.forEach(manager :: addNewTask);
-        epicsList.forEach(manager :: addNewEpic);
-        subtasksList.forEach(manager :: addNewSubtask);
+        tasksList.forEach(manager::addNewTask);
+        epicsList.forEach(manager::addNewEpic);
+        subtasksList.forEach(manager::addNewSubtask);
     }
 
     void getEpicEndTime(T manager) {
         LocalDateTime expectedEndTime = LocalDateTime.of(2077, 12, 10, 10, 25);
-        Subtask subtask;
+        Subtask subtask = new Subtask(
+                "Подзадача 2",
+                "Описание подзадачи 2",
+                LocalDateTime.of(2077, 12, 10, 10, 10),
+                Duration.ofMinutes(15),
+                6,
+                3
+        );
 
         fillManager(manager);
-        subtask = manager.getSubtasks().get(firstTaskInList);
-        subtask.setStartTime(LocalDateTime.of(2077, 12, 10, 10, 10));
-        manager.updateSubtask(subtask);
+        manager.addNewSubtask(subtask);
         assertEquals(expectedEndTime, manager.getEpics().get(firstTaskInList).getEndTime());
     }
 
@@ -93,6 +100,26 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Subtask mostBeFirstSubtaskInPrioritizedTasks = subtasksList.get(1);
         fillManager(manager);
         assertEquals(mostBeFirstSubtaskInPrioritizedTasks, manager.getPrioritizedTasks().get(0));
+    }
+
+    void checkTasksToCrossByStartTime(T manager) {
+        String errorByCrossTask
+                = "Задача 'Задача 1' пересекается с другой задачей по времени начала задачи: 2022-07-28T01:21";
+        String errorByCrossSubtask
+                = "Задача 'Подзадача 1' пересекается с другой задачей по времени начала задачи: 2022-07-28T01:41";
+
+        fillManager(manager);
+        IllegalArgumentException taskException = assertThrows(
+                IllegalArgumentException.class,
+                () -> manager.addNewTask(tasksList.get(firstTaskInList))
+        );
+        assertEquals(errorByCrossTask, taskException.getMessage());
+        Assertions.assertDoesNotThrow(() -> manager.addNewEpic(epicsList.get(firstTaskInList)));
+        IllegalArgumentException subtaskExeption = assertThrows(
+                IllegalArgumentException.class,
+                () -> manager.addNewSubtask(subtasksList.get(firstTaskInList))
+        );
+        assertEquals(errorByCrossSubtask, subtaskExeption.getMessage());
     }
 
     void setId(T manager) {
@@ -178,7 +205,12 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     void updateTask(T manager) {
         fillManager(manager);
-        task = new Task(task.getTaskName(), newDescription, task.getStartTime(), task.getDuration(), idTask);
+        task = new Task(
+                task.getTaskName(),
+                newDescription,
+                task.getStartTime().plusMinutes(100),
+                task.getDuration(),
+                idTask);
         manager.updateTask(task);
         assertEquals(newDescription, manager.getTaskById(idTask).getDescription());
     }
@@ -194,7 +226,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         fillManager(manager);
         subtask = new Subtask(
                 subtask.getTaskName(),
-                newDescription, subtask.getStartTime(),
+                newDescription,
+                subtask.getStartTime().plusMinutes(100),
                 subtask.getDuration(),
                 idSubtask,
                 subtask.getEpicId());

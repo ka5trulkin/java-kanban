@@ -100,9 +100,9 @@ public class InMemoryTaskManager implements TaskManager {
             if (isCross) {
                 throw new IllegalArgumentException(
                         "Задача '"
-                        + task.getTaskName()
-                        + "' пересекается с другой задачей по времени начала задачи: "
-                        + task.getStartTime());
+                                + task.getTaskName()
+                                + "' пересекается с другой задачей по времени начала задачи: "
+                                + task.getStartTime());
             }
         }
     }
@@ -119,43 +119,43 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getTasks() {
-        tasks.values().forEach(historyManager :: add);
+        tasks.values().forEach(historyManager::add);
         return new ArrayList<>(tasks.values());
     }
 
     @Override
     public List<Epic> getEpics() {
-        epics.values().forEach(historyManager :: add);
+        epics.values().forEach(historyManager::add);
         return new ArrayList<>(epics.values());
     }
 
     @Override
     public List<Subtask> getSubtasks() {
-        subtasks.values().forEach(historyManager :: add);
+        subtasks.values().forEach(historyManager::add);
         return new ArrayList<>(subtasks.values());
     }
 
     @Override
     public void clearAllTasks() {
-        tasks.keySet().forEach(historyManager :: remove);
+        tasks.keySet().forEach(historyManager::remove);
         tasks.values().forEach(prioritizedTasksByStartTime::remove);
         tasks.clear();
     }
 
     @Override
     public void clearAllEpics() {
-        epics.keySet().forEach(historyManager :: remove);
-        subtasks.keySet().forEach(historyManager :: remove);
+        epics.keySet().forEach(historyManager::remove);
+        subtasks.keySet().forEach(historyManager::remove);
         epics.values().forEach(prioritizedTasksByStartTime::remove);
-        subtasks.values().forEach(prioritizedTasksByStartTime :: remove);
+        subtasks.values().forEach(prioritizedTasksByStartTime::remove);
         epics.clear();
         subtasks.clear();
     }
 
     @Override
     public void clearAllSubtasks() {
-        subtasks.keySet().forEach(historyManager :: remove);
-        subtasks.values().forEach(prioritizedTasksByStartTime :: remove);
+        subtasks.keySet().forEach(historyManager::remove);
+        subtasks.values().forEach(prioritizedTasksByStartTime::remove);
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.clearSubtasks();
