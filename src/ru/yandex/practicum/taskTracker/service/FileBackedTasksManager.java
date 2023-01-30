@@ -65,8 +65,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = dataFromStringLine[2];
         Status status = Status.valueOf(dataFromStringLine[3]);
         String description = dataFromStringLine[4];
-        LocalDateTime startTime = LocalDateTime.parse(dataFromStringLine[5]);
-        Duration duration = Duration.between(startTime, LocalDateTime.parse(dataFromStringLine[6]));
+        LocalDateTime startTime;
+        Duration duration;
+
+        if (!(dataFromStringLine[5].equals("null")) && !(dataFromStringLine[6].equals("null"))) {
+            startTime = LocalDateTime.parse(dataFromStringLine[5]);
+            duration = Duration.between(startTime, LocalDateTime.parse(dataFromStringLine[6]));
+        } else {
+            startTime = null;
+            duration = null;
+        }
 
         switch (type) {
             case TASK:

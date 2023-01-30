@@ -53,9 +53,9 @@ public class InMemoryTaskManager implements TaskManager {
             for (Integer subtaskId : epic.getSubtasksId()) {
                 LocalDateTime subtaskStartTime = subtasks.get(subtaskId).getStartTime();
 
-                if (epicStartTime == null) {
+                if ((epicStartTime == null) && (subtaskStartTime != null)) {
                     epicStartTime = subtaskStartTime;
-                } else if (epicStartTime.isAfter(subtaskStartTime)) {
+                } else if (subtaskStartTime != null && epicStartTime.isAfter(subtaskStartTime)) {
                     epicStartTime = subtaskStartTime;
                 }
             }
@@ -70,9 +70,9 @@ public class InMemoryTaskManager implements TaskManager {
             for (Integer subtaskId : epic.getSubtasksId()) {
                 LocalDateTime subtaskEndTime = subtasks.get(subtaskId).getEndTime();
 
-                if (epicEndTime == null) {
+                if ((epicEndTime == null) && (subtaskEndTime != null)) {
                     epicEndTime = subtaskEndTime;
-                } else if (epicEndTime.isBefore(subtaskEndTime)) {
+                } else if ((subtaskEndTime != null) && (epicEndTime.isBefore(subtaskEndTime))) {
                     epicEndTime = subtaskEndTime;
                 }
             }
@@ -87,9 +87,9 @@ public class InMemoryTaskManager implements TaskManager {
             for (Integer subtaskId : epic.getSubtasksId()) {
                 Duration subtaskDuration = subtasks.get(subtaskId).getDuration();
 
-                if (duration == null) {
+                if ((duration == null) && (subtaskDuration != null)) {
                     duration = subtaskDuration;
-                } else {
+                } else if (subtaskDuration != null) {
                     duration = duration.plus(subtaskDuration);
                 }
             }

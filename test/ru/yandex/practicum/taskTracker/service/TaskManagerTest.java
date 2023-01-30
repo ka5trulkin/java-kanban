@@ -2,6 +2,7 @@ package ru.yandex.practicum.taskTracker.service;
 
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
+import ru.yandex.practicum.taskTracker.model.Status;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
@@ -28,11 +29,16 @@ abstract class TaskManagerTest<T extends TaskManager> {
                     "Описание задачи 2",
                     dateTime.plusMinutes(15),
                     Duration.ofMinutes(15),
-                    2)
+                    2),
+            new Task(
+                    "Задача 3",
+                    "Описание задачи 3",
+                    21,
+                    Status.IN_PROGRESS)
     );
     List<Epic> epicsList = Arrays.asList(
             new Epic("Эпик 1", "Описание эпика 1", 3),
-            new Epic("Эпик 2", "Описание эпика 2", 4)
+            new Epic("Эпик 2", "Описание эпика 2", 4, Status.NEW)
     );
     List<Subtask> subtasksList = Arrays.asList(
             new Subtask(
@@ -48,7 +54,13 @@ abstract class TaskManagerTest<T extends TaskManager> {
                     dateTime.plusMinutes(15),
                     Duration.ofMinutes(15),
                     6,
-                    3)
+                    3),
+            new Subtask(
+                    "Подзадача 3",
+                    "Описание подзадачи 3",
+                    22,
+                    3,
+                    Status.NEW)
     );
     String newDescription = "Новое описание задачи";
     final int firstTaskInList = 0;

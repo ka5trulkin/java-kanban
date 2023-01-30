@@ -7,23 +7,44 @@ import java.util.Objects;
 public class Subtask extends Task {
     private final int epicId;
 
-    public Subtask(String taskName,
-                   String description,
-                   LocalDateTime startTime,
-                   Duration duration,
-                   int id,
-                   int epicId) {
-        super(taskName, description,  startTime, duration, id);
+    public Subtask(
+            String taskName,
+            String description,
+            int id,
+            int epicId) {
+        super(taskName, description, id);
         this.epicId = epicId;
     }
 
-    public Subtask(String taskName,
-                   String description,
-                   LocalDateTime startTime,
-                   Duration duration,
-                   int id,
-                   Status status,
-                   int epicId) {
+    public Subtask(
+            String taskName,
+            String description,
+            LocalDateTime startTime,
+            Duration duration,
+            int id,
+            int epicId) {
+        super(taskName, description, startTime, duration, id);
+        this.epicId = epicId;
+    }
+
+    public Subtask(
+            String taskName,
+            String description,
+            int id,
+            int epicId,
+            Status status) {
+        super(taskName, description, id, status);
+        this.epicId = epicId;
+    }
+
+    public Subtask(
+            String taskName,
+            String description,
+            LocalDateTime startTime,
+            Duration duration,
+            int id,
+            Status status,
+            int epicId) {
         super(taskName, description, startTime, duration, id, status);
         this.epicId = epicId;
     }

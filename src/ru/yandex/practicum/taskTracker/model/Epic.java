@@ -14,9 +14,7 @@ public class Epic extends Task{
                 String description,
                 int id) {
         super(taskName,description,id);
-        this.setStartTime(LocalDateTime.now());
-        this.setDuration(Duration.ZERO);
-        this.endTime = LocalDateTime.now();
+        this.endTime = null;
     }
 
     public Epic(String taskName,
