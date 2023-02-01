@@ -100,9 +100,9 @@ public class InMemoryTaskManager implements TaskManager {
             if (isCross) {
                 throw new IllegalArgumentException(
                         "Задача '"
-                                + task.getTaskName()
-                                + "' пересекается с другой задачей по времени начала задачи: "
-                                + task.getStartTime());
+                        + task.getTaskName()
+                        + "' пересекается с другой задачей по времени начала задачи: "
+                        + task.getStartTime());
             }
         }
     }
