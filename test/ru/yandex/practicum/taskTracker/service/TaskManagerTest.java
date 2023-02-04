@@ -104,7 +104,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         fillManager(manager);
         lastTaskInList  = manager.getPrioritizedTasks().size() - 1;
-        manager.getPrioritizedTasks().forEach(System.out :: println);
         assertEquals(mostBeFirstSubtaskInPrioritizedTasks, manager.getPrioritizedTasks().get(0));
         assertEquals(mostBeLastSubtaskInPrioritizedTasks, manager.getPrioritizedTasks().get(lastTaskInList));
     }
