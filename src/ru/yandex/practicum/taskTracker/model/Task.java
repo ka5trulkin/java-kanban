@@ -142,8 +142,10 @@ public class Task {
         return "Task{" +
                 "taskName='" + taskName + '\'' +
                 ", description='" + description + '\'' +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
                 ", id=" + id +
-                ", status=" + status.getName() +
+                ", status=" + status +
                 '}';
     }
 }

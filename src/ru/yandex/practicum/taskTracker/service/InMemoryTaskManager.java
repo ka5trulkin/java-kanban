@@ -15,11 +15,11 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Subtask> subtasks = new HashMap<>();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     protected final Set<Task> prioritizedTasksByStartTime = new TreeSet<>(
-            (o1, o2) -> {
-                if (o1.getStartTime() != null && o2.getStartTime() != null) {
-                    return o1.getStartTime().compareTo(o2.getStartTime());
-                } else return 1;
-            });
+            Comparator.comparing(
+                    Task :: getId)
+                    .thenComparing(Task::getStartTime, Comparator.nullsFirst(Comparator.naturalOrder()))
+            );
+
 
     private void checkEpicStatus(Epic epic) {
         int counter = 0;
@@ -146,8 +146,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearAllEpics() {
         epics.keySet().forEach(historyManager::remove);
         subtasks.keySet().forEach(historyManager::remove);
-        epics.values().forEach(prioritizedTasksByStartTime::remove);
-        subtasks.values().forEach(prioritizedTasksByStartTime::remove);
+//        epics.values().forEach(prioritizedTasksByStartTime::remove);
+//        subtasks.values().forEach(prioritizedTasksByStartTime::remove);
         epics.clear();
         subtasks.clear();
     }
@@ -195,7 +195,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             checkTaskToCrossByStartTime(epic);
             epics.put(epic.getId(), epic);
-            prioritizedTasksByStartTime.add(epic);
+//            prioritizedTasksByStartTime.add(epic);
             checkEpicStatus(epic);
             checkEpicTimes(epic);
         }
@@ -270,7 +270,7 @@ public class InMemoryTaskManager implements TaskManager {
                 subtasks.remove(subtaskId);
                 historyManager.remove(subtaskId);
             }
-            prioritizedTasksByStartTime.remove(epics.get(epicId));
+//            prioritizedTasksByStartTime.remove(epics.get(epicId));
             historyManager.remove(epicId);
             epics.remove(epicId);
         }

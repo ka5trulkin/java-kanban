@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 abstract class TaskManagerTest<T extends TaskManager> {
+
     LocalDateTime dateTime = LocalDateTime.of(2022, 7, 28, 1, 21);
     List<Task> tasksList = Arrays.asList(
             new Task(
@@ -103,6 +104,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         fillManager(manager);
         lastTaskInList  = manager.getPrioritizedTasks().size() - 1;
+        manager.getPrioritizedTasks().forEach(System.out :: println);
         assertEquals(mostBeFirstSubtaskInPrioritizedTasks, manager.getPrioritizedTasks().get(0));
         assertEquals(mostBeLastSubtaskInPrioritizedTasks, manager.getPrioritizedTasks().get(lastTaskInList));
     }
