@@ -117,7 +117,12 @@ class EpicTest {
         assertEquals(Collections.emptyList(), epicTest.getSubtasksId());
 
         subtaskList.forEach(manager::addNewSubtask);
+        int oldId = subtaskTest.getId();
+        int newId = 555;
+        boolean isContainsId = true;
+        assertEquals(isContainsId, epicTest.getSubtasksId().contains(oldId));
 
+//        epicTest.setSubtask();
     }
 //
 //    @Test

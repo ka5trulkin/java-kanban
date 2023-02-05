@@ -8,4 +8,4 @@ id,type,name,status,description,startTime,endTime,epic
 6,SUBTASK,Подзадача 2,NEW,Описание подзадачи 2,1978-07-28T01:36,1978-07-28T01:51,3
 22,SUBTASK,Подзадача 3,NEW,Описание подзадачи 3,null,null,3
 
-1,2,21,5,6,22,3,4
+5,6,22,3,4,1,2,21

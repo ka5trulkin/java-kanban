@@ -52,12 +52,6 @@ public class Epic extends Task{
         subtasksId.remove(Integer.valueOf(subtaskId));
     }
 
-    public void setSubtask(int subtaskId) {
-        if (subtasksId.contains(subtaskId)) {
-            subtasksId.set(subtasksId.indexOf(subtaskId), subtaskId);
-        }
-    }
-
     public void clearSubtasks() {
         subtasksId.clear();
         setStatus(Status.NEW);

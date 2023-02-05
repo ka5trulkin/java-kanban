@@ -250,12 +250,14 @@ public class InMemoryTaskManager implements TaskManager {
             int subtaskId = subtask.getId();
             Epic epic = epics.get(subtask.getEpicId());
 
-            if (!subtasks.get(subtaskId).getStartTime().isEqual(subtask.getStartTime())) {
+            if (subtasks.get(subtaskId).getStartTime() != null
+                    && subtask.getStartTime() != null
+                    && !subtasks.get(subtaskId).getStartTime().isEqual(subtask.getStartTime()))
+            {
                 checkTaskToCrossByStartTime(subtask);
             }
             updatePrioritizedTasksByStartTime(subtasks.get(subtaskId), subtask);
             subtasks.put(subtaskId, subtask);
-            epic.setSubtask(subtaskId);
             checkEpicStatus(epic);
             checkEpicTimes(epic);
         }
