@@ -129,12 +129,14 @@ public class Task {
         return id == task.id
                 && Objects.equals(taskName, task.taskName)
                 && Objects.equals(description, task.description)
+                && Objects.equals(this.getStartTime(), task.getStartTime())
+                && Objects.equals(duration, task.duration)
                 && status == task.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskName, description, id, status);
+        return Objects.hash(taskName, description, this.getStartTime(), duration, id, status);
     }
 
     @Override

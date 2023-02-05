@@ -7,6 +7,7 @@ import ru.yandex.practicum.taskTracker.model.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     protected static int idCounter = 0;
@@ -22,22 +23,17 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     private void checkEpicStatus(Epic epic) {
-        int counter = 0;
+        List<Status> statusList = epic.getSubtasksId()
+                .stream()
+                .map(subtasks::get)
+                .map(Task::getStatus)
+                .collect(Collectors.toList());
 
-        if (epic != null) {
-            for (Integer subtaskId : epic.getSubtasksId()) {
-                if (subtasks.get(subtaskId).getStatus() == Status.DONE) {
-                    counter++;
-                }
-            }
-            if ((epic.getSubtasksId().size() == counter) && (counter > 0)) {
-                epic.setStatus(Status.DONE);
-            } else if (epic.getSubtasksId().size() > 0) {
-                epic.setStatus(Status.IN_PROGRESS);
-            } else {
-                epic.setStatus(Status.NEW);
-            }
-        }
+        if (statusList.contains(Status.IN_PROGRESS) || statusList.contains(Status.NEW)) {
+            epic.setStatus(Status.IN_PROGRESS);
+        } else if (statusList.contains(Status.DONE)) {
+            epic.setStatus(Status.DONE);
+        } else epic.setStatus(Status.NEW);
     }
 
     private void checkEpicTimes(Epic epic) {
@@ -254,7 +250,9 @@ public class InMemoryTaskManager implements TaskManager {
             int subtaskId = subtask.getId();
             Epic epic = epics.get(subtask.getEpicId());
 
-            checkTaskToCrossByStartTime(subtask);
+            if (!subtasks.get(subtaskId).getStartTime().isEqual(subtask.getStartTime())) {
+                checkTaskToCrossByStartTime(subtask);
+            }
             updatePrioritizedTasksByStartTime(subtasks.get(subtaskId), subtask);
             subtasks.put(subtaskId, subtask);
             epic.setSubtask(subtaskId);
