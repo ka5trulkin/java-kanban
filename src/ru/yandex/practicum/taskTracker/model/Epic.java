@@ -1,6 +1,5 @@
 package ru.yandex.practicum.taskTracker.model;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +54,8 @@ public class Epic extends Task{
     public void clearSubtasks() {
         subtasksId.clear();
         setStatus(Status.NEW);
-        setStartTime(LocalDateTime.now());
-        setDuration(Duration.ZERO);
+        setStartTime(null);
+        setEndTime(null);
     }
 
     @Override

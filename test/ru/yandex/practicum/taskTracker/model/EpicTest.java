@@ -13,8 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
     private final TaskManager manager = new InMemoryTaskManager();
@@ -76,9 +75,6 @@ class EpicTest {
         assertEquals(Status.IN_PROGRESS, epicTest.getStatus());
     }
 
-
-
-
     @Test
     void getSubtasksId() {
         assertEquals(Collections.emptyList(), manager.getEpics().get(0).getSubtasksId());
@@ -113,22 +109,17 @@ class EpicTest {
     }
 
     @Test
-    void setSubtask() {
+    void clearSubtasks() {
         assertEquals(Collections.emptyList(), epicTest.getSubtasksId());
 
         subtaskList.forEach(manager::addNewSubtask);
-        int oldId = subtaskTest.getId();
-        int newId = 555;
-        boolean isContainsId = true;
-        assertEquals(isContainsId, epicTest.getSubtasksId().contains(oldId));
+        assertNotEquals(Collections.emptyList(), epicTest.getSubtasksId());
 
-//        epicTest.setSubtask();
+        epicTest.clearSubtasks();
+        assertEquals(Collections.emptyList(), epicTest.getSubtasksId());
+        assertEquals(Status.NEW, epicTest.getStatus());
+        assertNull(epicTest.getStartTime());
+        assertNull(epicTest.getEndTime());
+        assertNull(epicTest.getEndTime());
     }
-//
-//    @Test
-//    void clearSubtasks() {
-//        epic.addSubtask(subtaskId);
-//        epic.clearSubtasks();
-//        assertEquals(listSize, epic.getSubtasksId().size());
-//    }
 }
