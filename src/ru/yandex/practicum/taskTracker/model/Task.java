@@ -19,7 +19,7 @@ public class Task {
         this.taskName = taskName;
         this.description = description;
         this.startTime = null;
-        this.duration = null;
+        this.duration = Duration.ZERO;
         this.id = id;
         this.status = Status.NEW;
     }

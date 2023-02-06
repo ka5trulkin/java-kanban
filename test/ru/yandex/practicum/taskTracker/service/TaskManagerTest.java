@@ -543,17 +543,15 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getSubtasksFromEpic() {
-        final int epicId = epicTest.getId();
-
-        assertEquals(Collections.emptyList(), manager.getSubtasksFromEpic(epicId), "Список должен быть пустым.");
+        assertEquals(Collections.emptyList(), manager.getSubtasksFromEpic(epicTest), "Список должен быть пустым.");
         manager.addNewEpic(epicTest);
-        assertEquals(Collections.emptyList(), manager.getSubtasksFromEpic(epicId), "Список должен быть пустым.");
+        assertEquals(Collections.emptyList(), manager.getSubtasksFromEpic(epicTest), "Список должен быть пустым.");
         subtaskList.forEach(manager::addNewSubtask);
-        assertEquals(subtaskList.size(), manager.getSubtasksFromEpic(epicId).size(), "Неверное количество задач.");
+        assertEquals(subtaskList.size(), manager.getSubtasksFromEpic(epicTest).size(), "Неверное количество задач.");
         manager.removeSubtaskById(subtaskTest.getId());
-        assertEquals(subtaskList.size() - 1, manager.getSubtasksFromEpic(epicId).size(), "Неверное количество задач.");
+        assertEquals(subtaskList.size() - 1, manager.getSubtasksFromEpic(epicTest).size(), "Неверное количество задач.");
         manager.clearAllSubtasks();
-        assertEquals(Collections.emptyList(), manager.getSubtasksFromEpic(epicId), "Список должен быть пустым.");
+        assertEquals(Collections.emptyList(), manager.getSubtasksFromEpic(epicTest), "Список должен быть пустым.");
     }
 
     @Test
