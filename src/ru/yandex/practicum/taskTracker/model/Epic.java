@@ -32,11 +32,6 @@ public class Epic extends Task{
         this.endTime = endTime;
     }
 
-    @Override
-    public Type getType() {
-        return Type.EPIC;
-    }
-
     public List<Integer> getSubtasksId() {
         return subtasksId;
     }
@@ -56,6 +51,11 @@ public class Epic extends Task{
         setStatus(Status.NEW);
         setStartTime(null);
         setEndTime(null);
+    }
+
+    @Override
+    public Type getType() {
+        return Type.EPIC;
     }
 
     @Override

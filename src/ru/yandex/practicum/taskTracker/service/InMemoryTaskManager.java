@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected static int idCounter = 0;
+    protected int idCounter = 0;
     protected final Map<Integer, Task> tasks = new HashMap<>();
     protected final Map<Integer, Epic> epics = new HashMap<>();
     protected final Map<Integer, Subtask> subtasks = new HashMap<>();
@@ -170,20 +170,26 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(int taskId) {
-        historyManager.add(tasks.get(taskId));
-        return tasks.get(taskId);
+        if (tasks.containsKey(taskId)) {
+            historyManager.add(tasks.get(taskId));
+            return tasks.get(taskId);
+        } else throw new IllegalArgumentException("Задача с ID:" + taskId + " не найдена.");
     }
 
     @Override
     public Epic getEpicById(int epicId) {
-        historyManager.add(epics.get(epicId));
-        return epics.get(epicId);
+        if (epics.containsKey(epicId)) {
+            historyManager.add(epics.get(epicId));
+            return epics.get(epicId);
+        } else throw new IllegalArgumentException("Эпик с ID:" + epicId + " не найден.");
     }
 
     @Override
     public Subtask getSubTaskById(int subtaskId) {
-        historyManager.add(subtasks.get(subtaskId));
-        return subtasks.get(subtaskId);
+        if (subtasks.containsKey(subtaskId)) {
+            historyManager.add(subtasks.get(subtaskId));
+            return subtasks.get(subtaskId);
+        } else throw new IllegalArgumentException("Подзадача с ID:" + subtaskId + " не найдена.");
     }
 
     @Override
@@ -209,6 +215,14 @@ public class InMemoryTaskManager implements TaskManager {
     public void addNewSubtask(Subtask subtask) {
         if (subtask != null) {
             int subtaskId = subtask.getId();
+
+            if (!epics.containsKey(subtask.getEpicId())) {
+                throw new IllegalArgumentException(
+                        "Эпика ID:" + subtask.getEpicId()
+                        + " для Подзадачи ID:" + subtaskId + " не существует"
+                );
+            }
+
             Epic epic = epics.get(subtask.getEpicId());
 
             checkTaskToCrossByStartTime(subtask);
@@ -228,7 +242,7 @@ public class InMemoryTaskManager implements TaskManager {
             checkTaskToCrossByStartTime(task);
             updatePrioritizedTasksByStartTime(tasks.get(taskId), task);
             tasks.put(taskId, task);
-        }
+        } else throw new IllegalArgumentException("Ошибка добавления " + task);
     }
 
     @Override
@@ -241,13 +255,21 @@ public class InMemoryTaskManager implements TaskManager {
             epics.put(epicId, epic);
             checkEpicStatus(epic);
             checkEpicTimes(epic);
-        }
+        } else throw new IllegalArgumentException("Ошибка добавления " + epic);
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
         if ((subtask != null) && (subtasks.containsKey(subtask.getId()))) {
             int subtaskId = subtask.getId();
+
+            if (!epics.containsKey(subtask.getEpicId())) {
+                throw new IllegalArgumentException(
+                        "Подзадача ID:" + subtaskId
+                        + " не принадлежит эпику ID:" + subtask.getEpicId()
+                );
+            }
+
             Epic epic = epics.get(subtask.getEpicId());
 
             if (subtasks.get(subtaskId).getStartTime() != null
@@ -260,11 +282,14 @@ public class InMemoryTaskManager implements TaskManager {
             subtasks.put(subtaskId, subtask);
             checkEpicStatus(epic);
             checkEpicTimes(epic);
-        }
+        } else throw new IllegalArgumentException("Ошибка добавления " + subtask);
     }
 
     @Override
     public void removeTaskById(int taskId) {
+        if (!tasks.containsKey(taskId)) {
+            throw new IllegalArgumentException("Задача ID:" + taskId + " не найдена");
+        }
         prioritizedTasksByStartTime.remove(tasks.get(taskId));
         tasks.remove(taskId);
         historyManager.remove(taskId);
@@ -272,30 +297,32 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeEpicById(int epicId) {
-        if (epics.get(epicId) != null) {
-            for (Integer subtaskId : epics.get(epicId).getSubtasksId()) {
-                prioritizedTasksByStartTime.remove(subtasks.get(subtaskId));
-                subtasks.remove(subtaskId);
-                historyManager.remove(subtaskId);
-            }
-            historyManager.remove(epicId);
-            epics.remove(epicId);
+        if (!epics.containsKey(epicId)) {
+            throw new IllegalArgumentException("Эпик ID:" + epicId + " не найден");
         }
+        for (Integer subtaskId : epics.get(epicId).getSubtasksId()) {
+            prioritizedTasksByStartTime.remove(subtasks.get(subtaskId));
+            subtasks.remove(subtaskId);
+            historyManager.remove(subtaskId);
+        }
+        historyManager.remove(epicId);
+        epics.remove(epicId);
     }
 
     @Override
     public void removeSubtaskById(int subtaskId) {
-        if (subtasks.get(subtaskId) != null) {
-            Epic epic = epics.get(subtasks.get(subtaskId).getEpicId());
-
-            prioritizedTasksByStartTime.remove(subtasks.get(subtaskId));
-            subtasks.remove(subtaskId);
-            historyManager.remove(subtaskId);
-            epic.removeSubtask(subtaskId);
-            historyManager.add(epic);
-            checkEpicStatus(epic);
-            checkEpicTimes(epic);
+        if (!subtasks.containsKey(subtaskId)) {
+            throw new IllegalArgumentException("Подзадача ID:" + subtaskId + " не найдена");
         }
+        Epic epic = epics.get(subtasks.get(subtaskId).getEpicId());
+
+        prioritizedTasksByStartTime.remove(subtasks.get(subtaskId));
+        subtasks.remove(subtaskId);
+        historyManager.remove(subtaskId);
+        epic.removeSubtask(subtaskId);
+        historyManager.add(epic);
+        checkEpicStatus(epic);
+        checkEpicTimes(epic);
     }
 
     @Override

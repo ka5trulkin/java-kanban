@@ -7,10 +7,7 @@ import ru.yandex.practicum.taskTracker.service.InMemoryTaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -120,6 +117,22 @@ class EpicTest {
         assertEquals(Status.NEW, epicTest.getStatus());
         assertNull(epicTest.getStartTime());
         assertNull(epicTest.getEndTime());
+        assertNull(epicTest.getEndTime());
+    }
+
+    @Test
+    void getEpicEndTime() {
+        LocalDateTime expectedEndTime = subtaskList.stream()
+                .map(Task::getEndTime)
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo)
+                .orElseThrow();
+
+        assertNull(epicTest.getEndTime());
+        subtaskList.forEach(manager::addNewSubtask);
+        assertEquals(expectedEndTime, epicTest.getEndTime());
+
+        manager.clearAllSubtasks();
         assertNull(epicTest.getEndTime());
     }
 }
