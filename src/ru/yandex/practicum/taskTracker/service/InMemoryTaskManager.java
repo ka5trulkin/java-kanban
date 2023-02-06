@@ -20,6 +20,15 @@ public class InMemoryTaskManager implements TaskManager {
                     .thenComparing(Task::getId)
     );
 
+    private void checkEpic(Epic epic) {
+        List<Subtask> subtaskList = getSubtasksFromEpic(epic);
+
+        setEpicStatus(subtaskList, epic);
+        setEpicStartTime(subtaskList, epic);
+        setEpicEndTime(subtaskList, epic);
+        setEpicDuration(subtaskList, epic);
+    }
+
     private void setEpicStatus(List<Subtask> subtaskList, Epic epic) {
         List<Status> statusList = subtaskList
                 .stream()
@@ -31,15 +40,6 @@ public class InMemoryTaskManager implements TaskManager {
         } else if (statusList.contains(Status.DONE)) {
             epic.setStatus(Status.DONE);
         } else epic.setStatus(Status.NEW);
-    }
-
-    private void checkEpic(Epic epic) {
-        List<Subtask> subtaskList = getSubtasksFromEpic(epic);
-
-        setEpicStatus(subtaskList, epic);
-        setEpicStartTime(subtaskList, epic);
-        setEpicEndTime(subtaskList, epic);
-        setEpicDuration(subtaskList, epic);
     }
 
     private void setEpicStartTime(List<Subtask> subtaskList, Epic epic) {
