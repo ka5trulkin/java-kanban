@@ -1,82 +1,72 @@
 package ru.yandex.practicum.taskTracker.service;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Status;
 import ru.yandex.practicum.taskTracker.model.Subtask;
+import ru.yandex.practicum.taskTracker.model.Task;
 
-import java.util.Collections;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
-
-
     public InMemoryTaskManagerTest() {
         super(new InMemoryTaskManager());
     }
 
     @Test
-    void test() {
-        System.out.println(manager.getClass());
-//        tasksList.forEach(System.out::println);
-        tasksList.forEach(manager::addNewTask);
-        manager.getTasks().forEach(System.out::println);
+    void checkEpicStatus() {
+        manager.addNewEpic(epicTest);
+        assertEquals(Status.NEW, epicTest.getStatus(), "Статус не совпадает.");
+        subtaskList.forEach(manager::addNewSubtask);
+        assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
+        manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.DONE));
+        manager.updateSubtask(subtaskTest);
+        assertEquals(Status.DONE, epicTest.getStatus(), "Статус не совпадает.");
+        manager.getSubTaskById(subtaskTest.getId()).setStatus(Status.NEW);
+        manager.updateSubtask(subtaskTest);
+        assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
+        manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.IN_PROGRESS));
+        manager.updateSubtask(subtaskTest);
+        assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
+        manager.clearAllSubtasks();
+        assertEquals(Status.NEW, epicTest.getStatus(), "Статус не совпадает.");
     }
-//    TaskManagerTest manager = new InMemoryTaskManagerTest();
 
-    //    void changeSubtaskStatus(Subtask subtaskFromManager, Status status) {
-//        manager.updateSubtask(
-//                new Subtask(
-//                        subtaskFromManager.getTaskName(),
-//                        subtaskFromManager.getDescription(),
-//                        subtaskFromManager.getId(),
-//                        subtaskFromManager.getEpicId(),
-//                        status
-//                )
-//        );
-//    }
-//
-//    @Test
-//    void checkEpicStatus() {
-//        manager.addNewEpic(epic);
-//        manager.updateEpic(epic);
-//        assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus());
-//        assertEquals(Collections.emptyList(), manager.getSubtasks());
-//        fillManager(manager);
-//        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
-//        for (Subtask subtaskFromManager : manager.getSubtasks()) {
-//            changeSubtaskStatus(subtaskFromManager, Status.DONE);
-//        }
-//        assertEquals(Status.DONE, manager.getEpicById(idEpic).getStatus());
-//        changeSubtaskStatus(manager.getSubTaskById(idSubtask), Status.NEW);
-//        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
-//        for (Subtask subtaskFromManager : manager.getSubtasks()) {
-//            changeSubtaskStatus(subtaskFromManager, Status.IN_PROGRESS);
-//        }
-//        assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus());
-//        manager.clearAllSubtasks();
-//        assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus());
-//    }
-//    @Test
-//    void checkTasksToCrossByStartTime() {
-//        String errorByCrossTask
-//                = "Задача 'Задача 1' пересекается с другой задачей по времени начала задачи: 2022-07-28T01:21";
-//        String errorByCrossSubtask
-//                = "Задача 'Подзадача 1' пересекается с другой задачей по времени начала задачи: 2022-07-28T01:41";
-//
-//        fillManager(manager);
-//        IllegalArgumentException taskException = assertThrows(
-//                IllegalArgumentException.class,
-//                () -> manager.addNewTask(tasksList.get(firstTaskInList))
-//        );
-//        assertEquals(errorByCrossTask, taskException.getMessage());
-//        Assertions.assertDoesNotThrow(() -> manager.addNewEpic(epicsList.get(firstTaskInList)));
-//        IllegalArgumentException subtaskExeption = assertThrows(
-//                IllegalArgumentException.class,
-//                () -> manager.addNewSubtask(subtasksList.get(firstTaskInList))
-//        );
-//        assertEquals(errorByCrossSubtask, subtaskExeption.getMessage());
-//    }
+    @Test
+    void checkTasksToCrossByStartTime() {
+        final Task task = new Task(
+                "Новая задача",
+                "Новое описание",
+                taskTest.getStartTime(),
+                Duration.ofMinutes(10),
+                idNonexistent
+        );
+        final Subtask subtask = new Subtask(
+                "Новая подзадача",
+                "Новое описание",
+                subtaskTest.getStartTime(),
+                Duration.ofMinutes(25),
+                idNonexistent,
+                epicTest.getId()
+        );
+        String errorByCrossTask = "Задача ID:" + task.getId() + " пересекается с другой задачей по времени: " + task.getStartTime();
+        String errorByCrossSubtask = "Задача ID:" + subtask.getId() + " пересекается с другой задачей по времени: " + subtask.getStartTime();
 
+        tasksList.forEach(manager::addNewTask);
+        epicList.forEach(manager::addNewEpic);
+        subtaskList.forEach(manager::addNewSubtask);
+        IllegalArgumentException taskException = assertThrows(
+                IllegalArgumentException.class,
+                () -> manager.addNewTask(task),
+                "Задачи не пересекаются по времени."
+        );
+        assertEquals(errorByCrossTask, taskException.getMessage());
+        IllegalArgumentException subtaskException = assertThrows(
+                IllegalArgumentException.class,
+                () -> manager.addNewTask(subtask),
+                "Задачи не пересекаются по времени."
+        );
+        assertEquals(errorByCrossSubtask, subtaskException.getMessage());
+    }
 }

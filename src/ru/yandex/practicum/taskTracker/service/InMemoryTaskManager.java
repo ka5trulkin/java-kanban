@@ -88,9 +88,9 @@ public class InMemoryTaskManager implements TaskManager {
                     .anyMatch(prioritizedTask -> prioritizedTask.getStartTime().equals(task.getStartTime()));
             if (isCross) {
                 throw new IllegalArgumentException(
-                        "Задача '"
-                                + task.getTaskName()
-                                + "' пересекается с другой задачей по времени начала задачи: "
+                        "Задача ID:"
+                                + task.getId()
+                                + " пересекается с другой задачей по времени: "
                                 + task.getStartTime());
             }
         }
