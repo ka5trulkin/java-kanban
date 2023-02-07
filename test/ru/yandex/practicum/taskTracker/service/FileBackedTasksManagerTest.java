@@ -1,137 +1,42 @@
 package ru.yandex.practicum.taskTracker.service;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.taskTracker.model.Status;
+import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
-
     public FileBackedTasksManagerTest() {
-        super(new FileBackedTasksManager(new File("resource/backup-task-manager.csv")));
+        super(new FileBackedTasksManager(new File("resource/backup-task-manager-test.csv")));
     }
 
-    //
-//    @Test
-//    void loadFromFile() {
-//        File testManagerFile = new File("resource/test-backup-task-manager.csv");
-//        File testHistoryManagerFile = new File("resource/test-history-manager.csv");
-//        File wrongFile = new File("wrongPath");
-//        String testHistoryManager;
-//        String expectedMessage = "Ошибка чтения " + wrongFile;
-//        FileBackedTasksManager managerTest = FileBackedTasksManager.loadFromFile(testManagerFile);
-//
-//        try {
-//            testHistoryManager = Files.readString(testHistoryManagerFile.toPath());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        assertEquals(tasksList, managerTest.getTasks());
-//        assertEquals(subtasksList, managerTest.getSubtasks());
-//        epicsList.get(firstTaskInList).setStatus(Status.IN_PROGRESS);
-//        assertEquals(epicsList, managerTest.getEpics());
-//        assertEquals(testHistoryManager, managerTest.historyManager.getHistory().toString());
-//        ManagerSaveException exception = assertThrows(
-//                ManagerSaveException.class,
-//                () -> FileBackedTasksManager.loadFromFile(wrongFile)
-//        );
-//        assertEquals(expectedMessage, exception.getMessage());
-//        Managers.getDefault();
-//    }
-//
-//    @Test
-//    void getTasks() {
-//        super.getTasks(manager);
-//    }
-//
-//    @Test
-//    void getEpics() {
-//        super.getEpics(manager);
-//    }
-//
-//    @Test
-//    void getSubtasks() {
-//        super.getSubtasks(manager);
-//    }
-//
-//    @Test
-//    void clearAllTasks() {
-//        super.clearAllTasks(manager);
-//    }
-//
-//    @Test
-//    void clearAllEpics() {
-//        super.clearAllEpics(manager);
-//    }
-//
-//    @Test
-//    void clearAllSubtasks() {
-//        super.clearAllSubtasks(manager);
-//    }
-//
-//    @Test
-//    void getTaskById() {
-//        super.getTaskById(manager);
-//    }
-//
-//    @Test
-//    void getEpicById() {
-//        super.getEpicById(manager);
-//    }
-//
-//    @Test
-//    void getSubTaskById() {
-//        super.getSubTaskById(manager);
-//    }
-//
-//    @Test
-//    void addNewTask() {
-//        super.addNewTask();
-//    }
-//
-//    @Test
-//    void addNewEpic() {
-//        super.addNewEpic(manager);
-//    }
-//
-//    @Test
-//    void addNewSubtask() {
-//        super.addNewSubtask(manager);
-//    }
-//
-//    @Test
-//    void updateTask() {
-//        super.updateTask(manager);
-//    }
-//
-//    @Test
-//    void updateEpic() {
-//        super.updateEpic(manager);
-//    }
-//
-//    @Test
-//    void updateSubtask() {
-//        super.updateSubtask(manager);
-//    }
-//
-//    @Test
-//    void removeTaskById() {
-//        super.removeTaskById(manager);
-//    }
-//
-//    @Test
-//    void removeEpicById() {
-//        super.removeEpicById(manager);
-//    }
-//
-//    @Test
-//    void removeSubtaskById() {
-//        super.removeSubtaskById(manager);
-//    }
+    @Test
+    void loadFromFile() {
+        TaskManager loadedManager = new FileBackedTasksManager(new File("resource/backup-task-manager-test.csv"));
+
+        assertEquals(Collections.emptyList(), loadedManager.getTasks(), "Списки не совпадают.");
+        assertEquals(Collections.emptyList(), loadedManager.getEpics(), "Списки не совпадают.");
+        assertEquals(Collections.emptyList(), loadedManager.getSubtasks(), "Списки не совпадают.");
+        tasksList.forEach(manager::addNewTask);
+        loadedManager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager-test.csv"));
+        assertEquals(manager.getTasks(), loadedManager.getTasks(), "Списки не совпадают.");
+        manager.clearAllTasks();
+        epicList.forEach(manager::addNewEpic);
+        loadedManager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager-test.csv"));
+        assertEquals(manager.getEpics(), loadedManager.getEpics(), "Списки не совпадают.");
+        assertEquals(manager.getSubtasks(), loadedManager.getSubtasks(), "Списки не совпадают.");
+        manager.clearAllEpics();
+        loadedManager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager-test.csv"));
+        assertEquals(manager.getEpics(), loadedManager.getEpics(), "Списки не совпадают.");
+        tasksList.forEach(manager::addNewTask);
+        epicList.forEach(manager::addNewEpic);
+        subtaskList.forEach(manager::addNewSubtask);
+        loadedManager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager-test.csv"));
+        assertEquals(manager.getTasks(), loadedManager.getTasks(), "Списки не совпадают.");
+        assertEquals(manager.getEpics(), loadedManager.getEpics(), "Списки не совпадают.");
+        assertEquals(manager.getSubtasks(), loadedManager.getSubtasks(), "Списки не совпадают.");
+    }
 }

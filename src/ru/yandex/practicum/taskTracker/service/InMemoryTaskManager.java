@@ -20,7 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
                     .thenComparing(Task::getId)
     );
 
-    private void checkEpic(Epic epic) {
+    protected void checkEpic(Epic epic) {
         List<Subtask> subtaskList = getSubtasksFromEpic(epic);
 
         setEpicStatus(subtaskList, epic);
@@ -199,8 +199,8 @@ public class InMemoryTaskManager implements TaskManager {
 
             if (!epics.containsKey(subtask.getEpicId())) {
                 throw new IllegalArgumentException(
-                        "Эпика ID:" + subtask.getEpicId()
-                                + " для Подзадачи ID:" + subtaskId + " не существует"
+                        "Подзадача ID:" + subtaskId
+                                + " не принадлежит эпику ID:" + subtask.getEpicId()
                 );
             }
             Epic epic = epics.get(subtask.getEpicId());

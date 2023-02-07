@@ -68,12 +68,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         LocalDateTime startTime;
         Duration duration;
 
-        if (!(dataFromStringLine[5].equals("null")) && !(dataFromStringLine[6].equals("null"))) {
+        if (!(dataFromStringLine[5].equals("null")) /*&& !(dataFromStringLine[6].equals("null"))*/) {
             startTime = LocalDateTime.parse(dataFromStringLine[5]);
             duration = Duration.between(startTime, LocalDateTime.parse(dataFromStringLine[6]));
         } else {
             startTime = null;
-            duration = null;
+            duration = Duration.ZERO;
         }
 
         switch (type) {
@@ -130,6 +130,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Subtask task = (Subtask) taskFromString(fileLine);
         int key = task.getId();
         this.subtasks.put(key, task);
+        Epic epic = epics.get(task.getEpicId());
+        epic.addSubtask(key);
+        this.checkEpic(epic);
     }
 
     private static List<Integer> historyFromString(String fileLine) {
@@ -170,9 +173,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка чтения " + backupFile);
         }
+        historyLine = fileLines[fileLines.length - 1];
         for (int index = dataLine; index < fileLines.length; index++) {
             fileLine = fileLines[index];
-            historyLine = fileLines[index + dataLine];
             if (!fileLine.isBlank()) {
                 tasksManager.fillTasksManager(fileLine);
             } else if (!historyLine.isBlank()) {

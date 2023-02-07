@@ -1,5 +1,7 @@
 package ru.yandex.practicum.taskTracker.service;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
@@ -87,6 +89,12 @@ abstract class TaskManagerTest<T extends TaskManager> {
         idNonexistent = 777;
     }
 
+//    @AfterEach
+//    void afterAll() {
+//        manager.clearAllTasks();
+//        manager.clearAllEpics();
+//    }
+
     @Test
     void addNewTask() {
         manager.addNewTask(
@@ -145,8 +153,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 () -> manager.addNewSubtask(subtaskTest)
         );
 
-        String expectedException = "Эпика ID:" + epicTest.getId()
-                + " для Подзадачи ID:" + subtaskTest.getId() + " не существует";
+        String expectedException = "Подзадача ID:" + subtaskTest.getId()
+                + " не принадлежит эпику ID:" + subtaskTest.getEpicId();
         assertEquals(expectedException, exception1.getMessage(), "Подзадача добавлена в несуществующий эпик");
 
         manager.addNewEpic(epicTest);
@@ -174,8 +182,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(subtaskTest, subtaskTestList.get(0), "Подзадачи не совпадают.");
 
         manager.clearAllEpics();
-        expectedException = "Эпика ID:" + subtask.getEpicId()
-                + " для Подзадачи ID:" + subtaskId + " не существует";
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.addNewSubtask(subtask)
