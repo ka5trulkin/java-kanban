@@ -24,7 +24,6 @@ class SubtaskTest {
         epicId = 1;
     }
 
-
     @Test
     void getEpicId() {
         assertEquals(epicId, subtask.getEpicId(), "ID Эпика не совпадают.");

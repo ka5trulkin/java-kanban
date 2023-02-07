@@ -94,9 +94,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private void fillHistoryManager(List<Integer> history) {
         for (Integer id : history) {
-            this.getTaskById(id);
-            this.getEpicById(id);
-            this.getSubTaskById(id);
+            if (tasks.containsKey(id)) {
+                this.getTaskById(id);
+            } else if (epics.containsKey(id)) {
+                this.getEpicById(id);
+            } else if (subtasks.containsKey(id)) {
+                this.getSubTaskById(id);
+            }
         }
     }
 

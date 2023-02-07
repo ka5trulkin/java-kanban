@@ -8,11 +8,11 @@ class ManagersTest {
 
     @Test
     void getDefault() {
-        assertEquals(FileBackedTasksManager.class, Managers.getDefault().getClass());
+        assertEquals(FileBackedTasksManager.class, Managers.getDefault().getClass(), "Объект не соответствует калссу.");
     }
 
     @Test
     void getDefaultHistory() {
-        assertEquals(InMemoryHistoryManager.class, Managers.getDefaultHistory().getClass());
+        assertEquals(InMemoryHistoryManager.class, Managers.getDefaultHistory().getClass(), "Объект не соответствует калссу.");
     }
 }

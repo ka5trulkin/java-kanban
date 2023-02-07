@@ -1,6 +1,5 @@
 package ru.yandex.practicum.taskTracker.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
@@ -86,12 +85,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         );
         subtaskTest = subtaskList.get(0);
         idNonexistent = 777;
-    }
-
-    @AfterEach
-    void afterAll() {
-        manager.clearAllTasks();
-        manager.clearAllEpics();
     }
 
     @Test

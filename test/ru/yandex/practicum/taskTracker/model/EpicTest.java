@@ -54,22 +54,22 @@ class EpicTest {
 
     @Test
     void epicStatusTest() {
-        assertEquals(Status.NEW, epicTest.getStatus());
+        assertEquals(Status.NEW, epicTest.getStatus(), "Статус не совпадает.");
 
         subtaskList.forEach(manager::addNewSubtask);
-        assertEquals(Status.IN_PROGRESS, epicTest.getStatus());
+        assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
 
         manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.DONE));
         manager.updateSubtask(subtaskTest);
-        assertEquals(Status.DONE, epicTest.getStatus());
+        assertEquals(Status.DONE, epicTest.getStatus(), "Статус не совпадает.");
 
         subtaskTest.setStatus(Status.NEW);
         manager.updateSubtask(subtaskTest);
-        assertEquals(Status.IN_PROGRESS, epicTest.getStatus());
+        assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
 
         manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.IN_PROGRESS));
         manager.updateSubtask(subtaskTest);
-        assertEquals(Status.IN_PROGRESS, epicTest.getStatus());
+        assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
     }
 
     @Test
@@ -79,45 +79,44 @@ class EpicTest {
 
         List<Integer> subtaskIdList = subtaskList.stream().map(Task::getId).collect(Collectors.toList());
 
-        assertEquals(subtaskIdList, manager.getEpics().get(0).getSubtasksId());
+        assertEquals(subtaskIdList, manager.getEpics().get(0).getSubtasksId(), "Списки не совпадают.");
     }
 
     @Test
     void addSubtask() {
-        assertEquals(Collections.emptyList(), epicTest.getSubtasksId());
+        assertEquals(Collections.emptyList(), epicTest.getSubtasksId(), "Списки не совпадают.");
 
         manager.getEpics().get(0).addSubtask(subtaskTest.getId());
-        assertEquals(Collections.singletonList(subtaskTest.getId()), epicTest.getSubtasksId());
+        assertEquals(Collections.singletonList(subtaskTest.getId()), epicTest.getSubtasksId(), "Задачи не совпадают.");
     }
 
     @Test
     void removeSubtask() {
-        assertEquals(Collections.emptyList(), epicTest.getSubtasksId());
+        assertEquals(Collections.emptyList(), epicTest.getSubtasksId(), "Списки не совпадают.");
 
         List<Integer> subtaskIdList = subtaskList.stream().map(Task::getId).collect(Collectors.toList());
 
         subtaskList.forEach(manager::addNewSubtask);
-        assertEquals(subtaskIdList, epicTest.getSubtasksId());
+        assertEquals(subtaskIdList, epicTest.getSubtasksId(), "Списки не совпадают.");
 
         subtaskList.remove(subtaskTest);
         epicTest.removeSubtask(subtaskTest.getId());
         subtaskIdList = subtaskList.stream().map(Task::getId).collect(Collectors.toList());
-        assertEquals(subtaskIdList, epicTest.getSubtasksId());
+        assertEquals(subtaskIdList, epicTest.getSubtasksId(), "Списки не совпадают.");
     }
 
     @Test
     void clearSubtasks() {
-        assertEquals(Collections.emptyList(), epicTest.getSubtasksId());
+        assertEquals(Collections.emptyList(), epicTest.getSubtasksId(), "Списки не совпадают.");
 
         subtaskList.forEach(manager::addNewSubtask);
-        assertNotEquals(Collections.emptyList(), epicTest.getSubtasksId());
+        assertNotEquals(Collections.emptyList(), epicTest.getSubtasksId(), "Список пуст.");
 
         epicTest.clearSubtasks();
-        assertEquals(Collections.emptyList(), epicTest.getSubtasksId());
-        assertEquals(Status.NEW, epicTest.getStatus());
-        assertNull(epicTest.getStartTime());
-        assertNull(epicTest.getEndTime());
-        assertNull(epicTest.getEndTime());
+        assertEquals(Collections.emptyList(), epicTest.getSubtasksId(), "Списки не совпадают.");
+        assertEquals(Status.NEW, epicTest.getStatus(), "Статус не совпадает.");
+        assertNull(epicTest.getStartTime(), "Время старта эпика должно быть пустым.");
+        assertNull(epicTest.getEndTime(), "Время старта эпика должно быть пустым.");
     }
 
     @Test
@@ -128,11 +127,11 @@ class EpicTest {
                 .max(LocalDateTime::compareTo)
                 .orElseThrow();
 
-        assertNull(epicTest.getEndTime());
+        assertNull(epicTest.getEndTime(), "Время завершения эпика должно быть пустым.");
         subtaskList.forEach(manager::addNewSubtask);
-        assertEquals(expectedEndTime, epicTest.getEndTime());
+        assertEquals(expectedEndTime, epicTest.getEndTime(), "Время завершения эпика не совпадает.");
 
         manager.clearAllSubtasks();
-        assertNull(epicTest.getEndTime());
+        assertNull(epicTest.getEndTime(), "Время завершения эпика должно быть пустым.");
     }
 }
