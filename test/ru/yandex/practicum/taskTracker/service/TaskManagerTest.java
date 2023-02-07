@@ -1,6 +1,5 @@
 package ru.yandex.practicum.taskTracker.service;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class TaskManagerTest<T extends TaskManager> {
 
     protected T manager;
-    protected final List<Task> tasksList = new ArrayList<>();
+    protected final List<Task> taskList = new ArrayList<>();
     protected final List<Epic> epicList = new ArrayList<>();
     protected final List<Subtask> subtaskList = new ArrayList<>();
     protected int idNonexistent;
@@ -36,7 +35,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void beforeEach() {
         LocalDateTime dateTime = LocalDateTime.of(2022, 7, 28, 1, 21);
 
-        tasksList.addAll(
+        taskList.addAll(
                 Arrays.asList(
                         new Task(
                                 "Задача 1",
@@ -57,7 +56,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                                 Status.IN_PROGRESS)
                 )
         );
-        taskTest = tasksList.get(0);
+        taskTest = taskList.get(0);
         epicList.add(new Epic("Эпик 1", "Описание эпика 1", manager.setId()));
         epicList.add(new Epic("Эпик 2", "Описание эпика 2", manager.setId(), Status.NEW));
         epicTest = epicList.get(0);
@@ -89,11 +88,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
         idNonexistent = 777;
     }
 
-//    @AfterEach
-//    void afterAll() {
-//        manager.clearAllTasks();
-//        manager.clearAllEpics();
-//    }
+    @AfterEach
+    void afterAll() {
+        manager.clearAllTasks();
+        manager.clearAllEpics();
+    }
 
     @Test
     void addNewTask() {
@@ -191,9 +190,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getTasks() {
-        tasksList.forEach(manager::addNewTask);
-        assertEquals(tasksList, manager.getTasks(), "Задачи не совпадают.");
-        assertEquals(tasksList.size(), manager.getTasks().size(), "Неверное количество задач.");
+        taskList.forEach(manager::addNewTask);
+        assertEquals(taskList, manager.getTasks(), "Задачи не совпадают.");
+        assertEquals(taskList.size(), manager.getTasks().size(), "Неверное количество задач.");
 
         manager.clearAllTasks();
         assertEquals(Collections.emptyList(), manager.getTasks(), "Список должен быть пуст.");
@@ -300,8 +299,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void clearAllTasks() {
-        tasksList.forEach(manager::addNewTask);
-        assertEquals(tasksList, manager.getTasks(), "Задачи не совпадают.");
+        taskList.forEach(manager::addNewTask);
+        assertEquals(taskList, manager.getTasks(), "Задачи не совпадают.");
         manager.clearAllTasks();
 
         String expectedException = "Задача с ID:" + taskTest.getId() + " не найдена.";
@@ -376,11 +375,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
         );
         final int taskId = task.getId();
 
-        tasksList.forEach(manager::addNewTask);
+        taskList.forEach(manager::addNewTask);
         assertNotEquals(task, manager.getTaskById(taskId), "Задачи совпадают.");
         manager.updateTask(task);
         assertEquals(task, manager.getTaskById(taskId), "Задачи не совпадают.");
-        assertEquals(tasksList.size(), manager.getTasks().size(), "Неверное количество задач.");
+        assertEquals(taskList.size(), manager.getTasks().size(), "Неверное количество задач.");
 
         final Task taskNonexistent = new Task(task.getTaskName(), task.getDescription(), idNonexistent);
         String expectedException = "Ошибка добавления " + taskNonexistent;
@@ -477,14 +476,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 () -> manager.removeTaskById(taskId),
                 "Задача не должна существовать."
         );
-        tasksList.forEach(manager::addNewTask);
+        taskList.forEach(manager::addNewTask);
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.removeTaskById(idNonexistent)
         );
         assertEquals(expectedException, exception.getMessage(), "Задача не должна существовать.");
         manager.removeTaskById(taskId);
-        assertEquals(tasksList.size() - 1, manager.getTasks().size(), "Неверное количество задач.");
+        assertEquals(taskList.size() - 1, manager.getTasks().size(), "Неверное количество задач.");
         assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.getTaskById(taskId),
@@ -568,7 +567,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         );
 
        assertEquals(Collections.emptyList(), manager.getPrioritizedTasks(), "Список должен быть пустым.");
-        tasksList.forEach(manager::addNewTask);
+        taskList.forEach(manager::addNewTask);
         epicList.forEach(manager::addNewEpic);
         subtaskList.forEach(manager::addNewSubtask);
         assertFalse(manager.getPrioritizedTasks().contains(epicTest), "Список не должен содержать эпик.");

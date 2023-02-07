@@ -53,7 +53,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         String errorByCrossTask = "Задача ID:" + task.getId() + " пересекается с другой задачей по времени: " + task.getStartTime();
         String errorByCrossSubtask = "Задача ID:" + subtask.getId() + " пересекается с другой задачей по времени: " + subtask.getStartTime();
 
-        tasksList.forEach(manager::addNewTask);
+        taskList.forEach(manager::addNewTask);
         epicList.forEach(manager::addNewEpic);
         subtaskList.forEach(manager::addNewSubtask);
         IllegalArgumentException taskException = assertThrows(
