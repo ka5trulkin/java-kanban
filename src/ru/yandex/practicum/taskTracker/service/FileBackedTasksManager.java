@@ -118,16 +118,24 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    private void checkIdCounter(int id) {
+        if (id > this.getIdCounter()) {
+            this.setIdCounter(id);
+        }
+    }
+
     private void fillTasks(String fileLine) {
         Task task = taskFromString(fileLine);
         int key = task.getId();
         this.tasks.put(key, task);
+        this.checkIdCounter(key);
     }
 
     private void fillEpics(String fileLine) {
         Epic task = (Epic) taskFromString(fileLine);
         int key = task.getId();
         this.epics.put(key, task);
+        this.checkIdCounter(key);
     }
 
     private void fillSubtasks(String fileLine) {
@@ -137,6 +145,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Epic epic = epics.get(task.getEpicId());
         epic.addSubtask(key);
         this.checkEpic(epic);
+        this.checkIdCounter(key);
     }
 
     private static List<Integer> historyFromString(String fileLine) {

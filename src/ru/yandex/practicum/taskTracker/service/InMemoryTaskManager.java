@@ -20,15 +20,6 @@ public class InMemoryTaskManager implements TaskManager {
                     .thenComparing(Task::getId)
     );
 
-    protected void checkEpic(Epic epic) {
-        List<Subtask> subtaskList = getSubtasksFromEpic(epic);
-
-        setEpicStatus(subtaskList, epic);
-        setEpicStartTime(subtaskList, epic);
-        setEpicEndTime(subtaskList, epic);
-        setEpicDuration(subtaskList, epic);
-    }
-
     private void setEpicStatus(List<Subtask> subtaskList, Epic epic) {
         List<Status> statusList = subtaskList
                 .stream()
@@ -96,8 +87,25 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    protected void checkEpic(Epic epic) {
+        List<Subtask> subtaskList = getSubtasksFromEpic(epic);
+
+        setEpicStatus(subtaskList, epic);
+        setEpicStartTime(subtaskList, epic);
+        setEpicEndTime(subtaskList, epic);
+        setEpicDuration(subtaskList, epic);
+    }
+
+    protected void setIdCounter(int id) {
+        this.idCounter = id;
+    }
+
+    protected int getIdCounter() {
+        return idCounter;
+    }
+
     @Override
-    public int setId() {
+    public int assignID() {
         return ++idCounter;
     }
 

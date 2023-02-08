@@ -39,6 +39,11 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         assertEquals(manager.getEpics(), loadedManager.getEpics(), "Списки не совпадают.");
         assertEquals(manager.getSubtasks(), loadedManager.getSubtasks(), "Списки не совпадают.");
 
+        final int expectedId = manager.getTasks().size()
+                + manager.getEpics().size()
+                + manager.getSubtasks().size();
+        assertEquals(expectedId, loadedManager.assignID() - 1, "Восстановлен не верный ID.");
+
         TaskManager mustBeRecoveredFromHistory = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager-test.csv"));
         assertEquals(loadedManager.getTasks(), mustBeRecoveredFromHistory.getTasks(), "Списки не совпадают.");
         assertEquals(loadedManager.getEpics(), mustBeRecoveredFromHistory.getEpics(), "Списки не совпадают.");

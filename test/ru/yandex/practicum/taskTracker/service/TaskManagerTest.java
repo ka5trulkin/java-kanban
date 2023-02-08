@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
+    public TaskManagerTest(T manager) {
+        this.manager = manager;
+    }
 
     protected T manager;
     protected final List<Task> taskList = new ArrayList<>();
@@ -24,11 +27,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     protected int idNonexistent;
     protected Task taskTest;
     protected Epic epicTest;
-    protected Subtask subtaskTest;
 
-    public TaskManagerTest(T manager) {
-        this.manager = manager;
-    }
+    protected Subtask subtaskTest;
 
     @BeforeEach
     void beforeEach() {
@@ -41,23 +41,23 @@ abstract class TaskManagerTest<T extends TaskManager> {
                                 "Описание задачи 1",
                                 dateTime.plusMinutes(15),
                                 Duration.ofMinutes(15),
-                                manager.setId()),
+                                manager.assignID()),
                         new Task(
                                 "Задача 2",
                                 "Описание задачи 2",
                                 dateTime,
                                 Duration.ofMinutes(15),
-                                manager.setId()),
+                                manager.assignID()),
                         new Task(
                                 "Задача 3",
                                 "Описание задачи 3",
-                                manager.setId(),
+                                manager.assignID(),
                                 Status.IN_PROGRESS)
                 )
         );
         taskTest = taskList.get(0);
-        epicList.add(new Epic("Эпик 1", "Описание эпика 1", manager.setId()));
-        epicList.add(new Epic("Эпик 2", "Описание эпика 2", manager.setId(), Status.NEW));
+        epicList.add(new Epic("Эпик 1", "Описание эпика 1", manager.assignID()));
+        epicList.add(new Epic("Эпик 2", "Описание эпика 2", manager.assignID(), Status.NEW));
         epicTest = epicList.get(0);
         subtaskList.addAll(
                 Arrays.asList(
@@ -66,19 +66,19 @@ abstract class TaskManagerTest<T extends TaskManager> {
                                 "Описание подзадачи 1",
                                 dateTime.plusMinutes(20),
                                 Duration.ofMinutes(15),
-                                manager.setId(),
+                                manager.assignID(),
                                 epicTest.getId()),
                         new Subtask(
                                 "Подзадача 2",
                                 "Описание подзадачи 2",
                                 dateTime.minusMinutes(115),
                                 Duration.ofMinutes(15),
-                                manager.setId(),
+                                manager.assignID(),
                                 epicTest.getId()),
                         new Subtask(
                                 "Подзадача 3",
                                 "Описание подзадачи 3",
-                                manager.setId(),
+                                manager.assignID(),
                                 epicTest.getId(),
                                 Status.NEW)
                 )

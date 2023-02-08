@@ -12,23 +12,23 @@ public class Main {
 
     public static void main(String[] args) {
         InMemoryTaskManager manager = new InMemoryTaskManager();
-        Epic epic = new Epic("новый эпик 1", "описание эпика 1", manager.setId());
+        Epic epic = new Epic("новый эпик 1", "описание эпика 1", manager.assignID());
         manager.addNewEpic(epic);
         //Данная задача должна быть 4 по счёту
         Subtask subtask1 = new Subtask("новая подзадача 1", "описание подзадачи 1",LocalDateTime.of(2022, 12, 30, 0, 30).plusDays(2), Duration.ofMinutes(15),
-                manager.setId(), epic.getId());
+                manager.assignID(), epic.getId());
         manager.addNewSubtask(subtask1);
         //Данная задача должна быть 1 по счёту
         Subtask subtask2 = new Subtask("новая подзадача 2", "описание подзадачи 2",LocalDateTime.of(2022, 12, 30, 0, 30), Duration.ofMinutes(30),
-                manager.setId(), epic.getId());
+                manager.assignID(), epic.getId());
         manager.addNewSubtask(subtask2);
         //Данная задача должна быть 3 по счёту
         Subtask subtask3 = new Subtask("новая подзадача 3", "описание подзадачи 3", LocalDateTime.of(2022, 12, 30, 0, 30).plusDays(1), Duration.ofMinutes(45),
-                manager.setId(), epic.getId());
+                manager.assignID(), epic.getId());
         manager.addNewSubtask(subtask3);
         //Данная задача должна быть 2 по счёту
         Subtask subtask4 = new Subtask("новая подзадача 4", "описание подзадачи 4",LocalDateTime.of(2022, 12, 30, 0, 30).plusHours(12), Duration.ofMinutes(60),
-                manager.setId(), epic.getId());
+                manager.assignID(), epic.getId());
         manager.addNewSubtask(subtask4);
         //Порядок добавления следующий subtask1 -> subtask2 -> subtask3 -> subtask4
         //Порядок следующий subtask2 -> subtask4 -> subtask3 -> subtask1

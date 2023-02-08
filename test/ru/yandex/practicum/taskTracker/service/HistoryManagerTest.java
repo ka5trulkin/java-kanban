@@ -35,17 +35,17 @@ class HistoryManagerTest {
                                 "Описание задачи 1",
                                 dateTime.plusMinutes(15),
                                 Duration.ofMinutes(15),
-                                taskManager.setId()),
+                                taskManager.assignID()),
                         new Task(
                                 "Задача 2",
                                 "Описание задачи 2",
                                 dateTime,
                                 Duration.ofMinutes(15),
-                                taskManager.setId()),
+                                taskManager.assignID()),
                         new Task(
                                 "Задача 3",
                                 "Описание задачи 3",
-                                taskManager.setId(),
+                                taskManager.assignID(),
                                 Status.IN_PROGRESS),
                         new Epic("Эпик 1", "Описание эпика 1", epicId),
                         new Epic("Эпик 2", "Описание эпика 2", epicId + 1, Status.NEW),
@@ -54,19 +54,19 @@ class HistoryManagerTest {
                                 "Описание подзадачи 1",
                                 dateTime.plusMinutes(20),
                                 Duration.ofMinutes(15),
-                                taskManager.setId(),
+                                taskManager.assignID(),
                                 epicId),
                         new Subtask(
                                 "Подзадача 2",
                                 "Описание подзадачи 2",
                                 dateTime.minusMinutes(115),
                                 Duration.ofMinutes(15),
-                                taskManager.setId(),
+                                taskManager.assignID(),
                                 epicId),
                         new Subtask(
                                 "Подзадача 3",
                                 "Описание подзадачи 3",
-                                taskManager.setId(),
+                                taskManager.assignID(),
                                 epicId,
                                 Status.NEW)
                 )

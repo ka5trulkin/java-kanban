@@ -7,7 +7,7 @@ import ru.yandex.practicum.taskTracker.model.Subtask;
 import java.util.List;
 
 public interface TaskManager {
-    int setId ();
+    int assignID();
 
     List<Task> getPrioritizedTasks();
 

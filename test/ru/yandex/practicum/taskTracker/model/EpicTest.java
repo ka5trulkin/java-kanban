@@ -22,8 +22,8 @@ class EpicTest {
     void beforeEach() {
         LocalDateTime dateTime = LocalDateTime.of(2022, 7, 28, 1, 21);
 
-        manager.addNewEpic(new Epic("Эпик 1", "Описание эпика 1", manager.setId()));
-        manager.addNewEpic(new Epic("Эпик 2", "Описание эпика 2", manager.setId(), Status.NEW));
+        manager.addNewEpic(new Epic("Эпик 1", "Описание эпика 1", manager.assignID()));
+        manager.addNewEpic(new Epic("Эпик 2", "Описание эпика 2", manager.assignID(), Status.NEW));
         subtaskList.addAll(
                 Arrays.asList(
                         new Subtask(
@@ -31,19 +31,19 @@ class EpicTest {
                                 "Описание подзадачи 1",
                                 dateTime.plusDays(2),
                                 Duration.ofMinutes(15),
-                                manager.setId(),
+                                manager.assignID(),
                                 manager.getEpics().get(0).getId()),
                         new Subtask(
                                 "Подзадача 2",
                                 "Описание подзадачи 2",
                                 dateTime,
                                 Duration.ofMinutes(30),
-                                manager.setId(),
+                                manager.assignID(),
                                 manager.getEpics().get(0).getId()),
                         new Subtask(
                                 "Подзадача 3",
                                 "Описание подзадачи 3",
-                                manager.setId(),
+                                manager.assignID(),
                                 manager.getEpics().get(0).getId(),
                                 Status.NEW)
                 )
