@@ -27,7 +27,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     protected int idNonexistent;
     protected Task taskTest;
     protected Epic epicTest;
-
     protected Subtask subtaskTest;
 
     @BeforeEach
