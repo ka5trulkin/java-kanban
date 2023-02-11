@@ -65,12 +65,22 @@ public class HttpTaskServer {
                     handleGetTaskById(exchange);
                     break;
                 }
-                case POST_TASK:
+                case POST_TASK: {
                     handlePostTaskById(exchange);
-                case DELETE_ALL_TASKS:
+                    break;
+                }
+                case DELETE_ALL_TASKS: {
                     handleDeleteAllTasks(exchange);
-                case DELETE_TASK_BY_ID:
+                    break;
+                }
+                case DELETE_TASK_BY_ID: {
                     handleDeleteTaskById(exchange);
+                    break;
+                }
+                case GET_HISTORY: {
+                    handleGetHistory(exchange);
+                    break;
+                }
                 default:
                     writeResponse(exchange, "Такого эндпоинта не существует", 404);
             }
@@ -85,48 +95,43 @@ public class HttpTaskServer {
             final int typeIndex = 2;
             final int contextLength = 2;
             final int taskTypeLength = 3;
-            final int requestLength = 4;
-            String context = "tasks";
-            String task = "task";
-            String epic = "epic";
-            String subtask = "subtask";
 
-            if (pathParts[typeIndex].equals("task")) {
-
-            }
-
-            if ((pathParts.length >= contextLength) && (pathParts[contextIndex].equals(context))) {
+            if ((pathParts.length >= contextLength) && (pathParts[contextIndex].equals("tasks"))) {
                 if ((pathParts.length == contextLength) && (requestMethod.equals(GET))) {
                     return GET_PRIORITIZES_TASKS;
                 }
-                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(GET)) && (!isContainsRequest)) {
-                    return GET_ALL_TASKS;
+                if ((pathParts.length == taskTypeLength) && (pathParts[typeIndex].equals("history"))) {
+                    return GET_HISTORY;
                 }
-                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(GET)) && (isContainsId)) {
-                    this.taskId = getPostId(exchange);
-                    return GET_TASK_BY_ID;
+                if ((pathParts.length == taskTypeLength) && (pathParts[typeIndex].equals("task"))) {
+                    return processRequestTaskData(exchange, pathParts, requestMethod, isContainsRequest, isContainsId);
                 }
-                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(POST))) {
-                    return POST_TASK;
-                }
-                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(DELETE)) && (!isContainsRequest)) {
-                    return DELETE_ALL_TASKS;
-                }
-                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(DELETE)) && (isContainsId)) {
-                    this.taskId = getPostId(exchange);
-                    return DELETE_TASK_BY_ID;
-                }
-
-//                if (pathParts.length == 4 && pathParts[contextIndex].equals("posts") && pathParts[3].equals("comments")) {
-//                    if (requestMethod.equals("GET")) {
-//                        return Endpoint.GET_ALL_TASKS;
-//                    }
-//                    if (requestMethod.equals("POST")) {
-//                        return Endpoint.GET_TASK_BY_ID;
-//                    }
-//                }
             }
-            return Endpoint.UNKNOWN;
+            return UNKNOWN;
+        }
+
+        private Endpoint processRequestTaskData(HttpExchange exchange,
+                                                String[] pathParts,
+                                                String requestMethod,
+                                                boolean isContainsRequest,
+                                                boolean isContainsId) throws IOException {
+            if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
+                return GET_ALL_TASKS;
+            }
+            if ((requestMethod.equals(GET)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return GET_TASK_BY_ID;
+            }
+            if (requestMethod.equals(POST)) {
+                return POST_TASK;
+            }
+            if ((requestMethod.equals(DELETE)) && (!isContainsRequest)) {
+                return DELETE_ALL_TASKS;
+            }
+            if ((requestMethod.equals(DELETE)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return DELETE_TASK_BY_ID;
+            } return UNKNOWN;
         }
 
         private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
@@ -134,6 +139,14 @@ public class HttpTaskServer {
             if (!taskList.isEmpty()) {
                 writeResponse(exchange, gson.toJson(taskList), 200);
             } else writeResponse(exchange, "Список приоритетных задач пуст", 204);
+        }
+
+        private void handleGetHistory(HttpExchange exchange) throws IOException {
+            List<Task> historyList = manager.getHistory();
+            if (!historyList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(historyList), 200);
+            } else writeResponse(exchange, "Список истории пуст", 204);
+
         }
 
         private void handleGetTasks(HttpExchange exchange) throws IOException {
@@ -182,6 +195,7 @@ public class HttpTaskServer {
                 writeResponse(exchange, "Задача ID:" + taskId + " не найдена", 404);
             }
         }
+
 
 
 //        private void handlePostComments(HttpExchange exchange) throws IOException {
