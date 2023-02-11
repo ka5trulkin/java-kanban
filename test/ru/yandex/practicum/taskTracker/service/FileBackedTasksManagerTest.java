@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
     public FileBackedTasksManagerTest() {
@@ -48,5 +49,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         assertEquals(loadedManager.getTasks(), mustBeRecoveredFromHistory.getTasks(), "Списки не совпадают.");
         assertEquals(loadedManager.getEpics(), mustBeRecoveredFromHistory.getEpics(), "Списки не совпадают.");
         assertEquals(loadedManager.getSubtasks(), mustBeRecoveredFromHistory.getSubtasks(), "Списки не совпадают.");
+
+        assertNotEquals(Collections.emptyList(), mustBeRecoveredFromHistory.getPrioritizedTasks(), "Список не должен быть пустым.");
     }
 }

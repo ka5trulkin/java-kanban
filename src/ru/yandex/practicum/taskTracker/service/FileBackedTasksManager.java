@@ -126,26 +126,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private void fillTasks(String fileLine) {
         Task task = taskFromString(fileLine);
-        int key = task.getId();
-        this.tasks.put(key, task);
-        this.checkIdCounter(key);
+        this.addNewTask(task);
+        this.checkIdCounter(task.getId());
     }
 
     private void fillEpics(String fileLine) {
-        Epic task = (Epic) taskFromString(fileLine);
-        int key = task.getId();
-        this.epics.put(key, task);
-        this.checkIdCounter(key);
+        Epic epic = (Epic) taskFromString(fileLine);
+        this.addNewEpic(epic);
+        this.checkIdCounter(epic.getId());
     }
 
     private void fillSubtasks(String fileLine) {
-        Subtask task = (Subtask) taskFromString(fileLine);
-        int key = task.getId();
-        this.subtasks.put(key, task);
-        Epic epic = epics.get(task.getEpicId());
-        epic.addSubtask(key);
+        Subtask subtask = (Subtask) taskFromString(fileLine);
+        this.addNewSubtask(subtask);
+        Epic epic = epics.get(subtask.getEpicId());
+        epic.addSubtask(subtask.getId());
         this.checkEpic(epic);
-        this.checkIdCounter(key);
+        this.checkIdCounter(subtask.getId());
     }
 
     private static List<Integer> historyFromString(String fileLine) {

@@ -38,14 +38,15 @@ public class HttpTaskServer {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+            System.out.println(exchange.getRequestURI());
             Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
 
             switch (endpoint) {
-                case GET_ALL_TASKS: {
-                    handleGetAllTasks(exchange);
+                case GET_PRIORITIZES_TASKS: {
+                    handleGetPrioritizedTasks(exchange);
                     break;
                 }
-                case GET_TASKS: {
+                case GET_ALL_TASKS: {
                     handleGetTasks(exchange);
                     break;
                 }
@@ -60,47 +61,43 @@ public class HttpTaskServer {
 
         private Endpoint getEndpoint(String requestPath, String requestMethod) {
             String[] pathParts = requestPath.split("/");
-            final int context = 1;
-            final int taskType = 2;
-            final int request = 3;
+            final int contextIndex = 1;
+            final int typeIndex = 2;
+            final int requestIndex = 3;
             final int contextLength = 2;
             final int taskTypeLength = 3;
             final int requestLength = 4;
-            String tasks = "tasks";
+            String context = "tasks";
             String task = "task";
             String epic = "epic";
             String subtask = "subtask";
             System.out.println(Arrays.toString(pathParts));
 
-            if ((pathParts.length >= contextLength) && (pathParts[context].equals(tasks)))
-            if (pathParts.length == contextLength) {
-                return Endpoint.GET_ALL_TASKS;
-            }
-            if (pathParts.length == taskTypeLength) {
-                return Endpoint.GET_TASKS;
-            }
-            if (pathParts.length == requestLength
-                    && pathParts[context].equals(tasks)
-                    && pathParts[taskType].equals(task)) {
-//                if (pathParts[request] == )
-            }
-
-            if (pathParts.length == 4 && pathParts[context].equals("posts") && pathParts[3].equals("comments")) {
-                if (requestMethod.equals("GET")) {
-                    return Endpoint.GET_TASKS;
+            if ((pathParts.length >= contextLength) && (pathParts[contextIndex].equals(context))) {
+                if (pathParts.length == contextLength) {
+                    return Endpoint.GET_PRIORITIZES_TASKS;
                 }
-                if (requestMethod.equals("POST")) {
-                    return Endpoint.POST_COMMENT;
+                if (pathParts.length == taskTypeLength) {
+                    return Endpoint.GET_ALL_TASKS;
+                }
+                if (pathParts.length == requestLength && pathParts[typeIndex].equals(task)) {
+//
+                }
+
+                if (pathParts.length == 4 && pathParts[contextIndex].equals("posts") && pathParts[3].equals("comments")) {
+                    if (requestMethod.equals("GET")) {
+                        return Endpoint.GET_ALL_TASKS;
+                    }
+                    if (requestMethod.equals("POST")) {
+                        return Endpoint.POST_COMMENT;
+                    }
                 }
             }
             return Endpoint.UNKNOWN;
         }
 
-        private void handleGetAllTasks(HttpExchange exchange) throws IOException {
-            List<Task> taskList = new ArrayList<>(manager.getTasks());
-            taskList.addAll(manager.getEpics());
-            taskList.addAll(manager.getSubtasks());
-            writeResponse(exchange, gson.toJson(taskList), 200);
+        private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
+            writeResponse(exchange, gson.toJson(manager.getPrioritizedTasks()), 200);
         }
 
         private void handleGetTasks(HttpExchange exchange) throws IOException {
