@@ -1,19 +1,26 @@
 package ru.yandex.practicum.taskTracker.http;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
+import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.service.FileBackedTasksManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import static ru.yandex.practicum.taskTracker.http.Endpoint.*;
 
 public class HttpTaskServer {
     private final int PORT = 8080;
@@ -31,10 +38,15 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks/subtask", new TasksHandler());
         httpServer.createContext("/tasks/history", new TasksHandler());
         httpServer.start(); // запускаем сервер
+        System.out.println("Сервер запущен");
+//        httpServer.stop(60);
     }
 
     class TasksHandler implements HttpHandler {
         private int taskId;
+        private String GET = "GET";
+        private String POST = "POST";
+        private String DELETE = "DELETE";
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -50,9 +62,11 @@ public class HttpTaskServer {
                     break;
                 }
                 case GET_TASK_BY_ID: {
-                    handleTaskById(exchange);
+                    handleGetTaskById(exchange);
                     break;
                 }
+                case POST_TASK:
+                    handlePostTaskById(exchange);
                 default:
                     writeResponse(exchange, "Такого эндпоинта не существует", 404);
             }
@@ -61,7 +75,6 @@ public class HttpTaskServer {
         private Endpoint getEndpoint(HttpExchange exchange) throws IOException {
             String[] pathParts = exchange.getRequestURI().getPath().split("/");
             String requestMethod = exchange.getRequestMethod();
-            int lengthURI = exchange.getRequestURI().toString().length();
             boolean isContainsRequest = exchange.getRequestURI().toString().contains("?");
             boolean isContainsId = exchange.getRequestURI().toString().contains("id=");
             final int contextIndex = 1;
@@ -73,21 +86,21 @@ public class HttpTaskServer {
             String task = "task";
             String epic = "epic";
             String subtask = "subtask";
-            System.out.println(Arrays.toString(pathParts));
 
             if ((pathParts.length >= contextLength) && (pathParts[contextIndex].equals(context))) {
-                if ((pathParts.length == contextLength) && (requestMethod.equals("GET"))) {
-                    return Endpoint.GET_PRIORITIZES_TASKS;
+                if ((pathParts.length == contextLength) && (requestMethod.equals(GET))) {
+                    return GET_PRIORITIZES_TASKS;
                 }
-                if ((pathParts.length == taskTypeLength) && (!isContainsRequest && requestMethod.equals("GET"))) {
-                    return Endpoint.GET_ALL_TASKS;
+                if ((pathParts.length == taskTypeLength) && (!isContainsRequest && requestMethod.equals(GET))) {
+                    return GET_ALL_TASKS;
                 }
-                if ((pathParts.length == taskTypeLength) && (isContainsId) && (requestMethod.equals("GET"))) {
+                if ((pathParts.length == taskTypeLength) && (isContainsId) && (requestMethod.equals(GET))) {
                     this.taskId = getPostId(exchange);
-                    return Endpoint.GET_TASK_BY_ID;
+                    System.out.println(taskId);
+                    return GET_TASK_BY_ID;
                 }
-                if ((pathParts.length == taskTypeLength) && requestMethod.equals("POST")) {
-
+                if ((pathParts.length == taskTypeLength) && requestMethod.equals(POST)) {
+                    return POST_TASK;
                 }
 
 //                if (pathParts.length == 4 && pathParts[contextIndex].equals("posts") && pathParts[3].equals("comments")) {
@@ -110,8 +123,27 @@ public class HttpTaskServer {
             writeResponse(exchange, gson.toJson(manager.getTasks()), 200);
         }
 
-        private void handleTaskById(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, gson.toJson(manager.getTaskById(taskId)), 200);
+        private void handleGetTaskById(HttpExchange exchange) throws IOException {
+            try {
+                writeResponse(exchange, gson.toJson(manager.getTaskById(taskId)), 200);
+            } catch (IllegalArgumentException e) {
+                writeResponse(exchange, e.getMessage(), 404);
+            }
+        }
+
+        private void handlePostTaskById(HttpExchange exchange) throws IOException {
+            InputStream inputStream = exchange.getRequestBody();
+            String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
+            Task task = gson.fromJson(body, Task.class);
+            System.out.println("!!!!");
+            boolean isExist = manager.getTasks().stream().anyMatch(task1 -> task1.getId() == task.getId());
+            if (!isExist) {
+                manager.addNewTask(task);
+                writeResponse(exchange, "Задача добавлена", 201);
+            } else {
+                manager.updateTask(task);
+                writeResponse(exchange, "Задача обновлена", 201);
+            }
         }
 
 //        private void handlePostComments(HttpExchange exchange) throws IOException {
@@ -182,7 +214,6 @@ public class HttpTaskServer {
 //            if (requestURI.contains("id=")) {
                 try {
                     String expectedId = requestURI.substring(requestURI.lastIndexOf("id=") + 3);
-                    System.out.println(expectedId);
                     Optional<Integer> id = Optional.of(Integer.parseInt(expectedId));
                     return id.get();
                 } catch (NumberFormatException exception) {
