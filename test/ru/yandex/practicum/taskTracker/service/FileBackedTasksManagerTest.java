@@ -24,12 +24,12 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         taskList.forEach(manager::addNewTask);
         loadedManager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager-test.csv"));
         assertEquals(manager.getTasks(), loadedManager.getTasks(), "Списки не совпадают.");
-        manager.clearAllTasks();
+        manager.deleteAllTasks();
         epicList.forEach(manager::addNewEpic);
         loadedManager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager-test.csv"));
         assertEquals(manager.getEpics(), loadedManager.getEpics(), "Списки не совпадают.");
         assertEquals(manager.getSubtasks(), loadedManager.getSubtasks(), "Списки не совпадают.");
-        manager.clearAllEpics();
+        manager.deleteAllEpics();
         loadedManager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager-test.csv"));
         assertEquals(manager.getEpics(), loadedManager.getEpics(), "Списки не совпадают.");
         taskList.forEach(manager::addNewTask);

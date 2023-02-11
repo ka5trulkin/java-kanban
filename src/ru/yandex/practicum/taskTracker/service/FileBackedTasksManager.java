@@ -218,20 +218,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void clearAllTasks() {
-        super.clearAllTasks();
+    public void deleteAllTasks() {
+        super.deleteAllTasks();
         save();
     }
 
     @Override
-    public void clearAllEpics() {
-        super.clearAllEpics();
+    public void deleteAllEpics() {
+        super.deleteAllEpics();
         save();
     }
 
     @Override
-    public void clearAllSubtasks() {
-        super.clearAllSubtasks();
+    public void deleteAllSubtasks() {
+        super.deleteAllSubtasks();
         save();
     }
 
@@ -293,20 +293,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void removeTaskById(int taskId) {
-        super.removeTaskById(taskId);
+    public void deleteTaskById(int taskId) {
+        super.deleteTaskById(taskId);
         save();
     }
 
     @Override
-    public void removeEpicById(int epicId) {
-        super.removeEpicById(epicId);
+    public void deleteEpicById(int epicId) {
+        super.deleteEpicById(epicId);
         save();
     }
 
     @Override
-    public void removeSubtaskById(int subtaskId) {
-        super.removeSubtaskById(subtaskId);
+    public void deleteSubtaskById(int subtaskId) {
+        super.deleteSubtaskById(subtaskId);
         save();
     }
 }

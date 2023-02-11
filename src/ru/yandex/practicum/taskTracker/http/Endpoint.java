@@ -5,5 +5,7 @@ public enum Endpoint {
     GET_ALL_TASKS,
     GET_TASK_BY_ID,
     POST_TASK,
+    DELETE_ALL_TASKS,
+    DELETE_TASK_BY_ID,
     UNKNOWN
 }

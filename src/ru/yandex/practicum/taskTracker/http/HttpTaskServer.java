@@ -67,6 +67,10 @@ public class HttpTaskServer {
                 }
                 case POST_TASK:
                     handlePostTaskById(exchange);
+                case DELETE_ALL_TASKS:
+                    handleDeleteAllTasks(exchange);
+                case DELETE_TASK_BY_ID:
+                    handleDeleteTaskById(exchange);
                 default:
                     writeResponse(exchange, "Такого эндпоинта не существует", 404);
             }
@@ -87,20 +91,30 @@ public class HttpTaskServer {
             String epic = "epic";
             String subtask = "subtask";
 
+            if (pathParts[typeIndex].equals("task")) {
+
+            }
+
             if ((pathParts.length >= contextLength) && (pathParts[contextIndex].equals(context))) {
                 if ((pathParts.length == contextLength) && (requestMethod.equals(GET))) {
                     return GET_PRIORITIZES_TASKS;
                 }
-                if ((pathParts.length == taskTypeLength) && (!isContainsRequest && requestMethod.equals(GET))) {
+                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(GET)) && (!isContainsRequest)) {
                     return GET_ALL_TASKS;
                 }
-                if ((pathParts.length == taskTypeLength) && (isContainsId) && (requestMethod.equals(GET))) {
+                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(GET)) && (isContainsId)) {
                     this.taskId = getPostId(exchange);
-                    System.out.println(taskId);
                     return GET_TASK_BY_ID;
                 }
-                if ((pathParts.length == taskTypeLength) && requestMethod.equals(POST)) {
+                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(POST))) {
                     return POST_TASK;
+                }
+                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(DELETE)) && (!isContainsRequest)) {
+                    return DELETE_ALL_TASKS;
+                }
+                if ((pathParts.length == taskTypeLength) && (requestMethod.equals(DELETE)) && (isContainsId)) {
+                    this.taskId = getPostId(exchange);
+                    return DELETE_TASK_BY_ID;
                 }
 
 //                if (pathParts.length == 4 && pathParts[contextIndex].equals("posts") && pathParts[3].equals("comments")) {
@@ -116,18 +130,24 @@ public class HttpTaskServer {
         }
 
         private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, gson.toJson(manager.getPrioritizedTasks()), 200);
+            List<Task> taskList = manager.getPrioritizedTasks();
+            if (!taskList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(taskList), 200);
+            } else writeResponse(exchange, "Список приоритетных задач пуст", 204);
         }
 
         private void handleGetTasks(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, gson.toJson(manager.getTasks()), 200);
+            List<Task> taskList = manager.getTasks();
+            if (!taskList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(manager.getTasks()), 200);
+            } else writeResponse(exchange, "Список задач пуст", 204);
         }
 
         private void handleGetTaskById(HttpExchange exchange) throws IOException {
             try {
                 writeResponse(exchange, gson.toJson(manager.getTaskById(taskId)), 200);
-            } catch (IllegalArgumentException e) {
-                writeResponse(exchange, e.getMessage(), 404);
+            } catch (IllegalArgumentException exception) {
+                writeResponse(exchange, exception.getMessage(), 204);
             }
         }
 
@@ -135,16 +155,34 @@ public class HttpTaskServer {
             InputStream inputStream = exchange.getRequestBody();
             String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
             Task task = gson.fromJson(body, Task.class);
-            System.out.println("!!!!");
-            boolean isExist = manager.getTasks().stream().anyMatch(task1 -> task1.getId() == task.getId());
-            if (!isExist) {
-                manager.addNewTask(task);
-                writeResponse(exchange, "Задача добавлена", 201);
-            } else {
+            System.out.println("Post task");
+            try {
                 manager.updateTask(task);
                 writeResponse(exchange, "Задача обновлена", 201);
+            } catch (IllegalArgumentException exceptionUpdate) {
+                try {
+                    manager.addNewTask(task);
+                    writeResponse(exchange, "Задача добавлена", 201);
+                } catch (IllegalArgumentException exceptionOfAddition) {
+                    writeResponse(exchange, "Ошибка добавления задачи", 404);
+                }
             }
         }
+
+        private void handleDeleteAllTasks(HttpExchange exchange) throws IOException {
+            manager.deleteAllTasks();
+            writeResponse(exchange, "Все задачи удалены", 200);
+        }
+
+        private void handleDeleteTaskById(HttpExchange exchange) throws IOException {
+            try {
+                manager.deleteTaskById(taskId);
+                writeResponse(exchange, "Задача ID:" + taskId + " удалена", 200);
+            } catch (IllegalArgumentException exception) {
+                writeResponse(exchange, "Задача ID:" + taskId + " не найдена", 404);
+            }
+        }
+
 
 //        private void handlePostComments(HttpExchange exchange) throws IOException {
 //            // реализуйте обработку добавления комментария

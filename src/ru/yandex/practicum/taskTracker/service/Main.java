@@ -1,10 +1,12 @@
 package ru.yandex.practicum.taskTracker.service;
 
 import ru.yandex.practicum.taskTracker.http.HttpTaskServer;
+import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.*;
 import java.util.stream.Collectors;
@@ -18,7 +20,16 @@ public class Main {
             server.startServer();
         } catch (IOException e) {
             System.out.println("Ошибка запуска сервера!");;
-        }
+    }
+//        final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
+//        final Task task = new Task(
+//                manager.getTaskById(2).getTaskName(),
+//                manager.getTaskById(2).getDescription(),
+//                manager.getTaskById(2).getId());
+//        task.setStartTime(LocalDateTime.now());
+//        manager.addNewTask(task);
+
+
 
 //        InMemoryTaskManager manager = new InMemoryTaskManager();
 //        Epic epic = new Epic("новый эпик 1", "описание эпика 1", manager.assignID());

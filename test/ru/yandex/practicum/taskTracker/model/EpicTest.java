@@ -13,13 +13,15 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
-    private final TaskManager manager = new InMemoryTaskManager();
-    private final List<Subtask> subtaskList = new ArrayList<>();
+    private TaskManager manager;
+    private List<Subtask> subtaskList;
     private Epic epicTest;
     private Subtask subtaskTest;
 
     @BeforeEach
     void beforeEach() {
+        manager = new InMemoryTaskManager();
+        subtaskList = new ArrayList<>();
         LocalDateTime dateTime = LocalDateTime.of(2022, 7, 28, 1, 21);
 
         manager.addNewEpic(new Epic("Эпик 1", "Описание эпика 1", manager.assignID()));
@@ -131,7 +133,7 @@ class EpicTest {
         subtaskList.forEach(manager::addNewSubtask);
         assertEquals(expectedEndTime, epicTest.getEndTime(), "Время завершения эпика не совпадает.");
 
-        manager.clearAllSubtasks();
+        manager.deleteAllSubtasks();
         assertNull(epicTest.getEndTime(), "Время завершения эпика должно быть пустым.");
     }
 }

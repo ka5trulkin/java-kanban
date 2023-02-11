@@ -29,7 +29,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.IN_PROGRESS));
         manager.updateSubtask(subtaskTest);
         assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
-        manager.clearAllSubtasks();
+        manager.deleteAllSubtasks();
         assertEquals(Status.NEW, epicTest.getStatus(), "Статус не совпадает.");
     }
 

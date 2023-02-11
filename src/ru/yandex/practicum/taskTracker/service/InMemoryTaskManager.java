@@ -133,14 +133,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void clearAllTasks() {
+    public void deleteAllTasks() {
         tasks.keySet().forEach(historyManager::remove);
         tasks.values().forEach(prioritizedTasksByStartTime::remove);
         tasks.clear();
     }
 
     @Override
-    public void clearAllEpics() {
+    public void deleteAllEpics() {
         epics.keySet().forEach(historyManager::remove);
         subtasks.keySet().forEach(historyManager::remove);
         epics.clear();
@@ -148,7 +148,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void clearAllSubtasks() {
+    public void deleteAllSubtasks() {
         subtasks.keySet().forEach(historyManager::remove);
         subtasks.values().forEach(prioritizedTasksByStartTime::remove);
         subtasks.clear();
@@ -184,25 +184,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addNewTask(Task task) {
-        if (task != null) {
+        if (task != null && !tasks.containsKey(task.getId())) {
             checkTaskToCrossByStartTime(task);
             tasks.put(task.getId(), task);
             prioritizedTasksByStartTime.add(task);
-        }
+        } else throw new IllegalArgumentException("Ошибка добавления " + task);
     }
 
     @Override
     public void addNewEpic(Epic epic) {
-        if (epic != null) {
+        if (epic != null && !epics.containsKey(epic.getId())) {
             checkTaskToCrossByStartTime(epic);
             epics.put(epic.getId(), epic);
             checkEpic(epic);
-        }
+        } else throw new IllegalArgumentException("Ошибка добавления " + epic);
     }
 
     @Override
     public void addNewSubtask(Subtask subtask) {
-        if (subtask != null) {
+        if (subtask != null && !subtasks.containsKey(subtask.getId())) {
             int subtaskId = subtask.getId();
 
             if (!epics.containsKey(subtask.getEpicId())) {
@@ -218,7 +218,7 @@ public class InMemoryTaskManager implements TaskManager {
             prioritizedTasksByStartTime.add(subtask);
             epic.addSubtask(subtaskId);
             checkEpic(epic);
-        }
+        } else throw new IllegalArgumentException("Ошибка добавления " + subtask);
     }
 
     @Override
@@ -269,7 +269,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeTaskById(int taskId) {
+    public void deleteTaskById(int taskId) {
         if (!tasks.containsKey(taskId)) {
             throw new IllegalArgumentException("Задача ID:" + taskId + " не найдена");
         }
@@ -279,7 +279,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeEpicById(int epicId) {
+    public void deleteEpicById(int epicId) {
         if (!epics.containsKey(epicId)) {
             throw new IllegalArgumentException("Эпик ID:" + epicId + " не найден");
         }
@@ -293,7 +293,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeSubtaskById(int subtaskId) {
+    public void deleteSubtaskById(int subtaskId) {
         if (!subtasks.containsKey(subtaskId)) {
             throw new IllegalArgumentException("Подзадача ID:" + subtaskId + " не найдена");
         }
