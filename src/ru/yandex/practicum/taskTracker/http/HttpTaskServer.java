@@ -5,7 +5,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
-import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.service.FileBackedTasksManager;
 
 import java.io.File;
@@ -35,11 +34,11 @@ public class HttpTaskServer {
     }
 
     class TasksHandler implements HttpHandler {
+        private int taskId;
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            System.out.println(exchange.getRequestURI());
-            Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
+            Endpoint endpoint = getEndpoint(exchange);
 
             switch (endpoint) {
                 case GET_PRIORITIZES_TASKS: {
@@ -50,20 +49,23 @@ public class HttpTaskServer {
                     handleGetTasks(exchange);
                     break;
                 }
-//                case POST_COMMENT: {
-//                    handlePostComments(exchange);
-//                    break;
-//                }
+                case GET_TASK_BY_ID: {
+                    handleTaskById(exchange);
+                    break;
+                }
                 default:
                     writeResponse(exchange, "Такого эндпоинта не существует", 404);
             }
         }
 
-        private Endpoint getEndpoint(String requestPath, String requestMethod) {
-            String[] pathParts = requestPath.split("/");
+        private Endpoint getEndpoint(HttpExchange exchange) throws IOException {
+            String[] pathParts = exchange.getRequestURI().getPath().split("/");
+            String requestMethod = exchange.getRequestMethod();
+            int lengthURI = exchange.getRequestURI().toString().length();
+            boolean isContainsRequest = exchange.getRequestURI().toString().contains("?");
+            boolean isContainsId = exchange.getRequestURI().toString().contains("id=");
             final int contextIndex = 1;
             final int typeIndex = 2;
-            final int requestIndex = 3;
             final int contextLength = 2;
             final int taskTypeLength = 3;
             final int requestLength = 4;
@@ -74,24 +76,28 @@ public class HttpTaskServer {
             System.out.println(Arrays.toString(pathParts));
 
             if ((pathParts.length >= contextLength) && (pathParts[contextIndex].equals(context))) {
-                if (pathParts.length == contextLength) {
+                if ((pathParts.length == contextLength) && (requestMethod.equals("GET"))) {
                     return Endpoint.GET_PRIORITIZES_TASKS;
                 }
-                if (pathParts.length == taskTypeLength) {
+                if ((pathParts.length == taskTypeLength) && (!isContainsRequest && requestMethod.equals("GET"))) {
                     return Endpoint.GET_ALL_TASKS;
                 }
-                if (pathParts.length == requestLength && pathParts[typeIndex].equals(task)) {
-//
+                if ((pathParts.length == taskTypeLength) && (isContainsId) && (requestMethod.equals("GET"))) {
+                    this.taskId = getPostId(exchange);
+                    return Endpoint.GET_TASK_BY_ID;
+                }
+                if ((pathParts.length == taskTypeLength) && requestMethod.equals("POST")) {
+
                 }
 
-                if (pathParts.length == 4 && pathParts[contextIndex].equals("posts") && pathParts[3].equals("comments")) {
-                    if (requestMethod.equals("GET")) {
-                        return Endpoint.GET_ALL_TASKS;
-                    }
-                    if (requestMethod.equals("POST")) {
-                        return Endpoint.POST_COMMENT;
-                    }
-                }
+//                if (pathParts.length == 4 && pathParts[contextIndex].equals("posts") && pathParts[3].equals("comments")) {
+//                    if (requestMethod.equals("GET")) {
+//                        return Endpoint.GET_ALL_TASKS;
+//                    }
+//                    if (requestMethod.equals("POST")) {
+//                        return Endpoint.GET_TASK_BY_ID;
+//                    }
+//                }
             }
             return Endpoint.UNKNOWN;
         }
@@ -104,6 +110,9 @@ public class HttpTaskServer {
             writeResponse(exchange, gson.toJson(manager.getTasks()), 200);
         }
 
+        private void handleTaskById(HttpExchange exchange) throws IOException {
+            writeResponse(exchange, gson.toJson(manager.getTaskById(taskId)), 200);
+        }
 
 //        private void handlePostComments(HttpExchange exchange) throws IOException {
 //            // реализуйте обработку добавления комментария
@@ -168,14 +177,29 @@ public class HttpTaskServer {
 //            writeResponse(exchange, "Пост с идентификатором " + postId + " не найден", 404);
 //        }
 
-        private Optional<Integer> getPostId(HttpExchange exchange) {
-            String[] pathParts = exchange.getRequestURI().getPath().split("/");
-            try {
-                return Optional.of(Integer.parseInt(pathParts[2]));
-            } catch (NumberFormatException exception) {
-                return Optional.empty();
-            }
+        private int getPostId(HttpExchange exchange) throws IOException {
+            String requestURI = exchange.getRequestURI().toString();
+//            if (requestURI.contains("id=")) {
+                try {
+                    String expectedId = requestURI.substring(requestURI.lastIndexOf("id=") + 3);
+                    System.out.println(expectedId);
+                    Optional<Integer> id = Optional.of(Integer.parseInt(expectedId));
+                    return id.get();
+                } catch (NumberFormatException exception) {
+                    writeResponse(exchange, "Некорректный идентификатор задачи", 400);
+                    return 0;
+                }
+//            }
         }
+
+//        private Optional<Integer> getPostId(HttpExchange exchange) {
+//            String[] pathParts = exchange.getRequestURI().getPath().split("/");
+//            try {
+//                return Optional.of(Integer.parseInt(pathParts[2]));
+//            } catch (NumberFormatException exception) {
+//                return Optional.empty();
+//            }
+//        }
 
         private void writeResponse(HttpExchange exchange,
                                    String responseString,

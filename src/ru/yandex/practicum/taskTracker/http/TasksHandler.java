@@ -1,3 +1,14 @@
+//private Optional<Integer> getPostId(HttpExchange exchange) {
+//        Object f = exchange.getAttribute("id");
+//        try {
+//        return Optional.of(Integer.parseInt(f.toString()));
+//        } catch (NumberFormatException exception) {
+//        return Optional.empty();
+//        }
+//        }
+
+
+
 //package ru.yandex.practicum.taskTracker.http;
 //
 //import com.google.gson.Gson;
