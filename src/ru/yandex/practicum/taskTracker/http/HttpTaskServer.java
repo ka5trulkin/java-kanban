@@ -261,7 +261,7 @@ public class HttpTaskServer {
             List<Epic> epicList = manager.getEpics();
             if (!epicList.isEmpty()) {
                 writeResponse(exchange, gson.toJson(epicList), 200);
-            } else writeResponse(exchange, "Список задач пуст", 204);
+            } else writeResponse(exchange, "Список эпиков пуст", 204);
         }
 
         private void handleGetEpicById(HttpExchange exchange) throws IOException {
@@ -284,22 +284,22 @@ public class HttpTaskServer {
                     manager.addNewEpic(epic);
                     writeResponse(exchange, "Эпик добавлен", 201);
                 } catch (IllegalArgumentException exceptionOfAddition) {
-                    writeResponse(exchange, "Ошибка добавления Эпика", 404);
+                    writeResponse(exchange, "Ошибка добавления эпика", 404);
                 }
             }
         }
 
         private void handleDeleteAllEpics(HttpExchange exchange) throws IOException {
-            manager.deleteAllTasks();
-            writeResponse(exchange, "Все задачи удалены", 200);
+            manager.deleteAllEpics();
+            writeResponse(exchange, "Все эпики удалены", 200);
         }
 
         private void handleDeleteEpicById(HttpExchange exchange) throws IOException {
             try {
-                manager.deleteTaskById(taskId);
-                writeResponse(exchange, "Задача ID:" + taskId + " удалена", 200);
+                manager.deleteEpicById(taskId);
+                writeResponse(exchange, "Эпик ID:" + taskId + " удален", 200);
             } catch (IllegalArgumentException exception) {
-                writeResponse(exchange, "Задача ID:" + taskId + " не найдена", 404);
+                writeResponse(exchange, "Эпик ID:" + taskId + " не найден", 404);
             }
         }
 
