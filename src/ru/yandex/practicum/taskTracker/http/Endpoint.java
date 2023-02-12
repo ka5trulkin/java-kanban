@@ -9,5 +9,10 @@ public enum Endpoint {
     POST_TASK,
     DELETE_ALL_TASKS,
     DELETE_TASK_BY_ID,
+    GET_ALL_EPICS,
+    GET_EPIC_BY_ID,
+    POST_EPIC,
+    DELETE_ALL_EPICS,
+    DELETE_EPIC_BY_ID,
     UNKNOWN
 }
