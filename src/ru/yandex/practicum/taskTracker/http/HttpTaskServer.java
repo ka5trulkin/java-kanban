@@ -22,14 +22,13 @@ import java.util.*;
 import static ru.yandex.practicum.taskTracker.http.Endpoint.*;
 
 public class HttpTaskServer {
-    private final int PORT = 8080;
     private final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Gson gson = new Gson();
 
     public void startServer() throws IOException {
         HttpServer httpServer = HttpServer.create();
-
+        int PORT = 8080;
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
         httpServer.createContext("/tasks/history", new TasksHandler());
@@ -37,16 +36,15 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks/task", new TasksHandler());
         httpServer.createContext("/tasks/epic", new TasksHandler());
         httpServer.createContext("/tasks/subtask", new TasksHandler());
-        httpServer.start(); // запускаем сервер
+        httpServer.start();
         System.out.println("Сервер запущен");
-//        httpServer.stop(60);
     }
 
     class TasksHandler implements HttpHandler {
         private int taskId;
-        private String GET = "GET";
-        private String POST = "POST";
-        private String DELETE = "DELETE";
+        private final String GET = "GET";
+        private final String POST = "POST";
+        private final String DELETE = "DELETE";
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -104,6 +102,26 @@ public class HttpTaskServer {
                     handleDeleteEpicById(exchange);
                     break;
                 }
+                case GET_ALL_SUBTASKS: {
+                    handleGetAllSubtasks(exchange);
+                    break;
+                }
+                case GET_SUBTASK_BY_ID: {
+                    handleGetSubtaskById(exchange);
+                    break;
+                }
+                case POST_SUBTASK: {
+                    handlePostSubtaskById(exchange);
+                    break;
+                }
+                case DELETE_ALL_SUBTASKS: {
+                    handleDeleteAllSubtasks(exchange);
+                    break;
+                }
+                case DELETE_SUBTASK_BY_ID: {
+                    handleDeleteSubtaskById(exchange);
+                    break;
+                }
                 default:
                     writeResponse(exchange, "Такого эндпоинта не существует", 404);
             }
@@ -136,6 +154,9 @@ public class HttpTaskServer {
                 }
                 if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("epic"))) {
                     return processRequestEpicData(exchange, requestMethod, isContainsRequest, isContainsId);
+                }
+                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("subtask"))) {
+                    return processRequestSubtaskData(exchange, requestMethod, isContainsRequest, isContainsId);
                 }
             }
             return UNKNOWN;
@@ -300,6 +321,76 @@ public class HttpTaskServer {
                 writeResponse(exchange, "Эпик ID:" + taskId + " удален", 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, "Эпик ID:" + taskId + " не найден", 404);
+            }
+        }
+        // обработка запросов Subtasks
+        private Endpoint processRequestSubtaskData(HttpExchange exchange,
+                                                String requestMethod,
+                                                boolean isContainsRequest,
+                                                boolean isContainsId) throws IOException {
+            if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
+                return GET_ALL_SUBTASKS;
+            }
+            if ((requestMethod.equals(GET)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return GET_SUBTASK_BY_ID;
+            }
+            if (requestMethod.equals(POST)) {
+                return POST_SUBTASK;
+            }
+            if ((requestMethod.equals(DELETE)) && (!isContainsRequest)) {
+                return DELETE_ALL_SUBTASKS;
+            }
+            if ((requestMethod.equals(DELETE)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return DELETE_SUBTASK_BY_ID;
+            } return UNKNOWN;
+        }
+
+        private void handleGetAllSubtasks(HttpExchange exchange) throws IOException {
+            List<Subtask> subtaskList = manager.getSubtasks();
+            if (!subtaskList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(subtaskList), 200);
+            } else writeResponse(exchange, "Список подзадач пуст", 204);
+        }
+
+        private void handleGetSubtaskById(HttpExchange exchange) throws IOException {
+            try {
+                writeResponse(exchange, gson.toJson(manager.getSubTaskById(taskId)), 200);
+            } catch (IllegalArgumentException exception) {
+                writeResponse(exchange, exception.getMessage(), 204);
+            }
+        }
+
+        private void handlePostSubtaskById(HttpExchange exchange) throws IOException {
+            InputStream inputStream = exchange.getRequestBody();
+            String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
+            Task task = gson.fromJson(body, Task.class);
+            System.out.println("Post task");
+            try {
+                manager.updateTask(task);
+                writeResponse(exchange, "Задача обновлена", 201);
+            } catch (IllegalArgumentException exceptionUpdate) {
+                try {
+                    manager.addNewTask(task);
+                    writeResponse(exchange, "Задача добавлена", 201);
+                } catch (IllegalArgumentException exceptionOfAddition) {
+                    writeResponse(exchange, "Ошибка добавления задачи", 404);
+                }
+            }
+        }
+
+        private void handleDeleteAllSubtasks(HttpExchange exchange) throws IOException {
+            manager.deleteAllTasks();
+            writeResponse(exchange, "Все задачи удалены", 200);
+        }
+
+        private void handleDeleteSubtaskById(HttpExchange exchange) throws IOException {
+            try {
+                manager.deleteTaskById(taskId);
+                writeResponse(exchange, "Задача ID:" + taskId + " удалена", 200);
+            } catch (IllegalArgumentException exception) {
+                writeResponse(exchange, "Задача ID:" + taskId + " не найдена", 404);
             }
         }
 
