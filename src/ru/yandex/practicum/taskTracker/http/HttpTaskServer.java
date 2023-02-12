@@ -277,14 +277,14 @@ public class HttpTaskServer {
             String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
             Epic epic = gson.fromJson(body, Epic.class);
             try {
-                manager.updateTask(epic);
-                writeResponse(exchange, "Задача обновлена", 201);
+                manager.updateEpic(epic);
+                writeResponse(exchange, "Эпик обновлен", 201);
             } catch (IllegalArgumentException exceptionUpdate) {
                 try {
-                    manager.addNewTask(epic);
-                    writeResponse(exchange, "Задача добавлена", 201);
+                    manager.addNewEpic(epic);
+                    writeResponse(exchange, "Эпик добавлен", 201);
                 } catch (IllegalArgumentException exceptionOfAddition) {
-                    writeResponse(exchange, "Ошибка добавления задачи", 404);
+                    writeResponse(exchange, "Ошибка добавления Эпика", 404);
                 }
             }
         }
