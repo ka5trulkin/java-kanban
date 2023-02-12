@@ -1,13 +1,11 @@
 package ru.yandex.practicum.taskTracker.http;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
+import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.service.FileBackedTasksManager;
 
@@ -33,10 +31,11 @@ public class HttpTaskServer {
 
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
+        httpServer.createContext("/tasks/history", new TasksHandler());
+        httpServer.createContext("/tasks/subtask/epic", new TasksHandler());
         httpServer.createContext("/tasks/task", new TasksHandler());
         httpServer.createContext("/tasks/epic", new TasksHandler());
         httpServer.createContext("/tasks/subtask", new TasksHandler());
-        httpServer.createContext("/tasks/history", new TasksHandler());
         httpServer.start(); // запускаем сервер
         System.out.println("Сервер запущен");
 //        httpServer.stop(60);
@@ -56,6 +55,13 @@ public class HttpTaskServer {
                 case GET_PRIORITIZES_TASKS: {
                     handleGetPrioritizedTasks(exchange);
                     break;
+                }
+                case GET_HISTORY: {
+                    handleGetHistory(exchange);
+                    break;
+                }
+                case GET_SUBTASKS_FROM_EPIC: {
+                    handleGetSubtasksFromEpic(exchange);
                 }
                 case GET_ALL_TASKS: {
                     handleGetTasks(exchange);
@@ -77,10 +83,6 @@ public class HttpTaskServer {
                     handleDeleteTaskById(exchange);
                     break;
                 }
-                case GET_HISTORY: {
-                    handleGetHistory(exchange);
-                    break;
-                }
                 default:
                     writeResponse(exchange, "Такого эндпоинта не существует", 404);
             }
@@ -93,25 +95,29 @@ public class HttpTaskServer {
             boolean isContainsId = exchange.getRequestURI().toString().contains("id=");
             final int contextIndex = 1;
             final int typeIndex = 2;
-            final int contextLength = 2;
-            final int taskTypeLength = 3;
+            final int subtaskFromEpicIndex = 3;
 
-            if ((pathParts.length >= contextLength) && (pathParts[contextIndex].equals("tasks"))) {
-                if ((pathParts.length == contextLength) && (requestMethod.equals(GET))) {
+            if ((pathParts.length >= contextIndex + 1) && (pathParts[contextIndex].equals("tasks"))) {
+                if ((pathParts.length == contextIndex + 1) && (requestMethod.equals(GET))) {
                     return GET_PRIORITIZES_TASKS;
                 }
-                if ((pathParts.length == taskTypeLength) && (pathParts[typeIndex].equals("history"))) {
+                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("history"))) {
                     return GET_HISTORY;
                 }
-                if ((pathParts.length == taskTypeLength) && (pathParts[typeIndex].equals("task"))) {
-                    return processRequestTaskData(exchange, pathParts, requestMethod, isContainsRequest, isContainsId);
+                if ((pathParts.length == subtaskFromEpicIndex + 1)
+                        && (pathParts[typeIndex].equals("subtask"))
+                        && (pathParts[subtaskFromEpicIndex].equals("epic"))
+                        && (isContainsId)) {
+                    return GET_SUBTASKS_FROM_EPIC;
+                }
+                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("task"))) {
+                    return processRequestTaskData(exchange, requestMethod, isContainsRequest, isContainsId);
                 }
             }
             return UNKNOWN;
         }
 
         private Endpoint processRequestTaskData(HttpExchange exchange,
-                                                String[] pathParts,
                                                 String requestMethod,
                                                 boolean isContainsRequest,
                                                 boolean isContainsId) throws IOException {
@@ -147,6 +153,14 @@ public class HttpTaskServer {
                 writeResponse(exchange, gson.toJson(historyList), 200);
             } else writeResponse(exchange, "Список истории пуст", 204);
 
+        }
+
+        private void handleGetSubtasksFromEpic(HttpExchange exchange) throws IOException {
+            this.taskId = getPostId(exchange);
+            List<Subtask> subtasksList = manager.getSubtasksFromEpic(manager.getEpicById(taskId));
+            if (!subtasksList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(subtasksList), 200);
+            } else writeResponse(exchange, "Список подзадач пуст", 204);
         }
 
         private void handleGetTasks(HttpExchange exchange) throws IOException {
