@@ -227,7 +227,6 @@ public class HttpTaskServer {
             InputStream inputStream = exchange.getRequestBody();
             String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
             Task task = gson.fromJson(body, Task.class);
-            System.out.println("Post task");
             try {
                 manager.updateTask(task);
                 writeResponse(exchange, "Задача обновлена", 201);
@@ -365,32 +364,31 @@ public class HttpTaskServer {
         private void handlePostSubtaskById(HttpExchange exchange) throws IOException {
             InputStream inputStream = exchange.getRequestBody();
             String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
-            Task task = gson.fromJson(body, Task.class);
-            System.out.println("Post task");
+            Subtask subtask = gson.fromJson(body, Subtask.class);
             try {
-                manager.updateTask(task);
-                writeResponse(exchange, "Задача обновлена", 201);
+                manager.updateSubtask(subtask);
+                writeResponse(exchange, "Подзадача обновлена", 201);
             } catch (IllegalArgumentException exceptionUpdate) {
                 try {
-                    manager.addNewTask(task);
-                    writeResponse(exchange, "Задача добавлена", 201);
+                    manager.addNewSubtask(subtask);
+                    writeResponse(exchange, "Подзадача добавлена", 201);
                 } catch (IllegalArgumentException exceptionOfAddition) {
-                    writeResponse(exchange, "Ошибка добавления задачи", 404);
+                    writeResponse(exchange, "Ошибка добавления подзадачи", 404);
                 }
             }
         }
 
         private void handleDeleteAllSubtasks(HttpExchange exchange) throws IOException {
-            manager.deleteAllTasks();
-            writeResponse(exchange, "Все задачи удалены", 200);
+            manager.deleteAllSubtasks();
+            writeResponse(exchange, "Все подзадачи удалены", 200);
         }
 
         private void handleDeleteSubtaskById(HttpExchange exchange) throws IOException {
             try {
-                manager.deleteTaskById(taskId);
-                writeResponse(exchange, "Задача ID:" + taskId + " удалена", 200);
+                manager.deleteSubtaskById(taskId);
+                writeResponse(exchange, "Подзадача ID:" + taskId + " удалена", 200);
             } catch (IllegalArgumentException exception) {
-                writeResponse(exchange, "Задача ID:" + taskId + " не найдена", 404);
+                writeResponse(exchange, "Подзадача ID:" + taskId + " не найдена", 404);
             }
         }
 

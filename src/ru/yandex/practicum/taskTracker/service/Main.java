@@ -22,12 +22,15 @@ public class Main {
             System.out.println("Ошибка запуска сервера!");;
     }
 //        final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
-//        final Task task = new Task(
-//                manager.getTaskById(2).getTaskName(),
-//                manager.getTaskById(2).getDescription(),
-//                manager.getTaskById(2).getId());
+//        final Subtask task = new Subtask(
+//                manager.getSubTaskById(6).getTaskName(),
+//                manager.getSubTaskById(6).getDescription(),
+//                manager.getSubTaskById(6).getId(),
+//                manager.getSubTaskById(6).getEpicId());
 //        task.setStartTime(LocalDateTime.now());
-//        manager.addNewTask(task);
+//        manager.updateSubtask(task);
+//        manager.updateSubtask(task);
+
 
 
 

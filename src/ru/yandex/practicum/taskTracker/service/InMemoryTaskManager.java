@@ -239,7 +239,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        if ((epic != null) && epics.containsKey(epic.getId())) {
+        if ((epic != null) && (epics.containsKey(epic.getId()))) {
             int epicId = epic.getId();
 
             checkTaskToCrossByStartTime(epic);
@@ -261,10 +261,7 @@ public class InMemoryTaskManager implements TaskManager {
                 );
             }
             Epic epic = epics.get(subtask.getEpicId());
-
-            if (subtasks.get(subtaskId).getStartTime() != null
-                    && subtask.getStartTime() != null
-                    && !subtasks.get(subtaskId).getStartTime().isEqual(subtask.getStartTime())) {
+            if (subtask.getStartTime() != null) {
                 checkTaskToCrossByStartTime(subtask);
             }
             updatePrioritizedTasksByStartTime(subtasks.get(subtaskId), subtask);
