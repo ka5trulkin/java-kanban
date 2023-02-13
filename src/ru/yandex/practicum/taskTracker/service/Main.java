@@ -2,6 +2,7 @@ package ru.yandex.practicum.taskTracker.service;
 
 import ru.yandex.practicum.taskTracker.http.HttpTaskServer;
 import ru.yandex.practicum.taskTracker.http.KVServer;
+import ru.yandex.practicum.taskTracker.http.KVTaskClient;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Subtask;
@@ -9,15 +10,18 @@ import ru.yandex.practicum.taskTracker.model.Task;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.*;
 import java.util.stream.Collectors;
 
 public class Main {
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
 //        new HttpTaskServer().startServer();
         new KVServer().start();
+        KVTaskClient client = new KVTaskClient(new URI("http://localhost:8078/register"));
     }
 }
 //        final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
