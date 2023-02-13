@@ -3,6 +3,7 @@ package ru.yandex.practicum.taskTracker.http;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +28,46 @@ public class KVServer {
         server.createContext("/load", this::load);
     }
 
-    private void load(HttpExchange h) {
-        // TODO Добавьте получение значения по ключу
+    private void load(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/load");
+            if (!hasAuth(h)) {
+                System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
+                h.sendResponseHeaders(403, 0);
+                return;
+            }
+            if ("GET".equals(h.getRequestMethod())) {
+                String key = h.getRequestURI().getPath().substring("/load/".length());
+                if (key.isEmpty()) {
+                    System.out.println("Key для загрузки пустой. key указывается в пути: /load/{key}");
+                    h.sendResponseHeaders(400, 0);
+                    return;
+                }
+                if (!data.containsKey(key)) {
+                    System.out.println("Key указан не верный");
+                    h.sendResponseHeaders(400, 0);
+                    return;
+                }
+                String responseString = data.get(key);
+
+                if (responseString.isBlank()) {
+                    System.out.println("Value пустой");
+                    h.sendResponseHeaders(204, 0);
+                } else {
+                    byte[] bytes = responseString.getBytes(UTF_8);
+                    System.out.println("Загрузка отправлена, размер файла - " + bytes.length + " байт");
+                    h.sendResponseHeaders(200, bytes.length);
+                    try (OutputStream os = h.getResponseBody()) {
+                        os.write(bytes);
+                    }
+                }
+            } else {
+                System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
+                h.sendResponseHeaders(405, 0);
+            }
+        } finally {
+            h.close();
+        }
     }
 
     private void save(HttpExchange h) throws IOException {
@@ -47,6 +86,7 @@ public class KVServer {
                     return;
                 }
                 String value = readText(h);
+                System.out.println(value);
                 if (value.isEmpty()) {
                     System.out.println("Value для сохранения пустой. value указывается в теле запроса");
                     h.sendResponseHeaders(400, 0);

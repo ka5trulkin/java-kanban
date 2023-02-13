@@ -16,8 +16,8 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        new HttpTaskServer().startServer();
-//        new KVServer().start();
+//        new HttpTaskServer().startServer();
+        new KVServer().start();
     }
 }
 //        final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
