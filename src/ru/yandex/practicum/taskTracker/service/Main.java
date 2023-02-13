@@ -1,6 +1,7 @@
 package ru.yandex.practicum.taskTracker.service;
 
 import ru.yandex.practicum.taskTracker.http.HttpTaskServer;
+import ru.yandex.practicum.taskTracker.http.KVServer;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Subtask;
@@ -14,13 +15,11 @@ import java.util.stream.Collectors;
 public class Main {
 
 
-    public static void main(String[] args) {
-        HttpTaskServer server = new HttpTaskServer();
-        try {
-            server.startServer();
-        } catch (IOException e) {
-            System.out.println("Ошибка запуска сервера!");;
+    public static void main(String[] args) throws IOException {
+        new HttpTaskServer().startServer();
+//        new KVServer().start();
     }
+}
 //        final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
 //        final Subtask task = new Subtask(
 //                manager.getSubTaskById(6).getTaskName(),
@@ -80,5 +79,5 @@ public class Main {
 //        System.out.println(epic.getStartTime() + " == " + subtask4.getStartTime() + " " + epic.getStartTime().equals(subtask4.getStartTime()));
 //        System.out.println(epic.getEndTime() + " == " + subtask4.getEndTime() + " " + epic.getEndTime().equals(subtask4.getEndTime()));
 //        System.out.println(manager.getPrioritizedTasks().stream().map(Task::getTaskName).collect(Collectors.toList()));
-    }
-}
+//    }
+//}

@@ -49,7 +49,6 @@ public class HttpTaskServer {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             Endpoint endpoint = getEndpoint(exchange);
-
             switch (endpoint) {
                 case GET_PRIORITIZES_TASKS: {
                     handleGetPrioritizedTasks(exchange);
@@ -123,19 +122,18 @@ public class HttpTaskServer {
                     break;
                 }
                 default:
-                    writeResponse(exchange, "Такого эндпоинта не существует", 404);
+                    writeResponse(exchange, "Ошибка запроса", 404);
             }
         }
 
         private Endpoint getEndpoint(HttpExchange exchange) throws IOException {
             String[] pathParts = exchange.getRequestURI().getPath().split("/");
             String requestMethod = exchange.getRequestMethod();
-            boolean isContainsRequest = exchange.getRequestURI().toString().contains("?");
+            boolean isContainsParameter = exchange.getRequestURI().toString().contains("?");
             boolean isContainsId = exchange.getRequestURI().toString().contains("id=");
             final int contextIndex = 1;
             final int typeIndex = 2;
-            final int subtaskFromEpicIndex = 3;
-
+            final int subtasksFromEpicIndex = 3;
             if ((pathParts.length >= contextIndex + 1) && (pathParts[contextIndex].equals("tasks"))) {
                 if ((pathParts.length == contextIndex + 1) && (requestMethod.equals(GET))) {
                     return GET_PRIORITIZES_TASKS;
@@ -143,20 +141,20 @@ public class HttpTaskServer {
                 if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("history"))) {
                     return GET_HISTORY;
                 }
-                if ((pathParts.length == subtaskFromEpicIndex + 1)
+                if ((pathParts.length == subtasksFromEpicIndex + 1)
                         && (pathParts[typeIndex].equals("subtask"))
-                        && (pathParts[subtaskFromEpicIndex].equals("epic"))
+                        && (pathParts[subtasksFromEpicIndex].equals("epic"))
                         && (isContainsId)) {
                     return GET_SUBTASKS_FROM_EPIC;
                 }
                 if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("task"))) {
-                    return processRequestTaskData(exchange, requestMethod, isContainsRequest, isContainsId);
+                    return processRequestTaskData(exchange, requestMethod, isContainsParameter, isContainsId);
                 }
                 if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("epic"))) {
-                    return processRequestEpicData(exchange, requestMethod, isContainsRequest, isContainsId);
+                    return processRequestEpicData(exchange, requestMethod, isContainsParameter, isContainsId);
                 }
                 if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("subtask"))) {
-                    return processRequestSubtaskData(exchange, requestMethod, isContainsRequest, isContainsId);
+                    return processRequestSubtaskData(exchange, requestMethod, isContainsParameter, isContainsId);
                 }
             }
             return UNKNOWN;
@@ -224,8 +222,7 @@ public class HttpTaskServer {
         }
 
         private void handlePostTaskById(HttpExchange exchange) throws IOException {
-            InputStream inputStream = exchange.getRequestBody();
-            String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             Task task = gson.fromJson(body, Task.class);
             try {
                 manager.updateTask(task);
@@ -293,8 +290,7 @@ public class HttpTaskServer {
         }
 
         private void handlePostEpicById(HttpExchange exchange) throws IOException {
-            InputStream inputStream = exchange.getRequestBody();
-            String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             Epic epic = gson.fromJson(body, Epic.class);
             try {
                 manager.updateEpic(epic);
@@ -362,8 +358,7 @@ public class HttpTaskServer {
         }
 
         private void handlePostSubtaskById(HttpExchange exchange) throws IOException {
-            InputStream inputStream = exchange.getRequestBody();
-            String body = new String(inputStream.readAllBytes(), Charset.defaultCharset());
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             Subtask subtask = gson.fromJson(body, Subtask.class);
             try {
                 manager.updateSubtask(subtask);
