@@ -387,94 +387,16 @@ public class HttpTaskServer {
             }
         }
 
-
-
-
-//        private void handlePostComments(HttpExchange exchange) throws IOException {
-//            // реализуйте обработку добавления комментария
-//
-//            // извлеките идентификатор поста и обработайте исключительные ситуации
-//            Optional<Integer> postIdOpt = getPostId(exchange);
-//            if (postIdOpt.isEmpty()) {
-//                writeResponse(exchange, "Некорректный идентификатор поста", 400);
-//                return;
-//            }
-//            int postId = postIdOpt.get();
-//            Post post;
-//
-//            try {
-//                post = posts.stream()
-//                        .filter(post1 -> post1.getId() == postId)
-//                        .findFirst()
-//                        .orElseThrow();
-//            } catch (NoSuchElementException exception) {
-//                writeResponse(exchange, "Пост с идентификатором " + postId + " не найден", 404);
-//                return;
-//            }
-//            InputStream inputStream = exchange.getRequestBody();
-//            String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
-//            try {
-//                Comment comment = gson.fromJson(body, Comment.class);
-//                if ((comment.getUser() == null) || (comment.getText() == null)) {
-//                    writeResponse(exchange, "Поля комментария не могут быть пустыми", 400);
-//                    return;
-//                }
-//                post.addComment(comment);
-//                writeResponse(exchange, "Комментарий добавлен", 201);
-//            } catch (JsonSyntaxException e) {
-//                writeResponse(exchange, "Получен некорректный JSON", 400);
-//            }
-//            /* Получите тело запроса в виде текста в формате JSON и преобразуйте его в объект Comment.
-//            Учтите, что может быть передан некоректный JSON — эту ситуацию нужно обработать.
-//            Подумайте, какие ещё ситуации требуют обработки. */
-//            // ...
-//
-//            // найдите пост с указанным идентификатором и добавьте в него комментарий
-
-//        }
-
-
-//        private void handleGetComments(HttpExchange exchange) throws IOException {
-//            Optional<Integer> postIdOpt = getPostId(exchange);
-//            if (postIdOpt.isEmpty()) {
-//                writeResponse(exchange, "Некорректный идентификатор поста", 400);
-//                return;
-//            }
-//            int postId = postIdOpt.get();
-//
-//            for (Post post : posts) {
-//                if (post.getId() == postId) {
-//                    String commentsJson = gson.toJson(post.getCommentaries());
-//                    writeResponse(exchange, commentsJson, 200);
-//                    return;
-//                }
-//            }
-//
-//            writeResponse(exchange, "Пост с идентификатором " + postId + " не найден", 404);
-//        }
-
         private int getPostId(HttpExchange exchange) throws IOException {
-            String requestURI = exchange.getRequestURI().toString();
-//            if (requestURI.contains("id=")) {
                 try {
+                    String requestURI = exchange.getRequestURI().toString();
                     String expectedId = requestURI.substring(requestURI.lastIndexOf("id=") + 3);
-                    Optional<Integer> id = Optional.of(Integer.parseInt(expectedId));
-                    return id.get();
+                    return Optional.of(Integer.parseInt(expectedId)).get();
                 } catch (NumberFormatException exception) {
                     writeResponse(exchange, "Некорректный идентификатор задачи", 400);
                     return 0;
                 }
-//            }
         }
-
-//        private Optional<Integer> getPostId(HttpExchange exchange) {
-//            String[] pathParts = exchange.getRequestURI().getPath().split("/");
-//            try {
-//                return Optional.of(Integer.parseInt(pathParts[2]));
-//            } catch (NumberFormatException exception) {
-//                return Optional.empty();
-//            }
-//        }
 
         private void writeResponse(HttpExchange exchange,
                                    String responseString,
