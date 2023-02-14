@@ -19,9 +19,9 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-//        new HttpTaskServer().startServer();
-        new KVServer().start();
-        KVTaskClient client = new KVTaskClient(new URI("http://localhost:8078/register"));
+        new HttpTaskServer().startServer();
+//        new KVServer().start();
+//        KVTaskClient client = new KVTaskClient(new URI("http://localhost:8078/register"));
     }
 }
 //        final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
