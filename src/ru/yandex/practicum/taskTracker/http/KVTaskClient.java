@@ -13,20 +13,20 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
-    final HttpClient client = HttpClient.newHttpClient();
-    Gson gson = Managers.getGson();
-    URI serverURL;
-    final long token;
+    private final HttpClient client = HttpClient.newHttpClient();
+    private final Gson gson = Managers.getGson();
+    private final URI serverURL;
+    private final long token;
 
     public KVTaskClient(URI serverURI) {
         this.serverURL = serverURI;
-        this.token = getToken(serverURI);
+        this.token = registrationOnKVServer();
         System.out.println("Клиент получил токен: " + token);
     }
 
-    private long getToken(URI serverURI) {
+    private long registrationOnKVServer() {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(serverURI.resolve("/register"))
+                .uri(this.serverURL.resolve("/register"))
                 .GET()
                 .build();
         try {
@@ -43,32 +43,16 @@ public class KVTaskClient {
         return - 1;
     }
 
-    public void save(HttpClient client) {
-
-        URI url = URI.create("https://api.exchangerate.host/latest?base=RUB&symbols=USD,EUR");
+    public void save(String key, String json) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
-                .GET()
+                .uri(this.serverURL.resolve("/save/" + key + "?API_TOKEN=" + this.token))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
-
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            // проверяем, успешно ли обработан запрос
             if (response.statusCode() == 200) {
-                JsonElement jsonElement = JsonParser.parseString(response.body());
-                if(!jsonElement.isJsonObject()) { // проверяем, точно ли мы получили JSON-объект
-                    System.out.println("Ответ от сервера не соответствует ожидаемому.");
-                    return;
-                }
-                // получите курс доллара и евро и запишите в переменные rateUSD и rateEUR
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-                double rateUSD = jsonObject.get("rates").getAsJsonObject().get("USD").getAsDouble();
-                double rateEUR = jsonObject.get("rates").getAsJsonObject().get("EUR").getAsDouble();
-
-                System.out.println("Стоимость рубля в долларах: " + rateUSD + " USD");
-                System.out.println("Стоимость рубля в евро: " + rateEUR + " EUR");
-            } else {
-                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+                System.out.println("Сохранение со стороны клиента прошло успешно");
             }
         } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +

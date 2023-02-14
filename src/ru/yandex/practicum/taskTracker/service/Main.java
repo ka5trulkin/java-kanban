@@ -1,5 +1,6 @@
 package ru.yandex.practicum.taskTracker.service;
 
+import com.google.gson.Gson;
 import ru.yandex.practicum.taskTracker.http.HttpTaskServer;
 import ru.yandex.practicum.taskTracker.http.KVServer;
 import ru.yandex.practicum.taskTracker.http.KVTaskClient;
@@ -22,6 +23,9 @@ public class Main {
 //        new HttpTaskServer().startServer();
         new KVServer().start();
         KVTaskClient client = new KVTaskClient(new URI("http://localhost:8078"));
+        Gson gson = Managers.getGson();
+//        String value =
+        client.save("key1", "value1");
     }
 }
 //        final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));

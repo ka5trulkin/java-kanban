@@ -86,7 +86,6 @@ public class KVServer {
                     return;
                 }
                 String value = readText(h);
-                System.out.println(value);
                 if (value.isEmpty()) {
                     System.out.println("Value для сохранения пустой. value указывается в теле запроса");
                     h.sendResponseHeaders(400, 0);

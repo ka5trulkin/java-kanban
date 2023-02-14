@@ -22,8 +22,7 @@ import java.util.*;
 import static ru.yandex.practicum.taskTracker.http.Endpoint.*;
 
 public class HttpTaskServer {
-//    private final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
-    private final TaskManager manager = Managers.getDefault();
+    private final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Gson gson = Managers.getGson();
 
