@@ -59,4 +59,23 @@ public class KVTaskClient {
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
     }
+
+    public String load(String key) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(this.serverURL.resolve("/load/" + key + "?API_TOKEN=" + this.token))
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                System.out.println("Загрузка со стороны клиента прошла успешно");
+                return response.body();
+            }
+        } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
+            System.out.println("Во время выполнения запроса возникла ошибка.\n" +
+                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+        }
+        return null;
+    }
 }
