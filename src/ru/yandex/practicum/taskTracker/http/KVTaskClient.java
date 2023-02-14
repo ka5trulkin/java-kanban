@@ -18,15 +18,15 @@ public class KVTaskClient {
     URI serverURL;
     final long token;
 
-    public KVTaskClient(URI serverURL) {
-        this.serverURL = serverURL;
-        this.token = getToken(serverURL);
-        System.out.println(token);
+    public KVTaskClient(URI serverURI) {
+        this.serverURL = serverURI;
+        this.token = getToken(serverURI);
+        System.out.println("Клиент получил токен: " + token);
     }
 
-    private long getToken(URI serverURL) {
+    private long getToken(URI serverURI) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(serverURL)
+                .uri(serverURI.resolve("/register"))
                 .GET()
                 .build();
         try {
