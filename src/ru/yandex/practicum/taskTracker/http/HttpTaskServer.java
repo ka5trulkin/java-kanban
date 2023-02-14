@@ -9,6 +9,7 @@ import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 import ru.yandex.practicum.taskTracker.service.FileBackedTasksManager;
+import ru.yandex.practicum.taskTracker.service.Managers;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import static ru.yandex.practicum.taskTracker.http.Endpoint.*;
 public class HttpTaskServer {
     private final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    private final Gson gson = new Gson();
+    private final Gson gson = Managers.getGson();
 
     public void startServer() throws IOException {
         HttpServer httpServer = HttpServer.create();
@@ -47,124 +48,116 @@ public class HttpTaskServer {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            try {
-                Endpoint endpoint = getEndpoint(exchange);
-                switch (endpoint) {
-                    case GET_PRIORITIZES_TASKS: {
-                        handleGetPrioritizedTasks(exchange);
-                        break;
-                    }
-                    case GET_HISTORY: {
-                        handleGetHistory(exchange);
-                        break;
-                    }
-                    case GET_SUBTASKS_FROM_EPIC: {
-                        handleGetSubtasksFromEpic(exchange);
-                    }
-                    case GET_ALL_TASKS: {
-                        handleGetAllTasks(exchange);
-                        break;
-                    }
-                    case GET_TASK_BY_ID: {
-                        handleGetTaskById(exchange);
-                        break;
-                    }
-                    case POST_TASK: {
-                        handlePostTaskById(exchange);
-                        break;
-                    }
-                    case DELETE_ALL_TASKS: {
-                        handleDeleteAllTasks(exchange);
-                        break;
-                    }
-                    case DELETE_TASK_BY_ID: {
-                        handleDeleteTaskById(exchange);
-                        break;
-                    }
-                    case GET_ALL_EPICS: {
-                        handleGetAllEpics(exchange);
-                        break;
-                    }
-                    case GET_EPIC_BY_ID: {
-                        handleGetEpicById(exchange);
-                        break;
-                    }
-                    case POST_EPIC: {
-                        handlePostEpicById(exchange);
-                        break;
-                    }
-                    case DELETE_ALL_EPICS: {
-                        handleDeleteAllEpics(exchange);
-                        break;
-                    }
-                    case DELETE_EPIC_BY_ID: {
-                        handleDeleteEpicById(exchange);
-                        break;
-                    }
-                    case GET_ALL_SUBTASKS: {
-                        handleGetAllSubtasks(exchange);
-                        break;
-                    }
-                    case GET_SUBTASK_BY_ID: {
-                        handleGetSubtaskById(exchange);
-                        break;
-                    }
-                    case POST_SUBTASK: {
-                        handlePostSubtaskById(exchange);
-                        break;
-                    }
-                    case DELETE_ALL_SUBTASKS: {
-                        handleDeleteAllSubtasks(exchange);
-                        break;
-                    }
-                    case DELETE_SUBTASK_BY_ID: {
-                        handleDeleteSubtaskById(exchange);
-                        break;
-                    }
-                    default:
-                        writeResponse(exchange, "Ошибка запроса", 404);
+            Endpoint endpoint = getEndpoint(exchange);
+            switch (endpoint) {
+                case GET_PRIORITIZES_TASKS: {
+                    handleGetPrioritizedTasks(exchange);
+                    break;
                 }
-            }finally {
-                exchange.close();
+                case GET_HISTORY: {
+                    handleGetHistory(exchange);
+                    break;
+                }
+                case GET_SUBTASKS_FROM_EPIC: {
+                    handleGetSubtasksFromEpic(exchange);
+                }
+                case GET_ALL_TASKS: {
+                    handleGetAllTasks(exchange);
+                    break;
+                }
+                case GET_TASK_BY_ID: {
+                    handleGetTaskById(exchange);
+                    break;
+                }
+                case POST_TASK: {
+                    handlePostTaskById(exchange);
+                    break;
+                }
+                case DELETE_ALL_TASKS: {
+                    handleDeleteAllTasks(exchange);
+                    break;
+                }
+                case DELETE_TASK_BY_ID: {
+                    handleDeleteTaskById(exchange);
+                    break;
+                }
+                case GET_ALL_EPICS: {
+                    handleGetAllEpics(exchange);
+                    break;
+                }
+                case GET_EPIC_BY_ID: {
+                    handleGetEpicById(exchange);
+                    break;
+                }
+                case POST_EPIC: {
+                    handlePostEpicById(exchange);
+                    break;
+                }
+                case DELETE_ALL_EPICS: {
+                    handleDeleteAllEpics(exchange);
+                    break;
+                }
+                case DELETE_EPIC_BY_ID: {
+                    handleDeleteEpicById(exchange);
+                    break;
+                }
+                case GET_ALL_SUBTASKS: {
+                    handleGetAllSubtasks(exchange);
+                    break;
+                }
+                case GET_SUBTASK_BY_ID: {
+                    handleGetSubtaskById(exchange);
+                    break;
+                }
+                case POST_SUBTASK: {
+                    handlePostSubtaskById(exchange);
+                    break;
+                }
+                case DELETE_ALL_SUBTASKS: {
+                    handleDeleteAllSubtasks(exchange);
+                    break;
+                }
+                case DELETE_SUBTASK_BY_ID: {
+                    handleDeleteSubtaskById(exchange);
+                    break;
+                }
+                default:
+                    writeResponse(exchange, "Ошибка запроса", 404);
             }
         }
 
         private Endpoint getEndpoint(HttpExchange exchange) throws IOException {
-            try {
-                String[] pathParts = exchange.getRequestURI().getPath().split("/");
-                String requestMethod = exchange.getRequestMethod();
-                boolean isContainsParameter = exchange.getRequestURI().toString().contains("?");
-                boolean isContainsId = exchange.getRequestURI().toString().contains("id=");
-                final int contextIndex = 1;
-                final int typeIndex = 2;
-                final int subtasksFromEpicIndex = 3;
-                if ((pathParts.length >= contextIndex + 1) && (pathParts[contextIndex].equals("tasks"))) {
-                    if ((pathParts.length == contextIndex + 1) && (requestMethod.equals(GET))) {
-                        return GET_PRIORITIZES_TASKS;
-                    }
-                    if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("history"))) {
-                        return GET_HISTORY;
-                    }
-                    if ((pathParts.length == subtasksFromEpicIndex + 1)
-                            && (pathParts[typeIndex].equals("subtask"))
-                            && (pathParts[subtasksFromEpicIndex].equals("epic"))
-                            && (isContainsId)) {
-                        return GET_SUBTASKS_FROM_EPIC;
-                    }
-                    if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("task"))) {
-                        return processRequestTaskData(exchange, requestMethod, isContainsParameter, isContainsId);
-                    }
-                    if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("epic"))) {
-                        return processRequestEpicData(exchange, requestMethod, isContainsParameter, isContainsId);
-                    }
-                    if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("subtask"))) {
-                        return processRequestSubtaskData(exchange, requestMethod, isContainsParameter, isContainsId);
-                    }
+            String[] pathParts = exchange.getRequestURI().getPath().split("/");
+            String requestMethod = exchange.getRequestMethod();
+            boolean isContainsParameter = exchange.getRequestURI().toString().contains("?");
+            boolean isContainsId = exchange.getRequestURI().toString().contains("id=");
+            final int contextIndex = 1;
+            final int typeIndex = 2;
+            final int subtasksFromEpicIndex = 3;
+            if ((pathParts.length >= contextIndex + 1) && (pathParts[contextIndex].equals("tasks"))) {
+                if ((pathParts.length == contextIndex + 1) && (requestMethod.equals(GET))) {
+                    return GET_PRIORITIZES_TASKS;
                 }
-                return UNKNOWN;
-            } finally {
-                exchange.close();
+                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("history"))) {
+                    return GET_HISTORY;
+                }
+                if ((pathParts.length == subtasksFromEpicIndex + 1)
+                        && (pathParts[typeIndex].equals("subtask"))
+                        && (pathParts[subtasksFromEpicIndex].equals("epic"))
+                        && (isContainsId)) {
+                    return GET_SUBTASKS_FROM_EPIC;
+                }
+                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("task"))) {
+                    return processRequestTaskData(exchange, requestMethod, isContainsParameter, isContainsId);
+                }
+                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("epic"))) {
+                    return processRequestEpicData(exchange, requestMethod, isContainsParameter, isContainsId);
+                }
+                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("subtask"))) {
+                    return processRequestSubtaskData(exchange, requestMethod, isContainsParameter, isContainsId);
+                }
             }
+            return UNKNOWN;
         }
 
         private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
@@ -175,66 +168,49 @@ public class HttpTaskServer {
         }
 
         private void handleGetHistory(HttpExchange exchange) throws IOException {
-            try {
-                List<Task> historyList = manager.getHistory();
-                if (!historyList.isEmpty()) {
-                    writeResponse(exchange, gson.toJson(historyList), 200);
-                } else writeResponse(exchange, "Список истории пуст", 204);
-            } finally {
-                exchange.close();
-            }
+            List<Task> historyList = manager.getHistory();
+            if (!historyList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(historyList), 200);
+            } else writeResponse(exchange, "Список истории пуст", 204);
+
         }
 
         private void handleGetSubtasksFromEpic(HttpExchange exchange) throws IOException {
-            try {
-                this.taskId = getPostId(exchange);
-                List<Subtask> subtasksList = manager.getSubtasksFromEpic(manager.getEpicById(taskId));
-                if (!subtasksList.isEmpty()) {
-                    writeResponse(exchange, gson.toJson(subtasksList), 200);
-                } else writeResponse(exchange, "Список подзадач пуст", 204);
-            } finally {
-                exchange.close();
-            }
+            this.taskId = getPostId(exchange);
+            List<Subtask> subtasksList = manager.getSubtasksFromEpic(manager.getEpicById(taskId));
+            if (!subtasksList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(subtasksList), 200);
+            } else writeResponse(exchange, "Список подзадач пуст", 204);
         }
-
         // обработка запросов Tasks
         private Endpoint processRequestTaskData(HttpExchange exchange,
                                                 String requestMethod,
                                                 boolean isContainsRequest,
                                                 boolean isContainsId) throws IOException {
-            try {
-                if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
-                    return GET_ALL_TASKS;
-                }
-                if ((requestMethod.equals(GET)) && (isContainsId)) {
-                    this.taskId = getPostId(exchange);
-                    return GET_TASK_BY_ID;
-                }
-                if (requestMethod.equals(POST)) {
-                    return POST_TASK;
-                }
-                if ((requestMethod.equals(DELETE)) && (!isContainsRequest)) {
-                    return DELETE_ALL_TASKS;
-                }
-                if ((requestMethod.equals(DELETE)) && (isContainsId)) {
-                    this.taskId = getPostId(exchange);
-                    return DELETE_TASK_BY_ID;
-                }
-                return UNKNOWN;
-            } finally {
-                exchange.close();
+            if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
+                return GET_ALL_TASKS;
             }
+            if ((requestMethod.equals(GET)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return GET_TASK_BY_ID;
+            }
+            if (requestMethod.equals(POST)) {
+                return POST_TASK;
+            }
+            if ((requestMethod.equals(DELETE)) && (!isContainsRequest)) {
+                return DELETE_ALL_TASKS;
+            }
+            if ((requestMethod.equals(DELETE)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return DELETE_TASK_BY_ID;
+            } return UNKNOWN;
         }
 
         private void handleGetAllTasks(HttpExchange exchange) throws IOException {
-            try {
-                List<Task> taskList = manager.getTasks();
-                if (!taskList.isEmpty()) {
-                    writeResponse(exchange, gson.toJson(taskList), 200);
-                } else writeResponse(exchange, "Список задач пуст", 204);
-            } finally {
-                exchange.close();
-            }
+            List<Task> taskList = manager.getTasks();
+            if (!taskList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(taskList), 200);
+            } else writeResponse(exchange, "Список задач пуст", 204);
         }
 
         private void handleGetTaskById(HttpExchange exchange) throws IOException {
@@ -242,8 +218,6 @@ public class HttpTaskServer {
                 writeResponse(exchange, gson.toJson(manager.getTaskById(taskId)), 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, exception.getMessage(), 204);
-            } finally {
-                exchange.close();
             }
         }
 
@@ -260,8 +234,6 @@ public class HttpTaskServer {
                 } catch (IllegalArgumentException exceptionOfAddition) {
                     writeResponse(exchange, "Ошибка добавления задачи", 404);
                 }
-            } finally {
-                exchange.close();
             }
         }
 
@@ -276,49 +248,37 @@ public class HttpTaskServer {
                 writeResponse(exchange, "Задача ID:" + taskId + " удалена", 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, "Задача ID:" + taskId + " не найдена", 404);
-            } finally {
-                exchange.close();
             }
         }
-
         // обработка запросов Epics
         private Endpoint processRequestEpicData(HttpExchange exchange,
                                                 String requestMethod,
                                                 boolean isContainsRequest,
                                                 boolean isContainsId) throws IOException {
-            try {
-                if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
-                    return GET_ALL_EPICS;
-                }
-                if ((requestMethod.equals(GET)) && (isContainsId)) {
-                    this.taskId = getPostId(exchange);
-                    return GET_EPIC_BY_ID;
-                }
-                if (requestMethod.equals(POST)) {
-                    return POST_EPIC;
-                }
-                if ((requestMethod.equals(DELETE)) && (!isContainsRequest)) {
-                    return DELETE_ALL_EPICS;
-                }
-                if ((requestMethod.equals(DELETE)) && (isContainsId)) {
-                    this.taskId = getPostId(exchange);
-                    return DELETE_EPIC_BY_ID;
-                }
-                return UNKNOWN;
-            } finally {
-                exchange.close();
+            if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
+                return GET_ALL_EPICS;
             }
+            if ((requestMethod.equals(GET)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return GET_EPIC_BY_ID;
+            }
+            if (requestMethod.equals(POST)) {
+                return POST_EPIC;
+            }
+            if ((requestMethod.equals(DELETE)) && (!isContainsRequest)) {
+                return DELETE_ALL_EPICS;
+            }
+            if ((requestMethod.equals(DELETE)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return DELETE_EPIC_BY_ID;
+            } return UNKNOWN;
         }
 
         private void handleGetAllEpics(HttpExchange exchange) throws IOException {
-            try {
-                List<Epic> epicList = manager.getEpics();
-                if (!epicList.isEmpty()) {
-                    writeResponse(exchange, gson.toJson(epicList), 200);
-                } else writeResponse(exchange, "Список эпиков пуст", 204);
-            } finally {
-                exchange.close();
-            }
+            List<Epic> epicList = manager.getEpics();
+            if (!epicList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(epicList), 200);
+            } else writeResponse(exchange, "Список эпиков пуст", 204);
         }
 
         private void handleGetEpicById(HttpExchange exchange) throws IOException {
@@ -326,8 +286,6 @@ public class HttpTaskServer {
                 writeResponse(exchange, gson.toJson(manager.getEpicById(taskId)), 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, exception.getMessage(), 204);
-            } finally {
-                exchange.close();
             }
         }
 
@@ -344,18 +302,12 @@ public class HttpTaskServer {
                 } catch (IllegalArgumentException exceptionOfAddition) {
                     writeResponse(exchange, "Ошибка добавления эпика", 404);
                 }
-            } finally {
-                exchange.close();
             }
         }
 
         private void handleDeleteAllEpics(HttpExchange exchange) throws IOException {
-            try {
-                manager.deleteAllEpics();
-                writeResponse(exchange, "Все эпики удалены", 200);
-            } finally {
-                exchange.close();
-            }
+            manager.deleteAllEpics();
+            writeResponse(exchange, "Все эпики удалены", 200);
         }
 
         private void handleDeleteEpicById(HttpExchange exchange) throws IOException {
@@ -364,49 +316,37 @@ public class HttpTaskServer {
                 writeResponse(exchange, "Эпик ID:" + taskId + " удален", 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, "Эпик ID:" + taskId + " не найден", 404);
-            } finally {
-                exchange.close();
             }
         }
-
         // обработка запросов Subtasks
         private Endpoint processRequestSubtaskData(HttpExchange exchange,
-                                                   String requestMethod,
-                                                   boolean isContainsRequest,
-                                                   boolean isContainsId) throws IOException {
-            try {
-                if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
-                    return GET_ALL_SUBTASKS;
-                }
-                if ((requestMethod.equals(GET)) && (isContainsId)) {
-                    this.taskId = getPostId(exchange);
-                    return GET_SUBTASK_BY_ID;
-                }
-                if (requestMethod.equals(POST)) {
-                    return POST_SUBTASK;
-                }
-                if ((requestMethod.equals(DELETE)) && (!isContainsRequest)) {
-                    return DELETE_ALL_SUBTASKS;
-                }
-                if ((requestMethod.equals(DELETE)) && (isContainsId)) {
-                    this.taskId = getPostId(exchange);
-                    return DELETE_SUBTASK_BY_ID;
-                }
-                return UNKNOWN;
-            } finally {
-                exchange.close();
+                                                String requestMethod,
+                                                boolean isContainsRequest,
+                                                boolean isContainsId) throws IOException {
+            if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
+                return GET_ALL_SUBTASKS;
             }
+            if ((requestMethod.equals(GET)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return GET_SUBTASK_BY_ID;
+            }
+            if (requestMethod.equals(POST)) {
+                return POST_SUBTASK;
+            }
+            if ((requestMethod.equals(DELETE)) && (!isContainsRequest)) {
+                return DELETE_ALL_SUBTASKS;
+            }
+            if ((requestMethod.equals(DELETE)) && (isContainsId)) {
+                this.taskId = getPostId(exchange);
+                return DELETE_SUBTASK_BY_ID;
+            } return UNKNOWN;
         }
 
         private void handleGetAllSubtasks(HttpExchange exchange) throws IOException {
-            try {
-                List<Subtask> subtaskList = manager.getSubtasks();
-                if (!subtaskList.isEmpty()) {
-                    writeResponse(exchange, gson.toJson(subtaskList), 200);
-                } else writeResponse(exchange, "Список подзадач пуст", 204);
-            } finally {
-                exchange.close();
-            }
+            List<Subtask> subtaskList = manager.getSubtasks();
+            if (!subtaskList.isEmpty()) {
+                writeResponse(exchange, gson.toJson(subtaskList), 200);
+            } else writeResponse(exchange, "Список подзадач пуст", 204);
         }
 
         private void handleGetSubtaskById(HttpExchange exchange) throws IOException {
@@ -414,8 +354,6 @@ public class HttpTaskServer {
                 writeResponse(exchange, gson.toJson(manager.getSubTaskById(taskId)), 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, exception.getMessage(), 204);
-            } finally {
-                exchange.close();
             }
         }
 
@@ -432,18 +370,12 @@ public class HttpTaskServer {
                 } catch (IllegalArgumentException exceptionOfAddition) {
                     writeResponse(exchange, "Ошибка добавления подзадачи", 404);
                 }
-            } finally {
-                exchange.close();
             }
         }
 
         private void handleDeleteAllSubtasks(HttpExchange exchange) throws IOException {
-            try {
-                manager.deleteAllSubtasks();
-                writeResponse(exchange, "Все подзадачи удалены", 200);
-            } finally {
-                exchange.close();
-            }
+            manager.deleteAllSubtasks();
+            writeResponse(exchange, "Все подзадачи удалены", 200);
         }
 
         private void handleDeleteSubtaskById(HttpExchange exchange) throws IOException {
@@ -452,21 +384,17 @@ public class HttpTaskServer {
                 writeResponse(exchange, "Подзадача ID:" + taskId + " удалена", 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, "Подзадача ID:" + taskId + " не найдена", 404);
-            } finally {
-                exchange.close();
             }
         }
 
         private int getPostId(HttpExchange exchange) throws IOException {
             try {
                 String requestURI = exchange.getRequestURI().toString();
-                String expectedId = requestURI.substring(requestURI.lastIndexOf("id=".length()));
+                String expectedId = requestURI.substring(requestURI.lastIndexOf("id=") + 3);
                 return Optional.of(Integer.parseInt(expectedId)).get();
             } catch (NumberFormatException exception) {
                 writeResponse(exchange, "Некорректный идентификатор задачи", 400);
                 return -1;
-            } finally {
-                exchange.close();
             }
         }
 

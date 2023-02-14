@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import ru.yandex.practicum.taskTracker.service.Managers;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,7 +14,7 @@ import java.net.http.HttpResponse;
 
 public class KVTaskClient {
     final HttpClient client = HttpClient.newHttpClient();
-    Gson gson = new Gson();
+    Gson gson = Managers.getGson();
     URI serverURL;
     final long token;
 
