@@ -1,12 +1,11 @@
 package ru.yandex.practicum.taskTracker.http;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.GsonBuilder;
 import ru.yandex.practicum.taskTracker.service.Managers;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,9 +13,9 @@ import java.net.http.HttpResponse;
 
 public class KVTaskClient {
     private final HttpClient client = HttpClient.newHttpClient();
-    private final Gson gson = Managers.getGson();
     private final URI serverURL;
     private final long token;
+    private Gson gson = Managers.getGson();
 
     public KVTaskClient(URI serverURI) {
         this.serverURL = serverURI;
@@ -48,6 +47,7 @@ public class KVTaskClient {
                 .uri(this.serverURL.resolve("/save/" + key + "?API_TOKEN=" + this.token))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
+//                .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

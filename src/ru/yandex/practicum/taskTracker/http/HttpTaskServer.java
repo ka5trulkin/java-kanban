@@ -26,7 +26,7 @@ public class HttpTaskServer {
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Gson gson = Managers.getGson();
 
-    public void startServer() throws IOException {
+    public void start() throws IOException {
         HttpServer httpServer = HttpServer.create();
         int PORT = 8080;
         httpServer.bind(new InetSocketAddress(PORT), 0);
@@ -414,4 +414,3 @@ public class HttpTaskServer {
         }
     }
 }
-
