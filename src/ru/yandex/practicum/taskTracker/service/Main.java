@@ -23,9 +23,12 @@ public class Main {
 //        new HttpTaskServer().startServer();
         new KVServer().start();
         KVTaskClient client = new KVTaskClient(new URI("http://localhost:8078"));
-        Gson gson = Managers.getGson();
-//        String value =
-        client.save("key1", "value1");
+        String key = "kurva";
+        String value = "Ja perdolal";
+        client.save(key, value);
+        System.out.println("Загруженные данные по ключу: " + key + " - " + client.load(key));
+        client.save(key, "Ne perdolal");
+        System.out.println("Обновленные данные по ключу: " + key + " - " + client.load(key));
     }
 }
 //        final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
