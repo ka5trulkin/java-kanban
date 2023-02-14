@@ -13,15 +13,19 @@ import java.util.Collections;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final File backupFile;
-    private final String lineSeparator = "\r?\n";
+    protected final File backupFile;
+    protected final String lineSeparator = "\r?\n";
     private final String infoLine = "id,type,name,status,description,startTime,endTime,epic";
 
     public FileBackedTasksManager(File backupFile) {
         this.backupFile = backupFile;
     }
 
-    private void save() {
+    protected FileBackedTasksManager() {
+        backupFile = new File("");
+    }
+
+    protected void save() {
         if (backupFile.isFile()) {
             try (BufferedWriter bufferedWriter
                          = new BufferedWriter(new FileWriter(backupFile.toString(), StandardCharsets.UTF_8))) {
@@ -33,7 +37,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private String tasksToString() {
+    protected String tasksToString() {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append(infoLine);
@@ -92,7 +96,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void fillHistoryManager(List<Integer> history) {
+    protected void fillHistoryManager(List<Integer> history) {
         for (Integer id : history) {
             if (tasks.containsKey(id)) {
                 this.getTaskById(id);
@@ -104,7 +108,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void fillTasksManager(String fileLine) {
+    protected void fillTasksManager(String fileLine) {
         switch (taskFromString(fileLine).getType()) {
             case TASK:
                 fillTasks(fileLine);
@@ -145,7 +149,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.checkIdCounter(subtask.getId());
     }
 
-    private static List<Integer> historyFromString(String fileLine) {
+    protected List<Integer> historyFromString(String fileLine) {
         if (fileLine.isBlank()) {
             return Collections.emptyList();
         }
@@ -157,7 +161,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return list;
     }
 
-    private static String historyToString(HistoryManager manager) {
+    protected String historyToString(HistoryManager manager) {
         if (!manager.getHistory().isEmpty()) {
             StringBuilder historyBuilder = new StringBuilder();
             List<Task> history = manager.getHistory();
@@ -189,7 +193,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             if (!fileLine.isBlank()) {
                 tasksManager.fillTasksManager(fileLine);
             } else if (!historyLine.isBlank()) {
-                tasksManager.fillHistoryManager(historyFromString(historyLine));
+                tasksManager.fillHistoryManager(tasksManager.historyFromString(historyLine));
                 break;
             }
         }
