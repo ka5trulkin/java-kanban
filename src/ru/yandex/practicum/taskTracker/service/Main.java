@@ -1,5 +1,6 @@
 package ru.yandex.practicum.taskTracker.service;
 
+import ru.yandex.practicum.taskTracker.http.HttpTaskServer;
 import ru.yandex.practicum.taskTracker.http.KVServer;
 import ru.yandex.practicum.taskTracker.http.KVTaskClient;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
@@ -11,6 +12,7 @@ import java.net.URISyntaxException;
 public class Main {
     public static void main(String[] args) throws IOException, URISyntaxException {
         new KVServer().start();
+        new HttpTaskServer().start();
 //        KVTaskClient client = new KVTaskClient(new URI("http://localhost:8078"));
 //        String key = "kurva";
 //        String value = "Ja perdolal";

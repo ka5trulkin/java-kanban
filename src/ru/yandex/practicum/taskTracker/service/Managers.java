@@ -8,12 +8,14 @@ import ru.yandex.practicum.taskTracker.interfaces.HistoryManager;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 public final class Managers {
-    public static TaskManager getDefault() {
-        return new FileBackedTasksManager(new File("resource/backup-task-manager.csv"));
+    public static TaskManager getDefault() throws URISyntaxException {
+        return new HttpTaskManager(new URI("http://localhost:8078"));
     }
 
     public static HistoryManager getDefaultHistory() {

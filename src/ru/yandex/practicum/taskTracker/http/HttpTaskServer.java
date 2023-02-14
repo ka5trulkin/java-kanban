@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -22,9 +23,13 @@ import java.util.*;
 import static ru.yandex.practicum.taskTracker.http.Endpoint.*;
 
 public class HttpTaskServer {
-    private final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
+//    private final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
+    private final TaskManager manager = Managers.getDefault();
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Gson gson = Managers.getGson();
+
+    public HttpTaskServer() throws URISyntaxException {
+    }
 
     public void start() throws IOException {
         HttpServer httpServer = HttpServer.create();
