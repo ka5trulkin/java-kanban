@@ -62,15 +62,15 @@ class EpicTest {
         assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
 
         manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.DONE));
-        manager.updateSubtask(subtaskTest);
+        manager.updateEpic(epicTest);
         assertEquals(Status.DONE, epicTest.getStatus(), "Статус не совпадает.");
 
         subtaskTest.setStatus(Status.NEW);
-        manager.updateSubtask(subtaskTest);
+        manager.updateEpic(epicTest);
         assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
 
         manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.IN_PROGRESS));
-        manager.updateSubtask(subtaskTest);
+        manager.updateEpic(epicTest);
         assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статус не совпадает.");
     }
 

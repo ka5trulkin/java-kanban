@@ -131,7 +131,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         subtaskList.forEach(manager::addNewSubtask);
         assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Статус Эпика не совпадает.");
         manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.DONE));
-        manager.updateSubtask(subtaskTest);
+        manager.updateEpic(epic);
         assertEquals(Status.DONE, epic.getStatus(), "Статус Эпика не совпадает.");
         manager.deleteAllSubtasks();
         assertEquals(Status.NEW, epic.getStatus(), "Статус Эпика не совпадает.");
@@ -396,10 +396,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(Status.NEW, manager.getEpicById(epicId).getStatus(), "Статус не совпадает.");
         subtaskList.forEach(manager::addNewSubtask);
         manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.DONE));
-        manager.updateSubtask(subtaskTest);
+        manager.updateEpic(epic);
         assertEquals(Status.DONE, manager.getEpicById(epicId).getStatus(), "Статус не совпадает.");
         manager.getSubTaskById(subtaskTest.getId()).setStatus(Status.IN_PROGRESS);
-        manager.updateSubtask(subtaskTest);
+        manager.updateEpic(epic);
         assertEquals(Status.IN_PROGRESS, manager.getEpicById(epicId).getStatus(), "Статус не совпадает.");
         manager.deleteAllSubtasks();
         assertEquals(Status.NEW, manager.getEpicById(epicId).getStatus(), "Статус не совпадает.");
