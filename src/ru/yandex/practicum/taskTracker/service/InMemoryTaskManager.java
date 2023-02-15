@@ -148,8 +148,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllEpics() {
         epics.keySet().forEach(historyManager::remove);
         subtasks.keySet().forEach(historyManager::remove);
+        deleteAllSubtasks();
         epics.clear();
-        subtasks.clear();
     }
 
     @Override
@@ -199,7 +199,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addNewEpic(Epic epic) {
         if (epic != null && !epics.containsKey(epic.getId())) {
-            checkTaskToCrossByStartTime(epic);
             epics.put(epic.getId(), epic);
             checkEpic(epic);
         } else throw new IllegalArgumentException("Ошибка добавления " + epic);
