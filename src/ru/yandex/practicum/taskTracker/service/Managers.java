@@ -2,12 +2,11 @@ package ru.yandex.practicum.taskTracker.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ru.yandex.practicum.taskTracker.gson.DurationAdapter;
-import ru.yandex.practicum.taskTracker.gson.LocalDateTimeAdapter;
+import ru.yandex.practicum.taskTracker.adapter.DurationAdapter;
+import ru.yandex.practicum.taskTracker.adapter.LocalDateTimeAdapter;
 import ru.yandex.practicum.taskTracker.interfaces.HistoryManager;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;

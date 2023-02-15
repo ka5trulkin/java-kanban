@@ -2,11 +2,8 @@ package ru.yandex.practicum.taskTracker.service;
 
 import ru.yandex.practicum.taskTracker.http.HttpTaskServer;
 import ru.yandex.practicum.taskTracker.http.KVServer;
-import ru.yandex.practicum.taskTracker.http.KVTaskClient;
-import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 public class Main {
