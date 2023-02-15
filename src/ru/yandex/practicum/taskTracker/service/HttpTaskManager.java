@@ -36,7 +36,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         String historyLine;
         int dataLine = 1;
         fileLines = this.client.load(this.key).split(System.lineSeparator());
-        System.out.println("Проверка fileLines: " + Arrays.toString(fileLines).length());
+        System.out.println("Проверка fileLines: " + Arrays.toString(fileLines));
         historyLine = fileLines[fileLines.length - 1];
         for (int index = dataLine; index < fileLines.length; index++) {
             fileLine = fileLines[index];
@@ -53,5 +53,14 @@ public class HttpTaskManager extends FileBackedTasksManager {
         HttpTaskManager manager = new HttpTaskManager(new URI("http://localhost:8078"));
         manager.addNewEpic(new Epic("New Epic", "Epic Description", 777));
         System.out.println(manager.getPrioritizedTasks());
+        System.out.println(manager.getEpics());
+        System.out.println("Старый ключ: " + manager.getKey());
+        manager.setKey("new");
+        System.out.println("Новый ключ: " + manager.getKey());
+        HttpTaskManager manager1 = new HttpTaskManager(new URI("http://localhost:8078"));
+        System.out.println("Second manager: " + manager1.getEpics());
+//        manager1.load();
+//        System.out.println(manager1.getEpics());
+
     }
 }
