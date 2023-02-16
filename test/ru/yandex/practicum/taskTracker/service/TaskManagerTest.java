@@ -558,7 +558,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 )
         );
 
-       assertEquals(Collections.emptyList(), manager.getPrioritizedTasks(), "Список должен быть пустым.");
+        assertEquals(Collections.emptyList(), manager.getPrioritizedTasks(), "Список должен быть пустым.");
         taskList.forEach(manager::addNewTask);
         epicList.forEach(manager::addNewEpic);
         subtaskList.forEach(manager::addNewSubtask);
