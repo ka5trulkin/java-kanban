@@ -21,6 +21,7 @@ import java.util.*;
 import static ru.yandex.practicum.taskTracker.http.Endpoint.*;
 
 public class HttpTaskServer {
+    HttpServer httpServer;
     private final TaskManager manager = Managers.getDefault();
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Gson gson = Managers.getGson();
@@ -29,7 +30,7 @@ public class HttpTaskServer {
     }
 
     public void start() throws IOException {
-        HttpServer httpServer = HttpServer.create();
+        httpServer = HttpServer.create();
         int PORT = 8080;
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
@@ -40,6 +41,10 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks/subtask", new TasksHandler());
         httpServer.start();
         System.out.println("Сервер запущен");
+    }
+
+    public void stop() {
+        httpServer.stop(0);
     }
 
     class TasksHandler implements HttpHandler {
@@ -179,7 +184,13 @@ public class HttpTaskServer {
 
         private void handleGetSubtasksFromEpic(HttpExchange exchange) throws IOException {
             this.taskId = getPostId(exchange);
-            List<Subtask> subtasksList = manager.getSubtasksFromEpic(manager.getEpicById(taskId));
+            List<Subtask> subtasksList;
+            try {
+                subtasksList = manager.getSubtasksFromEpic(manager.getEpicById(taskId));
+            } catch (IllegalArgumentException exception) {
+                writeResponse(exchange, exception.getMessage(), 204);
+                return;
+            }
             if (!subtasksList.isEmpty()) {
                 writeResponse(exchange, gson.toJson(subtasksList), 200);
             } else writeResponse(exchange, "Список подзадач пуст", 204);
@@ -313,6 +324,7 @@ public class HttpTaskServer {
 
         private void handleDeleteAllEpics(HttpExchange exchange) throws IOException {
             manager.deleteAllEpics();
+            System.out.println("Delete epics");
             writeResponse(exchange, "Все эпики удалены", 200);
         }
 
@@ -387,6 +399,7 @@ public class HttpTaskServer {
         }
 
         private void handleDeleteSubtaskById(HttpExchange exchange) throws IOException {
+            System.out.println("попытка удаления сабтаска");
             try {
                 manager.deleteSubtaskById(taskId);
                 writeResponse(exchange, "Подзадача ID:" + taskId + " удалена", 200);
