@@ -2,6 +2,7 @@ package ru.yandex.practicum.taskTracker.http;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskServerTest {
+    private KVServer kvServer;
+    private HttpTaskServer httpTaskServer;
     private HttpClient client;
     private Gson gson;
     private Task firstTask;
@@ -34,14 +37,25 @@ class HttpTaskServerTest {
     private final URI uriEpic = URI.create("http://localhost:8080/tasks/epic");
     private final URI uriSubtask = URI.create("http://localhost:8080/tasks/subtask");
 
-    @BeforeAll
-    static void beforeAll() throws IOException, URISyntaxException {
-        new KVServer().start();
-        new HttpTaskServer().start();
+//    @BeforeAll
+//    static void beforeAll() throws IOException, URISyntaxException {
+//        new KVServer().start();
+//        new HttpTaskServer().start();
+//    }
+
+    @AfterEach
+    void afterEach() {
+        kvServer.stop();
+        httpTaskServer.stop();
     }
 
     @BeforeEach
     void BeforeEach() throws IOException, URISyntaxException {
+        kvServer = new KVServer();
+        kvServer.start();
+        httpTaskServer = new HttpTaskServer();
+        httpTaskServer.start();
+
         client = HttpClient.newHttpClient();
         gson = Managers.getGson();
         LocalDateTime dateTime = LocalDateTime.now();
@@ -76,14 +90,13 @@ class HttpTaskServerTest {
                 firstEpic.getId());
     }
 
-    private void pushTaskOnServer(Task task, URI url) throws IOException, InterruptedException {
+    private void addTaskOnServer(Task task, URI url) throws IOException, InterruptedException {
         String json = gson.toJson(task);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(url)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println("pushTaskOnServer");
         if (response.statusCode() != 201) {
             System.out.println("Произошла ошибка отправки задачи на сервер.");
         }
@@ -95,9 +108,31 @@ class HttpTaskServerTest {
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Тело getTaskList: " + response.body());
+        return gson.fromJson(response.body(), new TypeToken<>(){});
+    }
+
+    private List<Epic> getEpicList(URI uri) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Тело getTaskList: " + response.body());
+        return gson.fromJson(response.body(), new TypeToken<>(){});
+    }
+
+    private List<Subtask> getSubtaskList(URI uri) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Тело getTaskList: " + response.body());
         return gson.fromJson(response.body(), new TypeToken<>(){});
 
     }
+
 
     private void deleteTasks(URI uri) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
@@ -107,13 +142,21 @@ class HttpTaskServerTest {
         client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private Task getTask(URI uri, Task task) throws IOException, InterruptedException {
+    private Task getTaskById(URI uri, Task task) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(uri.toString() + "?id=" + task.getId()))
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return gson.fromJson(response.body(), task.getClass());
+    }
+
+    private void deleteTaskById(URI uri, int id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri.toString() + "?id=" + id))
+                .DELETE()
+                .build();
+        client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     @Test
@@ -123,20 +166,14 @@ class HttpTaskServerTest {
         List<Task> prioritizedList = getTaskList(uriPrioritizedTasks);
         assertNull(prioritizedList, "Список не должен быть возвращен.");
         // проверка состояния списка
-        pushTaskOnServer(firstTask, uriTask);
-        pushTaskOnServer(secondTask, uriTask);
-        pushTaskOnServer(firstEpic, uriEpic);
-        pushTaskOnServer(secondEpic, uriEpic);
-        pushTaskOnServer(firstSubtask, uriSubtask);
-        pushTaskOnServer(secondSubtask, uriSubtask);
+        addTaskOnServer(firstTask, uriTask);
+        addTaskOnServer(secondTask, uriTask);
+        addTaskOnServer(firstEpic, uriEpic);
+        addTaskOnServer(secondEpic, uriEpic);
+        addTaskOnServer(firstSubtask, uriSubtask);
+        addTaskOnServer(secondSubtask, uriSubtask);
         int expectedListSize = 4;
         prioritizedList = getTaskList(uriPrioritizedTasks);
-        System.out.println("Длинна " + prioritizedList.size());
-        System.out.println("List " + prioritizedList);
-        for (Task task : prioritizedList) {
-            System.out.println(task);
-            System.out.println(task.getType());
-        }
         assertEquals(expectedListSize, prioritizedList.size(), "Неверная длинна списка.");
         assertTrue(prioritizedList.contains(firstTask), "Задача в списке восстановлена некорректно.");
         // удаление Tasks
@@ -158,13 +195,13 @@ class HttpTaskServerTest {
         List<Task> historyList = getTaskList(uriHistory);
         assertNull(historyList, "Список не должен быть возвращен.");
         // проверка состояния списка
-        pushTaskOnServer(firstTask, uriTask);
-        pushTaskOnServer(firstEpic, uriEpic);
-        pushTaskOnServer(secondSubtask, uriSubtask);
+        addTaskOnServer(firstTask, uriTask);
+        addTaskOnServer(firstEpic, uriEpic);
+        addTaskOnServer(secondSubtask, uriSubtask);
         List<Task> expectedList = new ArrayList<>();
-        expectedList.add(getTask(uriSubtask, secondSubtask));
-        expectedList.add(getTask(uriTask, firstTask));
-        expectedList.add(getTask(uriEpic, firstEpic));
+        expectedList.add(getTaskById(uriSubtask, secondSubtask));
+        expectedList.add(getTaskById(uriTask, firstTask));
+        expectedList.add(getTaskById(uriEpic, firstEpic));
         historyList = getTaskList(uriHistory);
         assertEquals(expectedList.size(), historyList.size(), "Списки не совпадают.");
         assertEquals(expectedList.get(1), historyList.get(1), "Порядок задач не совпадает.");
@@ -174,7 +211,36 @@ class HttpTaskServerTest {
         historyList = getTaskList(uriHistory);
         assertEquals(expectedList.size(), historyList.size(), "Списки не совпадают.");
         assertEquals(expectedList.get(0), historyList.get(0), "Порядок задач не совпадает.");
-        deleteTasks(uriTask);
+    }
+
+
+    @Test
+    void handleGetSubtasksFromEpic() throws IOException, InterruptedException {
+        URI uriSubtasksFromEpic = URI.create("http://localhost:8080/tasks/subtask/epic?id=" + firstEpic.getId());
+        // пустой список
+        List<Subtask> subtaskList = getSubtaskList(uriSubtasksFromEpic);
+        List<Epic> epicList = getEpicList(uriEpic);
+        assertNull(epicList);
+        assertNull(subtaskList, "Список не должен быть возвращен.");
+        // проверка состояния списка
+        addTaskOnServer(firstEpic, uriEpic);
+        addTaskOnServer(firstSubtask, uriSubtask);
+        addTaskOnServer(secondSubtask, uriSubtask);
+        subtaskList = getSubtaskList(uriSubtasksFromEpic);
+        int expectedListSize = 2;
+        assertEquals(expectedListSize, subtaskList.size(), "Неверная длинна списка.");
+        assertTrue(subtaskList.contains(firstSubtask), "Задача в списке восстановлена некорректно.");
+        // удаление подзадачи
+        System.out.println("проверка списка: " + getSubtaskList(uriSubtask));
+        deleteTaskById(uriSubtask, firstSubtask.getId());
+        expectedListSize = 1;
+        subtaskList = getSubtaskList(uriSubtasksFromEpic);
+        assertEquals(expectedListSize, subtaskList.size(), "Списки не совпадают.");
+        assertFalse(subtaskList.contains(firstSubtask), "Список не должен содержать " + firstSubtask);
+        Thread.sleep(100); // Тест без задержки не проходит (видимо из-за пинга)
+        // удаление эпика
         deleteTasks(uriEpic);
+        subtaskList = getSubtaskList(uriSubtasksFromEpic);
+        assertNull(subtaskList, "Список не должен быть возвращен.");
     }
 }

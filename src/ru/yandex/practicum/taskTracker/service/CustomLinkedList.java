@@ -15,6 +15,9 @@ class CustomLinkedList<T> {
         final Node<T> next = node.next;
         final Node<T> prev = node.prev;
 
+        if (next == null && prev == null) {
+            node = null;
+        }
         if (prev == null) {
             head = next;
         } else {
