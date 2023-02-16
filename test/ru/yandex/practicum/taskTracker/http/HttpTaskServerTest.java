@@ -5,13 +5,9 @@ import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.taskTracker.model.Epic;
-import ru.yandex.practicum.taskTracker.model.Status;
-import ru.yandex.practicum.taskTracker.model.Subtask;
-import ru.yandex.practicum.taskTracker.model.Task;
+import ru.yandex.practicum.taskTracker.model.*;
 import ru.yandex.practicum.taskTracker.service.Managers;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,7 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +34,6 @@ class HttpTaskServerTest {
     private final URI uriEpic = URI.create("http://localhost:8080/tasks/epic");
     private final URI uriSubtask = URI.create("http://localhost:8080/tasks/subtask");
 
-
     @BeforeAll
     static void beforeAll() throws IOException, URISyntaxException {
         new KVServer().start();
@@ -46,7 +41,7 @@ class HttpTaskServerTest {
     }
 
     @BeforeEach
-    void BeforeEach() {
+    void BeforeEach() throws IOException, URISyntaxException {
         client = HttpClient.newHttpClient();
         gson = Managers.getGson();
         LocalDateTime dateTime = LocalDateTime.now();
@@ -94,15 +89,14 @@ class HttpTaskServerTest {
         }
     }
 
-    private List<Task> getPrioritizedList() throws IOException, InterruptedException {
+    private List<Task> getTaskList(URI uri) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/tasks"))
+                .uri(uri)
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        TypeToken<List<Task>> typeToken = new TypeToken<>() {
-        };
-        return gson.fromJson(response.body(), typeToken);
+        return gson.fromJson(response.body(), new TypeToken<>(){});
+
     }
 
     private void deleteTasks(URI uri) throws IOException, InterruptedException {
@@ -111,13 +105,22 @@ class HttpTaskServerTest {
                 .DELETE()
                 .build();
         client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 
+    private Task getTask(URI uri, Task task) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri.toString() + "?id=" + task.getId()))
+                .GET()
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return gson.fromJson(response.body(), task.getClass());
     }
 
     @Test
     void handleGetPrioritizedTasks() throws IOException, InterruptedException {
+        URI uriPrioritizedTasks = URI.create("http://localhost:8080/tasks");
         // пустой список
-        List<Task> prioritizedList = getPrioritizedList();
+        List<Task> prioritizedList = getTaskList(uriPrioritizedTasks);
         assertNull(prioritizedList, "Список не должен быть возвращен.");
         // проверка состояния списка
         pushTaskOnServer(firstTask, uriTask);
@@ -127,21 +130,51 @@ class HttpTaskServerTest {
         pushTaskOnServer(firstSubtask, uriSubtask);
         pushTaskOnServer(secondSubtask, uriSubtask);
         int expectedListSize = 4;
-        prioritizedList = getPrioritizedList();
+        prioritizedList = getTaskList(uriPrioritizedTasks);
+        System.out.println("Длинна " + prioritizedList.size());
+        System.out.println("List " + prioritizedList);
+        for (Task task : prioritizedList) {
+            System.out.println(task);
+            System.out.println(task.getType());
+        }
         assertEquals(expectedListSize, prioritizedList.size(), "Неверная длинна списка.");
         assertTrue(prioritizedList.contains(firstTask), "Задача в списке восстановлена некорректно.");
         // удаление Tasks
         deleteTasks(uriTask);
-        prioritizedList = getPrioritizedList();
-        System.out.println(prioritizedList);
+        prioritizedList = getTaskList(uriPrioritizedTasks);
         expectedListSize = 2;
         assertEquals(expectedListSize, prioritizedList.size(), "Списки не совпадают.");
         assertFalse(prioritizedList.contains(firstTask), "Список не должен содержать " + firstTask);
         // удаление всех задач
         deleteTasks(uriSubtask);
-        prioritizedList = getPrioritizedList();
+        prioritizedList = getTaskList(uriPrioritizedTasks);
         assertNull(prioritizedList, "Список не должен быть возвращен.");
     }
 
-
+    @Test
+    void handleGetHistory() throws IOException, InterruptedException {
+        URI uriHistory = URI.create("http://localhost:8080/tasks/history");
+        // пустой список
+        List<Task> historyList = getTaskList(uriHistory);
+        assertNull(historyList, "Список не должен быть возвращен.");
+        // проверка состояния списка
+        pushTaskOnServer(firstTask, uriTask);
+        pushTaskOnServer(firstEpic, uriEpic);
+        pushTaskOnServer(secondSubtask, uriSubtask);
+        List<Task> expectedList = new ArrayList<>();
+        expectedList.add(getTask(uriSubtask, secondSubtask));
+        expectedList.add(getTask(uriTask, firstTask));
+        expectedList.add(getTask(uriEpic, firstEpic));
+        historyList = getTaskList(uriHistory);
+        assertEquals(expectedList.size(), historyList.size(), "Списки не совпадают.");
+        assertEquals(expectedList.get(1), historyList.get(1), "Порядок задач не совпадает.");
+        // удаление подзадачи
+        deleteTasks(uriSubtask);
+        expectedList.remove(secondSubtask);
+        historyList = getTaskList(uriHistory);
+        assertEquals(expectedList.size(), historyList.size(), "Списки не совпадают.");
+        assertEquals(expectedList.get(0), historyList.get(0), "Порядок задач не совпадает.");
+        deleteTasks(uriTask);
+        deleteTasks(uriEpic);
+    }
 }
