@@ -37,12 +37,6 @@ class HttpTaskServerTest {
     private final URI uriEpic = URI.create("http://localhost:8080/tasks/epic");
     private final URI uriSubtask = URI.create("http://localhost:8080/tasks/subtask");
 
-//    @BeforeAll
-//    static void beforeAll() throws IOException, URISyntaxException {
-//        new KVServer().start();
-//        new HttpTaskServer().start();
-//    }
-
     @AfterEach
     void afterEach() {
         kvServer.stop();
@@ -276,5 +270,53 @@ class HttpTaskServerTest {
         deleteTaskById(uriTask, firstTask);
         task = getTaskById(uriTask, firstTask);
         assertNull(task, "Задача не удалена.");
+    }
+
+    @Test
+    void handlePostTaskById() throws IOException, InterruptedException {
+        // отправка задачи на сервер
+        addTaskOnServer(firstTask, uriTask);
+        Task task = getTaskById(uriTask, firstTask);
+        assertEquals(firstTask, task, "Задача создана некорректно");
+        // обновление задачи
+        final Task updateTask = new Task(
+                secondTask.getTaskName(),
+                secondTask.getDescription(),
+                firstTask.getId()
+        );
+        addTaskOnServer(updateTask, uriTask);
+        assertNotEquals(task, getTaskById(uriTask, firstTask), "Задача не обновлена.");
+        assertEquals(updateTask, getTaskById(uriTask, firstTask), "Задача не обновлена.");
+        // удаление задачи
+        deleteTaskById(uriTask, firstTask);
+        assertNull(getTaskById(uriTask, firstTask), "Задача не удалена.");
+    }
+
+    @Test
+    void handleDeleteAllTasks() throws IOException, InterruptedException {
+        // нет задач
+        assertNull(getTaskList(uriTask), "Список задач должен быть пустым.");
+        // удаление задач
+        addTaskOnServer(firstTask, uriTask);
+        addTaskOnServer(secondTask, uriTask);
+        final int expectedSize = 2;
+        assertEquals(expectedSize, getTaskList(uriTask).size(), "Списки задач не совпадают.");
+        deleteTasks(uriTask);
+        assertNull(getTaskList(uriTask), "Задачи не удалены.");
+    }
+
+    @Test
+    void handleDeleteTaskById() throws IOException, InterruptedException {
+        // нет задач
+        assertNull(getTaskList(uriTask), "Список задач должен быть пустым.");
+        // удаление задачи по Id
+        addTaskOnServer(firstTask, uriTask);
+        addTaskOnServer(secondTask, uriTask);
+        assertTrue(getTaskList(uriTask).contains(firstTask), "Задача не добавлена.");
+        deleteTaskById(uriTask, firstTask);
+        assertFalse(getTaskList(uriTask).contains(firstTask), "Задача не удалена.");
+        assertTrue(getTaskList(uriTask).contains(secondTask), "Задача не должна быть удалена.");
+        deleteTaskById(uriTask, secondTask);
+        assertNull(getTaskList(uriTask), "Задача не удалена.");
     }
 }
