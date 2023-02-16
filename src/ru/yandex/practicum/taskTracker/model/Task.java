@@ -9,11 +9,8 @@ public class Task {
     protected String description;
     protected LocalDateTime startTime;
     protected Duration duration;
-    protected int id;
+    protected final int id;
     protected Status status;
-
-    public Task() {
-    }
 
     public Task(
             String taskName,
@@ -83,10 +80,6 @@ public class Task {
                     startTime.getHour(),
                     startTime.getMinute());
         } else return null;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getId() {

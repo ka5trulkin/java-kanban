@@ -1,7 +1,6 @@
 package ru.yandex.practicum.taskTracker.service;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.yandex.practicum.taskTracker.http.HttpTaskServer;
 import ru.yandex.practicum.taskTracker.http.KVServer;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
@@ -14,7 +13,9 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
-    URI uri = new URI("http://localhost:8078");
+    private final URI uri = new URI("http://localhost:8078");
+    private static KVServer kvServer;
+    private static HttpTaskServer httpTaskServer;
 
     public HttpTaskManagerTest() throws URISyntaxException {
         super(new HttpTaskManager(new URI("http://localhost:8078")));
@@ -22,8 +23,16 @@ class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
     @BeforeAll
     static void beforeAll() throws IOException, URISyntaxException {
-        new KVServer().start();
-        new HttpTaskServer().start();
+        kvServer = new KVServer();
+        kvServer.start();
+        httpTaskServer = new HttpTaskServer();
+        httpTaskServer.start();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        kvServer.stop();
+        httpTaskServer.stop();
     }
 
     @Test
