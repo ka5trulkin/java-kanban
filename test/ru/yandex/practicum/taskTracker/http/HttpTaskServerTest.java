@@ -151,9 +151,9 @@ class HttpTaskServerTest {
         return gson.fromJson(response.body(), task.getClass());
     }
 
-    private void deleteTaskById(URI uri, int id) throws IOException, InterruptedException {
+    private void deleteTaskById(URI uri, Task task) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri.toString() + "?id=" + id))
+                .uri(URI.create(uri.toString() + "?id=" + task.getId()))
                 .DELETE()
                 .build();
         client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -175,7 +175,7 @@ class HttpTaskServerTest {
         int expectedListSize = 4;
         prioritizedList = getTaskList(uriPrioritizedTasks);
         assertEquals(expectedListSize, prioritizedList.size(), "Неверная длинна списка.");
-        assertTrue(prioritizedList.contains(firstTask), "Задача в списке восстановлена некорректно.");
+        assertTrue(prioritizedList.contains(firstTask), "Задача в списке получена некорректно.");
         // удаление Tasks
         deleteTasks(uriTask);
         prioritizedList = getTaskList(uriPrioritizedTasks);
@@ -229,10 +229,10 @@ class HttpTaskServerTest {
         subtaskList = getSubtaskList(uriSubtasksFromEpic);
         int expectedListSize = 2;
         assertEquals(expectedListSize, subtaskList.size(), "Неверная длинна списка.");
-        assertTrue(subtaskList.contains(firstSubtask), "Задача в списке восстановлена некорректно.");
+        assertTrue(subtaskList.contains(firstSubtask), "Задача в списке получена некорректно.");
         // удаление подзадачи
         System.out.println("проверка списка: " + getSubtaskList(uriSubtask));
-        deleteTaskById(uriSubtask, firstSubtask.getId());
+        deleteTaskById(uriSubtask, firstSubtask);
         expectedListSize = 1;
         subtaskList = getSubtaskList(uriSubtasksFromEpic);
         assertEquals(expectedListSize, subtaskList.size(), "Списки не совпадают.");
@@ -242,5 +242,39 @@ class HttpTaskServerTest {
         deleteTasks(uriEpic);
         subtaskList = getSubtaskList(uriSubtasksFromEpic);
         assertNull(subtaskList, "Список не должен быть возвращен.");
+    }
+
+    @Test
+    void handleGetAllTasks() throws IOException, InterruptedException {
+        // пустой список
+        List<Task> taskList = getTaskList(uriTask);
+        assertNull(taskList, "Список не должен быть возвращен.");
+        // проверка состояния списка
+        addTaskOnServer(firstTask, uriTask);
+        addTaskOnServer(secondTask, uriTask);
+        int expectedListSize = 2;
+        taskList = getTaskList(uriTask);
+        assertEquals(expectedListSize, taskList.size(), "Неверная длинна списка.");
+        assertTrue(taskList.contains(firstTask), "Задача в списке получена некорректно.");
+        assertTrue(taskList.contains(secondTask), "Задача в списке получена некорректно.");
+        // удаление задач
+        deleteTasks(uriTask);
+        taskList = getTaskList(uriTask);
+        assertNull(taskList, "Список не должен быть возвращен.");
+    }
+
+    @Test
+    void handleGetTaskById() throws IOException, InterruptedException {
+        // задача не существует
+        Task task = getTaskById(uriTask, firstTask);
+        assertNull(task, "Задача не должна существовать.");
+        // получение задачи
+        addTaskOnServer(firstTask, uriTask);
+        task = getTaskById(uriTask, firstTask);
+        assertEquals(firstTask, task, "Задачи не совпадают.");
+        // удаление задачи
+        deleteTaskById(uriTask, firstTask);
+        task = getTaskById(uriTask, firstTask);
+        assertNull(task, "Задача не удалена.");
     }
 }
