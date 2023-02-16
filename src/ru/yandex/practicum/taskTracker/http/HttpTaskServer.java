@@ -1,6 +1,9 @@
 package ru.yandex.practicum.taskTracker.http;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -21,7 +24,6 @@ import java.util.*;
 import static ru.yandex.practicum.taskTracker.http.Endpoint.*;
 
 public class HttpTaskServer {
-//    private final TaskManager manager = FileBackedTasksManager.loadFromFile(new File("resource/backup-task-manager.csv"));
     private final TaskManager manager = Managers.getDefault();
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Gson gson = Managers.getGson();
@@ -132,7 +134,7 @@ public class HttpTaskServer {
         private Endpoint getEndpoint(HttpExchange exchange) throws IOException {
             String[] pathParts = exchange.getRequestURI().getPath().split("/");
             String requestMethod = exchange.getRequestMethod();
-            boolean isContainsParameter = exchange.getRequestURI().toString().contains("?");
+            boolean isContainsRequest = exchange.getRequestURI().toString().contains("?");
             boolean isContainsId = exchange.getRequestURI().toString().contains("id=");
             final int contextIndex = 1;
             final int typeIndex = 2;
@@ -151,13 +153,13 @@ public class HttpTaskServer {
                     return GET_SUBTASKS_FROM_EPIC;
                 }
                 if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("task"))) {
-                    return processRequestTaskData(exchange, requestMethod, isContainsParameter, isContainsId);
+                    return processRequestTaskData(exchange, requestMethod, isContainsRequest, isContainsId);
                 }
                 if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("epic"))) {
-                    return processRequestEpicData(exchange, requestMethod, isContainsParameter, isContainsId);
+                    return processRequestEpicData(exchange, requestMethod, isContainsRequest, isContainsId);
                 }
                 if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("subtask"))) {
-                    return processRequestSubtaskData(exchange, requestMethod, isContainsParameter, isContainsId);
+                    return processRequestSubtaskData(exchange, requestMethod, isContainsRequest, isContainsId);
                 }
             }
             return UNKNOWN;
@@ -185,6 +187,7 @@ public class HttpTaskServer {
                 writeResponse(exchange, gson.toJson(subtasksList), 200);
             } else writeResponse(exchange, "Список подзадач пуст", 204);
         }
+
         // обработка запросов Tasks
         private Endpoint processRequestTaskData(HttpExchange exchange,
                                                 String requestMethod,
@@ -206,7 +209,8 @@ public class HttpTaskServer {
             if ((requestMethod.equals(DELETE)) && (isContainsId)) {
                 this.taskId = getPostId(exchange);
                 return DELETE_TASK_BY_ID;
-            } return UNKNOWN;
+            }
+            return UNKNOWN;
         }
 
         private void handleGetAllTasks(HttpExchange exchange) throws IOException {
@@ -253,6 +257,7 @@ public class HttpTaskServer {
                 writeResponse(exchange, "Задача ID:" + taskId + " не найдена", 404);
             }
         }
+
         // обработка запросов Epics
         private Endpoint processRequestEpicData(HttpExchange exchange,
                                                 String requestMethod,
@@ -274,7 +279,8 @@ public class HttpTaskServer {
             if ((requestMethod.equals(DELETE)) && (isContainsId)) {
                 this.taskId = getPostId(exchange);
                 return DELETE_EPIC_BY_ID;
-            } return UNKNOWN;
+            }
+            return UNKNOWN;
         }
 
         private void handleGetAllEpics(HttpExchange exchange) throws IOException {
@@ -321,11 +327,12 @@ public class HttpTaskServer {
                 writeResponse(exchange, "Эпик ID:" + taskId + " не найден", 404);
             }
         }
+
         // обработка запросов Subtasks
         private Endpoint processRequestSubtaskData(HttpExchange exchange,
-                                                String requestMethod,
-                                                boolean isContainsRequest,
-                                                boolean isContainsId) throws IOException {
+                                                   String requestMethod,
+                                                   boolean isContainsRequest,
+                                                   boolean isContainsId) throws IOException {
             if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
                 return GET_ALL_SUBTASKS;
             }
@@ -342,7 +349,8 @@ public class HttpTaskServer {
             if ((requestMethod.equals(DELETE)) && (isContainsId)) {
                 this.taskId = getPostId(exchange);
                 return DELETE_SUBTASK_BY_ID;
-            } return UNKNOWN;
+            }
+            return UNKNOWN;
         }
 
         private void handleGetAllSubtasks(HttpExchange exchange) throws IOException {
