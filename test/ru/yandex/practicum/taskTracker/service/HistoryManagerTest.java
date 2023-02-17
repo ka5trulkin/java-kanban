@@ -28,7 +28,6 @@ class HistoryManagerTest {
         taskManager = Managers.getDefault();
         LocalDateTime dateTime = LocalDateTime.of(2021, 7, 28, 1, 21);
         final int epicId = 10;
-
         taskList.addAll(
                 Arrays.asList(
                         new Task(
@@ -69,9 +68,7 @@ class HistoryManagerTest {
                                 "Описание подзадачи 3",
                                 taskManager.assignID(),
                                 epicId,
-                                Status.NEW)
-                )
-        );
+                                Status.NEW)));
     }
 
     @Test

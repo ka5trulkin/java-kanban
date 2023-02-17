@@ -17,15 +17,13 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     protected final Set<Task> prioritizedTasksByStartTime = new TreeSet<>(
             Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder()))
-                    .thenComparing(Task::getId)
-    );
+                    .thenComparing(Task::getId));
 
     private void setEpicStatus(List<Subtask> subtaskList, Epic epic) {
         List<Status> statusList = subtaskList
                 .stream()
                 .map(Task::getStatus)
                 .collect(Collectors.toList());
-
         if (statusList.contains(Status.IN_PROGRESS) || statusList.contains(Status.NEW)) {
             epic.setStatus(Status.IN_PROGRESS);
         } else if (statusList.contains(Status.DONE)) {
@@ -40,7 +38,6 @@ public class InMemoryTaskManager implements TaskManager {
                 .filter(Objects::nonNull)
                 .min(Comparator.naturalOrder())
                 .orElse(null);
-
         epic.setStartTime(epicStartTime);
     }
 
@@ -51,7 +48,6 @@ public class InMemoryTaskManager implements TaskManager {
                 .filter(Objects::nonNull)
                 .max(Comparator.naturalOrder())
                 .orElse(null);
-
         epic.setEndTime(epicEndTime);
     }
 
@@ -62,7 +58,6 @@ public class InMemoryTaskManager implements TaskManager {
                 .filter(Objects::nonNull)
                 .reduce(Duration::plus)
                 .orElse(Duration.ZERO);
-
         epic.setDuration(epicDuration);
     }
 
@@ -89,7 +84,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void checkEpic(Epic epic) {
         List<Subtask> subtaskList = getSubtasksFromEpic(epic);
-
         setEpicStatus(subtaskList, epic);
         setEpicStartTime(subtaskList, epic);
         setEpicEndTime(subtaskList, epic);
@@ -208,15 +202,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void addNewSubtask(Subtask subtask) {
         if (subtask != null && !subtasks.containsKey(subtask.getId())) {
             int subtaskId = subtask.getId();
-
             if (!epics.containsKey(subtask.getEpicId())) {
                 throw new IllegalArgumentException(
                         "Подзадача ID:" + subtaskId
-                                + " не принадлежит эпику ID:" + subtask.getEpicId()
-                );
+                                + " не принадлежит эпику ID:" + subtask.getEpicId());
             }
             Epic epic = epics.get(subtask.getEpicId());
-
             checkTaskToCrossByStartTime(subtask);
             subtasks.put(subtaskId, subtask);
             prioritizedTasksByStartTime.add(subtask);
@@ -229,7 +220,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         if ((task != null) && (tasks.containsKey(task.getId()))) {
             int taskId = task.getId();
-
             checkTaskToCrossByStartTime(task);
             updatePrioritizedTasksByStartTime(tasks.get(taskId), task);
             tasks.put(taskId, task);
@@ -240,7 +230,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic epic) {
         if ((epic != null) && (epics.containsKey(epic.getId()))) {
             int epicId = epic.getId();
-
             checkTaskToCrossByStartTime(epic);
             updatePrioritizedTasksByStartTime(epics.get(epicId), epic);
             epics.put(epicId, epic);
@@ -252,12 +241,10 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(Subtask subtask) {
         if ((subtask != null) && (subtasks.containsKey(subtask.getId()))) {
             int subtaskId = subtask.getId();
-
             if (!epics.containsKey(subtask.getEpicId())) {
                 throw new IllegalArgumentException(
                         "Подзадача ID:" + subtaskId
-                                + " не принадлежит эпику ID:" + subtask.getEpicId()
-                );
+                                + " не принадлежит эпику ID:" + subtask.getEpicId());
             }
             Epic epic = epics.get(subtask.getEpicId());
             if (subtask.getStartTime() != null) {
@@ -299,7 +286,6 @@ public class InMemoryTaskManager implements TaskManager {
             throw new IllegalArgumentException("Подзадача ID:" + subtaskId + " не найдена");
         }
         Epic epic = epics.get(subtasks.get(subtaskId).getEpicId());
-
         prioritizedTasksByStartTime.remove(subtasks.get(subtaskId));
         subtasks.remove(subtaskId);
         historyManager.remove(subtaskId);

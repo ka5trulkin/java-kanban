@@ -40,33 +40,28 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
                 "Новое описание",
                 taskTest.getStartTime(),
                 Duration.ofMinutes(10),
-                idNonexistent
-        );
+                idNonexistent);
         final Subtask subtask = new Subtask(
                 "Новая подзадача",
                 "Новое описание",
                 subtaskTest.getStartTime(),
                 Duration.ofMinutes(25),
                 idNonexistent,
-                epicTest.getId()
-        );
+                epicTest.getId());
         String errorByCrossTask = "Задача ID:" + task.getId() + " пересекается с другой задачей по времени: " + task.getStartTime();
         String errorByCrossSubtask = "Задача ID:" + subtask.getId() + " пересекается с другой задачей по времени: " + subtask.getStartTime();
-
         taskList.forEach(manager::addNewTask);
         epicList.forEach(manager::addNewEpic);
         subtaskList.forEach(manager::addNewSubtask);
         IllegalArgumentException taskException = assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.addNewTask(task),
-                "Задачи не пересекаются по времени."
-        );
+                "Задачи не пересекаются по времени.");
         assertEquals(errorByCrossTask, taskException.getMessage());
         IllegalArgumentException subtaskException = assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.addNewTask(subtask),
-                "Задачи не пересекаются по времени."
-        );
+                "Задачи не пересекаются по времени.");
         assertEquals(errorByCrossSubtask, subtaskException.getMessage());
     }
 }

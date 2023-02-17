@@ -12,7 +12,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         if (task != null) {
             int idTask = task.getId();
-
             remove(idTask);
             history.add(idTask, task);
         }
