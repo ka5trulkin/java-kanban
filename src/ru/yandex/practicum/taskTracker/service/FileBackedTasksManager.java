@@ -15,7 +15,6 @@ import java.util.List;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     protected final File backupFile;
     protected final String lineSeparator = "\r?\n";
-    private final String infoLine = "id,type,name,status,description,startTime,endTime,epic";
 
     public FileBackedTasksManager(File backupFile) {
         this.backupFile = backupFile;
@@ -39,7 +38,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     protected String tasksToString() {
         StringBuilder stringBuilder = new StringBuilder();
-
+        String infoLine = "id,type,name,status,description,startTime,endTime,epic";
         stringBuilder.append(infoLine);
         stringBuilder.append(System.lineSeparator());
         tasks.values().forEach(task -> stringBuilder.append(taskToString(task)));

@@ -399,7 +399,6 @@ public class HttpTaskServer {
         }
 
         private void handleDeleteSubtaskById(HttpExchange exchange) throws IOException {
-            System.out.println("попытка удаления сабтаска");
             try {
                 manager.deleteSubtaskById(taskId);
                 writeResponse(exchange, "Подзадача ID:" + taskId + " удалена", 200);

@@ -10,12 +10,5 @@ public class Main {
     public static void main(String[] args) throws IOException, URISyntaxException {
         new KVServer().start();
         new HttpTaskServer().start();
-//        KVTaskClient client = new KVTaskClient(new URI("http://localhost:8078"));
-//        String key = "kurva";
-//        String value = "Ja perdolal";
-//        client.save(key, value);
-//        System.out.println("Загруженные данные по ключу: " + key + " - " + client.load(key));
-//        client.save(key, "Ne perdolal");
-//        System.out.println("Обновленные данные по ключу: " + key + " - " + client.load(key));
     }
 }

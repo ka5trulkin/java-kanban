@@ -32,7 +32,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @BeforeEach
     void beforeEach() {
         LocalDateTime dateTime = LocalDateTime.of(2022, 7, 28, 1, 21);
-
         taskList.addAll(
                 Arrays.asList(
                         new Task(
@@ -51,9 +50,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                                 "Задача 3",
                                 "Описание задачи 3",
                                 manager.assignID(),
-                                Status.IN_PROGRESS)
-                )
-        );
+                                Status.IN_PROGRESS)));
         taskTest = taskList.get(0);
         epicList.add(new Epic("Эпик 1", "Описание эпика 1", manager.assignID()));
         epicList.add(new Epic("Эпик 2", "Описание эпика 2", manager.assignID(), Status.NEW));
@@ -79,9 +76,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                                 "Описание подзадачи 3",
                                 manager.assignID(),
                                 epicTest.getId(),
-                                Status.NEW)
-                )
-        );
+                                Status.NEW)));
         subtaskTest = subtaskList.get(0);
         idNonexistent = 777;
     }
@@ -94,9 +89,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                         taskTest.getDescription(),
                         taskTest.getStartTime(),
                         taskTest.getDuration(),
-                        taskTest.getId()
-                )
-        );
+                        taskTest.getId()));
 
         final int taskId = taskTest.getId();
         final Task task = manager.getTaskById(taskId);
@@ -117,17 +110,13 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         final int epicId = epicTest.getId();
         final Epic epic = manager.getEpicById(epicId);
-
         assertNotNull(epic, "Эпик не найден.");
         assertEquals(epicTest, epic, "Эпики не совпадают.");
-
         final List<Epic> epicTestList = manager.getEpics();
-
         assertNotNull(epicTestList, "Эпики на возвращаются.");
         assertEquals(1, epicTestList.size(), "Неверное количество эпиков.");
         assertEquals(epicTest, epicTestList.get(0), "Эпики не совпадают.");
         assertEquals(Status.NEW, epic.getStatus());
-
         subtaskList.forEach(manager::addNewSubtask);
         assertEquals(Status.IN_PROGRESS, epic.getStatus(), "Статус Эпика не совпадает.");
         manager.getSubtasks().forEach(subtask -> subtask.setStatus(Status.DONE));
@@ -141,13 +130,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void addNewSubtask() {
         IllegalArgumentException exception1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.addNewSubtask(subtaskTest)
-        );
-
+                () -> manager.addNewSubtask(subtaskTest));
         String expectedException = "Подзадача ID:" + subtaskTest.getId()
                 + " не принадлежит эпику ID:" + subtaskTest.getEpicId();
         assertEquals(expectedException, exception1.getMessage(), "Подзадача добавлена в несуществующий эпик");
-
         manager.addNewEpic(epicTest);
         manager.addNewSubtask(
                 new Subtask(
@@ -156,9 +142,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                         subtaskTest.getStartTime(),
                         subtaskTest.getDuration(),
                         subtaskTest.getId(),
-                        subtaskTest.getEpicId()
-                )
-        );
+                        subtaskTest.getEpicId()));
 
         final int subtaskId = subtaskTest.getId();
         final Subtask subtask = manager.getSubTaskById(subtaskId);
@@ -175,8 +159,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.deleteAllEpics();
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.addNewSubtask(subtask)
-        );
+                () -> manager.addNewSubtask(subtask));
         assertEquals(expectedException, exception2.getMessage(), "Подзадача добавлена в несуществующий эпик");
     }
 
@@ -223,8 +206,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         IllegalArgumentException exception1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.getTaskById(idNonexistent)
-        );
+                () -> manager.getTaskById(idNonexistent));
         assertEquals(expectedException, exception1.getMessage(), "Задача не должна быть получена.");
 
         manager.deleteAllTasks();
@@ -232,8 +214,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.getTaskById(taskId)
-        );
+                () -> manager.getTaskById(taskId));
         assertEquals(expectedException, exception2.getMessage(), "Задача не должна быть получена.");
 
     }
@@ -250,16 +231,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         IllegalArgumentException exception1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.getEpicById(idNonexistent)
-        );
+                () -> manager.getEpicById(idNonexistent));
         assertEquals(expectedException, exception1.getMessage(), "Эпик не должен быть получен.");
 
         manager.deleteAllEpics();
         expectedException = "Эпик с ID:" + epicId + " не найден.";
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.getEpicById(epicId)
-        );
+                () -> manager.getEpicById(epicId));
         assertEquals(expectedException, exception2.getMessage(), "Эпик не должен быть получен.");
     }
 
@@ -276,16 +255,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         IllegalArgumentException exception1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.getSubTaskById(idNonexistent)
-        );
+                () -> manager.getSubTaskById(idNonexistent));
         assertEquals(expectedException, exception1.getMessage(), "Подзадача не должна быть получена.");
 
         manager.deleteAllSubtasks();
         expectedException = "Подзадача с ID:" + subtaskId + " не найдена.";
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.getSubTaskById(subtaskId)
-        );
+                () -> manager.getSubTaskById(subtaskId));
         assertEquals(expectedException, exception2.getMessage(), "Подзадача не должна быть получена.");
     }
 
@@ -299,8 +276,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.getTaskById(taskTest.getId())
-        );
+                () -> manager.getTaskById(taskTest.getId()));
         assertEquals(expectedException, exception.getMessage(), "Задача не удалена.");
         assertEquals(Collections.emptyList(), manager.getTasks(), "Задачи не удалены.");
     }
@@ -318,16 +294,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
         IllegalArgumentException exception1 = assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.getEpicById(epicTest.getId()),
-                "Эпик не удален."
-        );
+                "Эпик не удален.");
         assertEquals(expectedException, exception1.getMessage(), "Эпик не удален.");
 
         expectedException = "Подзадача с ID:" + subtaskTest.getId() + " не найдена.";
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.getSubTaskById(subtaskTest.getId()),
-                "Подзадача не удалена."
-        );
+                "Подзадача не удалена.");
         assertEquals(expectedException, exception2.getMessage(), "Подзадача не удалена.");
         assertEquals(Collections.emptyList(), manager.getEpics(), "Эпики не удалены.");
         assertEquals(Collections.emptyList(), manager.getSubtasks(), "Подзадачи не удалены.");
@@ -347,8 +321,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.getSubTaskById(subtaskTest.getId()),
-                "Подзадача не удалена."
-        );
+                "Подзадача не удалена.");
         assertEquals(expectedException, exception.getMessage(), "Подзадача не удалена.");
         assertEquals(epicTest, manager.getEpicById(epicTest.getId()), "Эпик не должен быть удален.");
         assertEquals(Collections.emptyList(), manager.getSubtasks(), "Подзадачи не удалены.");
@@ -363,8 +336,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 "Новое описание",
                 LocalDateTime.of(2000, 10, 10, 10, 10),
                 Duration.ofDays(23),
-                taskTest.getId()
-        );
+                taskTest.getId());
         final int taskId = task.getId();
 
         taskList.forEach(manager::addNewTask);
@@ -378,8 +350,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.updateTask(taskNonexistent)
-        );
+                () -> manager.updateTask(taskNonexistent));
         assertEquals(expectedException, exception.getMessage(), "Задача не должна быть обновлена.");
     }
 
@@ -409,8 +380,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.updateEpic(epicNonexistent)
-        );
+                () -> manager.updateEpic(epicNonexistent));
         assertEquals(expectedException, exception.getMessage(), "Эпик не должен быть обновлен.");
     }
 
@@ -422,16 +392,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 LocalDateTime.of(2077, 11, 11, 12, 12),
                 Duration.ofHours(16),
                 subtaskTest.getId(),
-                subtaskTest.getEpicId()
-        );
+                subtaskTest.getEpicId());
         final int subtaskId = subtask.getId();
 
         String expectedException = "Ошибка добавления " + subtask;
 
         IllegalArgumentException exception1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.updateSubtask(subtask)
-        );
+                () -> manager.updateSubtask(subtask));
         assertEquals(expectedException, exception1.getMessage(), "Подзадача не должна существовать.");
 
         epicList.forEach(manager::addNewEpic);
@@ -447,14 +415,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 LocalDateTime.of(2077, 11, 11, 12, 12),
                 Duration.ofHours(16),
                 subtaskId,
-                idNonexistent
-        );
-
+                idNonexistent);
         expectedException = "Подзадача ID:" + subtaskId + " не принадлежит эпику ID:" + idNonexistent;
         IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.updateSubtask(subtaskWithNonexistentEpicId)
-        );
+                () -> manager.updateSubtask(subtaskWithNonexistentEpicId));
         assertEquals(expectedException, exception2.getMessage(), "Подзадача добавлена в несуществующий эпик.");
     }
 
@@ -466,13 +431,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.deleteTaskById(taskId),
-                "Задача не должна существовать."
-        );
+                "Задача не должна существовать.");
         taskList.forEach(manager::addNewTask);
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.deleteTaskById(idNonexistent)
-        );
+                () -> manager.deleteTaskById(idNonexistent));
         assertEquals(expectedException, exception.getMessage(), "Задача не должна существовать.");
         manager.deleteTaskById(taskId);
         assertEquals(taskList.size() - 1, manager.getTasks().size(), "Неверное количество задач.");
@@ -490,13 +453,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.deleteEpicById(epicId),
-                "Задача не должна существовать."
-        );
+                "Задача не должна существовать.");
         epicList.forEach(manager::addNewEpic);
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.deleteEpicById(idNonexistent)
-        );
+                () -> manager.deleteEpicById(idNonexistent));
         assertEquals(expectedException, exception.getMessage(), "Эпик не должен существовать.");
         subtaskList.forEach(manager::addNewSubtask);
         manager.deleteEpicById(epicId);
@@ -504,8 +465,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.getEpicById(epicId),
-                "Эпик не удален."
-        );
+                "Эпик не удален.");
     }
 
     @Test
@@ -517,13 +477,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.deleteSubtaskById(subtaskId),
-                "Подзадача не должна существовать."
-        );
+                "Подзадача не должна существовать.");
         manager.addNewSubtask(subtaskTest);
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> manager.deleteSubtaskById(idNonexistent)
-        );
+                () -> manager.deleteSubtaskById(idNonexistent));
         assertEquals(expectedException, exception.getMessage(), "Подзадача не должна существовать.");
         assertEquals(Status.IN_PROGRESS, epicTest.getStatus(), "Статусы не совпадают.");
         manager.deleteSubtaskById(subtaskId);
@@ -531,8 +489,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> manager.deleteSubtaskById(subtaskId),
-                "Подзадача не удалена."
-        );
+                "Подзадача не удалена.");
         subtaskList.forEach(manager::addNewSubtask);
         manager.deleteSubtaskById(subtaskId);
         assertEquals(subtaskList.size() - 1, manager.getSubtasks().size(), "Неверное количество задач.");
@@ -554,10 +511,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void getPrioritizedTasks() {
         List<String> list = new ArrayList<>(
-                List.of("Подзадача 2", "Задача 2", "Задача 1", "Подзадача 1", "Задача 3", "Подзадача 3"
-                )
-        );
-
+                List.of("Подзадача 2", "Задача 2", "Задача 1", "Подзадача 1", "Задача 3", "Подзадача 3"));
         assertEquals(Collections.emptyList(), manager.getPrioritizedTasks(), "Список должен быть пустым.");
         taskList.forEach(manager::addNewTask);
         epicList.forEach(manager::addNewEpic);
@@ -566,23 +520,19 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(
                 list,
                 manager.getPrioritizedTasks().stream().map(Task::getTaskName).collect(Collectors.toList()),
-                "Задачи не совпадают."
-        );
+                "Задачи не совпадают.");
         manager.deleteSubtaskById(subtaskTest.getId());
-        list.remove("Подзадача 1"
-        );
+        list.remove("Подзадача 1");
         assertEquals(
                 list,
                 manager.getPrioritizedTasks().stream().map(Task::getTaskName).collect(Collectors.toList()),
-                "Задачи не совпадают."
-        );
+                "Задачи не совпадают.");
         manager.deleteTaskById(taskTest.getId());
         list.remove("Задача 1");
         assertEquals(
                 list,
                 manager.getPrioritizedTasks().stream().map(Task::getTaskName).collect(Collectors.toList()),
-                "Задачи не совпадают."
-        );
+                "Задачи не совпадают.");
         manager.deleteAllTasks();
         manager.deleteAllSubtasks();
         assertEquals(Collections.emptyList(), manager.getPrioritizedTasks(), "Список должен быть пустым.");
