@@ -10,9 +10,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
-    private final HttpClient client = HttpClient.newHttpClient();
     private final URI serverURL;
-    private final long token;
+    private final String token;
     private final Gson gson = Managers.getGson();
 
     public KVTaskClient(URI serverURI) {
@@ -21,15 +20,16 @@ public class KVTaskClient {
         System.out.println("Клиент получил токен: " + token);
     }
 
-    private long registrationOnKVServer() {
+    private String registrationOnKVServer() {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(this.serverURL.resolve("/register"))
                 .GET()
                 .build();
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response
+                    = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                return Long.parseLong(response.body());
+                return response.body();
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
@@ -37,7 +37,7 @@ public class KVTaskClient {
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
-        return - 1;
+        return null;
     }
 
     public void save(String key, String json) {
@@ -47,10 +47,11 @@ public class KVTaskClient {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response
+                    = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                System.out.println("Сохранение со стороны клиента прошло успешно");
-            }
+                System.out.println("Сохранение KVTaskClient прошло успешно");
+            } else System.out.println("Ошибка сохранения KVTaskClient");
         } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
@@ -64,11 +65,12 @@ public class KVTaskClient {
                 .GET()
                 .build();
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response
+                    = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                System.out.println("Загрузка со стороны клиента прошла успешно");
+                System.out.println("Загрузка KVTaskClient прошла успешно");
                 return response.body();
-            }
+            } else System.out.println("Ошибка загрузки KVTaskClient");
         } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
