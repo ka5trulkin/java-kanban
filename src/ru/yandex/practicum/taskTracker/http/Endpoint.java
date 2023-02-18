@@ -23,19 +23,6 @@ public enum Endpoint {
     DELETE_SUBTASK_BY_ID,
     UNKNOWN;
 
-    public static Endpoint getAll(Type taskType) {
-        switch (taskType) {
-            case TASK:
-                return GET_ALL_TASKS;
-            case EPIC:
-                return GET_ALL_EPICS;
-            case SUBTASK:
-                return GET_ALL_SUBTASKS;
-            default:
-                return UNKNOWN;
-        }
-    }
-
     public static Endpoint post(Type taskType) {
         switch (taskType) {
             case TASK:
@@ -44,6 +31,19 @@ public enum Endpoint {
                 return POST_EPIC;
             case SUBTASK:
                 return POST_SUBTASK;
+            default:
+                return UNKNOWN;
+        }
+    }
+
+    public static Endpoint getAll(Type taskType) {
+        switch (taskType) {
+            case TASK:
+                return GET_ALL_TASKS;
+            case EPIC:
+                return GET_ALL_EPICS;
+            case SUBTASK:
+                return GET_ALL_SUBTASKS;
             default:
                 return UNKNOWN;
         }
@@ -87,5 +87,4 @@ public enum Endpoint {
                 return UNKNOWN;
         }
     }
-
 }
