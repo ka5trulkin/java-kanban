@@ -1,8 +1,5 @@
 package ru.yandex.practicum.taskTracker.http;
 
-import com.google.gson.Gson;
-import ru.yandex.practicum.taskTracker.service.Managers;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -12,7 +9,6 @@ import java.net.http.HttpResponse;
 public class KVTaskClient {
     private final URI serverURL;
     private final String token;
-    private final Gson gson = Managers.getGson();
 
     public KVTaskClient(URI serverURI) {
         this.serverURL = serverURI;
