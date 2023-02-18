@@ -19,19 +19,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static ru.yandex.practicum.taskTracker.http.Endpoint.*;
+import static ru.yandex.practicum.taskTracker.http.Method.*;
 
 public class HttpTaskServer {
-    HttpServer httpServer;
+    private HttpServer httpServer;
     private final TaskManager manager = Managers.getDefault();
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Gson gson = Managers.getGson();
+    private final int PORT = 8080;
 
     public HttpTaskServer() throws URISyntaxException {
     }
 
     public void start() throws IOException {
         httpServer = HttpServer.create();
-        int PORT = 8080;
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
         httpServer.createContext("/tasks/history", new TasksHandler());
@@ -45,6 +46,7 @@ public class HttpTaskServer {
 
     public void stop() {
         httpServer.stop(0);
+        System.out.println("Сервер остановлен");
     }
 
     class TasksHandler implements HttpHandler {
@@ -145,23 +147,27 @@ public class HttpTaskServer {
                 if ((pathParts.length == contextIndex + 1) && (requestMethod.equals(GET))) {
                     return GET_PRIORITIZES_TASKS;
                 }
-                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("history"))) {
-                    return GET_HISTORY;
-                }
                 if ((pathParts.length == subtasksFromEpicIndex + 1)
                         && (pathParts[typeIndex].equals("subtask"))
                         && (pathParts[subtasksFromEpicIndex].equals("epic"))
                         && (isContainsId)) {
                     return GET_SUBTASKS_FROM_EPIC;
                 }
-                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("task"))) {
-                    return processRequestTaskData(exchange, requestMethod, isContainsRequest, isContainsId);
-                }
-                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("epic"))) {
-                    return processRequestEpicData(exchange, requestMethod, isContainsRequest, isContainsId);
-                }
-                if ((pathParts.length == typeIndex + 1) && (pathParts[typeIndex].equals("subtask"))) {
-                    return processRequestSubtaskData(exchange, requestMethod, isContainsRequest, isContainsId);
+                if ((pathParts.length == typeIndex + 1)) {
+                    switch (pathParts[typeIndex]) {
+                        case "history": {
+                            return GET_HISTORY;
+                        }
+                        case "task": {
+                            return processRequestTaskData(exchange, requestMethod, isContainsRequest, isContainsId);
+                        }
+                        case "epic": {
+                            return processRequestEpicData(exchange, requestMethod, isContainsRequest, isContainsId);
+                        }
+                        case "subtask": {
+                            return processRequestSubtaskData(exchange, requestMethod, isContainsRequest, isContainsId);
+                        }
+                    }
                 }
             }
             return UNKNOWN;
@@ -201,7 +207,7 @@ public class HttpTaskServer {
                                                 String requestMethod,
                                                 boolean isContainsRequest,
                                                 boolean isContainsId) throws IOException {
-            if ((requestMethod.equals(GET)) && (!isContainsRequest)) {
+            if ((Method.GET.equalsMethod(requestMethod)) && (!isContainsRequest)) {
                 return GET_ALL_TASKS;
             }
             if ((requestMethod.equals(GET)) && (isContainsId)) {
