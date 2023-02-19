@@ -24,26 +24,25 @@ import static ru.yandex.practicum.taskTracker.http.Method.*;
 import static ru.yandex.practicum.taskTracker.model.Type.*;
 
 public class HttpTaskServer {
-    private HttpServer httpServer;
+    private final HttpServer httpServer;
     private final TaskManager manager = Managers.getDefault();
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final Gson gson = Managers.getGson();
     private final int PORT = 8080;
 
-    public HttpTaskServer() throws URISyntaxException {
-    }
-
-    public void start() throws IOException {
-        httpServer = HttpServer.create();
-        httpServer.bind(new InetSocketAddress(PORT), 0);
+    public HttpTaskServer() throws URISyntaxException, IOException {
+        httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
         httpServer.createContext("/tasks/history", new TasksHandler());
         httpServer.createContext("/tasks/subtask/epic", new TasksHandler());
         httpServer.createContext("/tasks/task", new TasksHandler());
         httpServer.createContext("/tasks/epic", new TasksHandler());
         httpServer.createContext("/tasks/subtask", new TasksHandler());
+    }
+
+    public void start() {
         httpServer.start();
-        System.out.println("HttpTaskServer запущен");
+        System.out.println("HttpTaskServer запущен на порту: " + PORT);
     }
 
     public void stop() {
@@ -58,77 +57,59 @@ public class HttpTaskServer {
         public void handle(HttpExchange exchange) throws IOException {
             Endpoint endpoint = getEndpoint(exchange);
             switch (endpoint) {
-                case GET_PRIORITIZES_TASKS: {
+                case GET_PRIORITIZES_TASKS:
                     handleGetPrioritizedTasks(exchange);
                     break;
-                }
-                case GET_HISTORY: {
+                case GET_HISTORY:
                     handleGetHistory(exchange);
                     break;
-                }
-                case GET_SUBTASKS_FROM_EPIC: {
+                case GET_SUBTASKS_FROM_EPIC:
                     handleGetSubtasksFromEpic(exchange);
-                }
-                case GET_ALL_TASKS: {
+                case GET_ALL_TASKS:
                     handleGetAllTasks(exchange);
                     break;
-                }
-                case GET_TASK_BY_ID: {
+                case GET_TASK_BY_ID:
                     handleGetTaskById(exchange);
                     break;
-                }
-                case POST_TASK: {
+                case POST_TASK:
                     handlePostTaskById(exchange);
                     break;
-                }
-                case DELETE_ALL_TASKS: {
+                case DELETE_ALL_TASKS:
                     handleDeleteAllTasks(exchange);
                     break;
-                }
-                case DELETE_TASK_BY_ID: {
+                case DELETE_TASK_BY_ID:
                     handleDeleteTaskById(exchange);
                     break;
-                }
-                case GET_ALL_EPICS: {
+                case GET_ALL_EPICS:
                     handleGetAllEpics(exchange);
                     break;
-                }
-                case GET_EPIC_BY_ID: {
+                case GET_EPIC_BY_ID:
                     handleGetEpicById(exchange);
                     break;
-                }
-                case POST_EPIC: {
+                case POST_EPIC:
                     handlePostEpicById(exchange);
                     break;
-                }
-                case DELETE_ALL_EPICS: {
+                case DELETE_ALL_EPICS:
                     handleDeleteAllEpics(exchange);
                     break;
-                }
-                case DELETE_EPIC_BY_ID: {
+                case DELETE_EPIC_BY_ID:
                     handleDeleteEpicById(exchange);
                     break;
-                }
-                case GET_ALL_SUBTASKS: {
+                case GET_ALL_SUBTASKS:
                     handleGetAllSubtasks(exchange);
                     break;
-                }
-                case GET_SUBTASK_BY_ID: {
+                case GET_SUBTASK_BY_ID:
                     handleGetSubtaskById(exchange);
                     break;
-                }
-                case POST_SUBTASK: {
+                case POST_SUBTASK:
                     handlePostSubtaskById(exchange);
                     break;
-                }
-                case DELETE_ALL_SUBTASKS: {
+                case DELETE_ALL_SUBTASKS:
                     handleDeleteAllSubtasks(exchange);
                     break;
-                }
-                case DELETE_SUBTASK_BY_ID: {
+                case DELETE_SUBTASK_BY_ID:
                     handleDeleteSubtaskById(exchange);
                     break;
-                }
                 default:
                     writeResponse(exchange, "Ошибка запроса", 404);
             }
@@ -171,7 +152,6 @@ public class HttpTaskServer {
             return UNKNOWN;
         }
 
-        // обработка запросов
         private Endpoint processRequestData(Type taskType,
                                             HttpExchange exchange,
                                             String requestMethod,
@@ -206,7 +186,6 @@ public class HttpTaskServer {
             if (!historyList.isEmpty()) {
                 writeResponse(exchange, gson.toJson(historyList), 200);
             } else writeResponse(exchange, "Список истории пуст", 204);
-
         }
 
         private void handleGetSubtasksFromEpic(HttpExchange exchange) throws IOException {
