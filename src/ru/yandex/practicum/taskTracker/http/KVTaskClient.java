@@ -42,6 +42,7 @@ public class KVTaskClient {
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
+        System.out.println("Save: Key " + key + " " + "Value " + json);
         try {
             HttpResponse<String> response
                     = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
@@ -65,6 +66,7 @@ public class KVTaskClient {
                     = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 System.out.println("Загрузка KVTaskClient прошла успешно");
+                System.out.println("Load: Key " + key + " " + "Value " + response.body());
                 return response.body();
             } else System.out.println("Ошибка загрузки KVTaskClient");
         } catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
