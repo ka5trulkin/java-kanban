@@ -79,16 +79,20 @@ class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
                 + manager.getEpics().size()
                 + manager.getSubtasks().size();
         assertEquals(expectedId, loadedManager.assignID() - 1, "Восстановлен не верный ID.");
-        // загрузка по другому ключу не должна производиться
+        // проверка восстановления истории задач
+        assertEquals(manager.getHistory(), loadedManager.getHistory(), "Список истории не совпадает.");
+        manager.getEpics();
+        assertNotEquals(manager.getHistory(), loadedManager.getHistory(), "Списки истории не должны совпадать.");
+        loadedManager = HttpTaskManager.loadFromURI(uri);
+        assertEquals(manager.getHistory(), loadedManager.getHistory(), "Список истории не совпадает.");
+        manager.deleteTaskById(taskTest.getId());
+        assertNotEquals(manager.getHistory(), loadedManager.getHistory(), "Списки истории не должны совпадать.");
+        loadedManager = HttpTaskManager.loadFromURI(uri);
+        assertEquals(manager.getHistory(), loadedManager.getHistory(), "Список истории не совпадает.");
         manager.deleteAllTasks();
         manager.deleteAllEpics();
-        manager.setKey("anotherUser");
-        taskList.forEach(manager::addNewTask);
-        epicList.forEach(manager::addNewEpic);
-        subtaskList.forEach(manager::addNewSubtask);
+        manager.deleteAllSubtasks();
         loadedManager = HttpTaskManager.loadFromURI(uri);
-        assertEquals(Collections.emptyList(), loadedManager.getTasks(), "Список должен быть пустым.");
-        assertEquals(Collections.emptyList(), loadedManager.getTasks(), "Список должен быть пустым.");
-        assertEquals(Collections.emptyList(), loadedManager.getTasks(), "Список должен быть пустым.");
+        assertEquals(Collections.emptyList(), loadedManager.getHistory(), "Список истории должен быть пуст.");
     }
 }

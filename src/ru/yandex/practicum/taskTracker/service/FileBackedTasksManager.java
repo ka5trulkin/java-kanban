@@ -24,7 +24,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         backupFile = new File("");
     }
 
-    protected void save() {
+    private void save() {
         if (backupFile.isFile()) {
             try (BufferedWriter bufferedWriter
                          = new BufferedWriter(new FileWriter(backupFile.toString(), StandardCharsets.UTF_8))) {
@@ -36,7 +36,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    protected String tasksToString() {
+    private String tasksToString() {
         StringBuilder stringBuilder = new StringBuilder();
         String infoLine = "id,type,name,status,description,startTime,endTime,epic";
         stringBuilder.append(infoLine);
@@ -107,7 +107,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    protected void fillTasksManager(String fileLine) {
+    private void fillTasksManager(String fileLine) {
         switch (taskFromString(fileLine).getType()) {
             case TASK:
                 fillTasks(fileLine);
@@ -118,12 +118,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             case SUBTASK:
                 fillSubtasks(fileLine);
                 break;
-        }
-    }
-
-    private void checkIdCounter(int id) {
-        if (id > this.getIdCounter()) {
-            this.setIdCounter(id);
         }
     }
 
@@ -148,7 +142,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.checkIdCounter(subtask.getId());
     }
 
-    protected List<Integer> historyFromString(String fileLine) {
+    private List<Integer> historyFromString(String fileLine) {
         if (fileLine.isBlank()) {
             return Collections.emptyList();
         }
@@ -160,7 +154,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return list;
     }
 
-    protected String historyToString(HistoryManager manager) {
+    private String historyToString(HistoryManager manager) {
         if (!manager.getHistory().isEmpty()) {
             StringBuilder historyBuilder = new StringBuilder();
             List<Task> history = manager.getHistory();
@@ -172,6 +166,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
             return historyBuilder.toString();
         } else return "";
+    }
+
+    protected void checkIdCounter(int id) {
+        if (id > this.getIdCounter()) {
+            this.setIdCounter(id);
+        }
     }
 
     public static FileBackedTasksManager loadFromFile(File backupFile) {

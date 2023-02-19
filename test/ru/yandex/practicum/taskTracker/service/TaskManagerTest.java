@@ -466,6 +466,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 IllegalArgumentException.class,
                 () -> manager.getEpicById(epicId),
                 "Эпик не удален.");
+        manager.deleteAllSubtasks();
     }
 
     @Test

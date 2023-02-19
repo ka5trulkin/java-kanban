@@ -46,6 +46,7 @@ public class KVServer {
                     return;
                 }
                 String responseString = data.get(key);
+                System.out.println("responseString" + responseString);
 
                 if (responseString.isBlank()) {
                     System.out.println("Value пустой");

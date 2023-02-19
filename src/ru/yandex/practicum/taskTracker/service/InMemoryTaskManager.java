@@ -194,7 +194,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void addNewEpic(Epic epic) {
         if (epic != null && !epics.containsKey(epic.getId())) {
             epics.put(epic.getId(), epic);
-            checkEpic(epic);
         } else throw new IllegalArgumentException("Ошибка добавления " + epic);
     }
 
