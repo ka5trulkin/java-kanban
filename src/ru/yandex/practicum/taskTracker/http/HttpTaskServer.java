@@ -128,23 +128,23 @@ public class HttpTaskServer {
                     return GET_PRIORITIZES_TASKS;
                 }
                 if ((pathParts.length == subtasksFromEpicIndex + 1)
-                        && (pathParts[typeIndex].equals("subtask"))
-                        && (pathParts[subtasksFromEpicIndex].equals("epic"))
+                        && (pathParts[typeIndex].equals(SUBTASK.toLowerCase()))
+                        && (pathParts[subtasksFromEpicIndex].equals(EPIC.toLowerCase()))
                         && (isContainsRequestId)
                         && (isGetMethod)) {
                     return GET_SUBTASKS_FROM_EPIC;
                 }
                 if ((pathParts.length == typeIndex + 1)) {
-                    switch (pathParts[typeIndex]) {
-                        case "history":
+                    switch (Type.valueOf(pathParts[typeIndex].toUpperCase())) {
+                        case HISTORY:
                             if (isGetMethod) {
                                 return GET_HISTORY;
                             }
-                        case "task":
+                        case TASK:
                             return processRequestData(TASK, exchange, requestMethod, isContainsRequestId);
-                        case "epic":
+                        case EPIC:
                             return processRequestData(EPIC, exchange, requestMethod, isContainsRequestId);
-                        case "subtask":
+                        case SUBTASK:
                             return processRequestData(SUBTASK, exchange, requestMethod, isContainsRequestId);
                     }
                 }
