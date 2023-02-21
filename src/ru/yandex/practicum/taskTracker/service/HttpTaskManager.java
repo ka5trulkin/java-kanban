@@ -16,7 +16,7 @@ import static ru.yandex.practicum.taskTracker.model.Type.*;
 
 public class HttpTaskManager extends FileBackedTasksManager {
     private final KVTaskClient client;
-    private final static Gson gson = Managers.getGson();
+    private final Gson gson = Managers.getGson();
 
     public HttpTaskManager(URI uri) {
         this.client = new KVTaskClient(uri);

@@ -9,7 +9,6 @@ import ru.yandex.practicum.taskTracker.model.Status;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
 
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,9 +22,9 @@ class HistoryManagerTest {
     final List<Task> taskList = new ArrayList<>();
 
     @BeforeEach
-    void beforeEach() throws URISyntaxException {
+    void beforeEach() {
         historyManager = Managers.getDefaultHistory();
-        taskManager = Managers.getDefault();
+        taskManager = new InMemoryTaskManager();
         LocalDateTime dateTime = LocalDateTime.of(2021, 7, 28, 1, 21);
         final int epicId = 10;
         taskList.addAll(
