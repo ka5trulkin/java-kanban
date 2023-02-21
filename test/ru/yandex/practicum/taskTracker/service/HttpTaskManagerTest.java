@@ -24,7 +24,7 @@ class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     static void beforeAll() throws IOException, URISyntaxException {
         kvServer = new KVServer();
         kvServer.start();
-        httpTaskServer = new HttpTaskServer();
+        httpTaskServer = new HttpTaskServer(Managers.getDefault());
         httpTaskServer.start();
     }
 

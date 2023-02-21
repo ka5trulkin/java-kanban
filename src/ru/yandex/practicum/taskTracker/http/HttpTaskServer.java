@@ -25,12 +25,13 @@ import static ru.yandex.practicum.taskTracker.model.Type.*;
 
 public class HttpTaskServer {
     private final HttpServer httpServer;
-    private final TaskManager manager = Managers.getDefault();
+    private final TaskManager manager;
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    private final Gson gson = Managers.getGson();
+    private final Gson GSON = Managers.getGson();
     private final int PORT = 8080;
 
-    public HttpTaskServer() throws URISyntaxException, IOException {
+    public HttpTaskServer(TaskManager taskManager) throws URISyntaxException, IOException {
+        manager = taskManager;
         httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
         httpServer.createContext("/tasks/history", new TasksHandler());
@@ -177,14 +178,14 @@ public class HttpTaskServer {
         private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
             List<Task> taskList = manager.getPrioritizedTasks();
             if (!taskList.isEmpty()) {
-                writeResponse(exchange, gson.toJson(taskList), 200);
+                writeResponse(exchange, GSON.toJson(taskList), 200);
             } else writeResponse(exchange, "Список приоритетных задач пуст", 204);
         }
 
         private void handleGetHistory(HttpExchange exchange) throws IOException {
             List<Task> historyList = manager.getHistory();
             if (!historyList.isEmpty()) {
-                writeResponse(exchange, gson.toJson(historyList), 200);
+                writeResponse(exchange, GSON.toJson(historyList), 200);
             } else writeResponse(exchange, "Список истории пуст", 204);
         }
 
@@ -198,20 +199,20 @@ public class HttpTaskServer {
                 return;
             }
             if (!subtasksList.isEmpty()) {
-                writeResponse(exchange, gson.toJson(subtasksList), 200);
+                writeResponse(exchange, GSON.toJson(subtasksList), 200);
             } else writeResponse(exchange, "Список подзадач пуст", 204);
         }
 
         private void handleGetAllTasks(HttpExchange exchange) throws IOException {
             List<Task> taskList = manager.getTasks();
             if (!taskList.isEmpty()) {
-                writeResponse(exchange, gson.toJson(taskList), 200);
+                writeResponse(exchange, GSON.toJson(taskList), 200);
             } else writeResponse(exchange, "Список задач пуст", 204);
         }
 
         private void handleGetTaskById(HttpExchange exchange) throws IOException {
             try {
-                writeResponse(exchange, gson.toJson(manager.getTaskById(taskId)), 200);
+                writeResponse(exchange, GSON.toJson(manager.getTaskById(taskId)), 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, exception.getMessage(), 204);
             }
@@ -219,7 +220,7 @@ public class HttpTaskServer {
 
         private void handlePostTaskById(HttpExchange exchange) throws IOException {
             String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            Task task = gson.fromJson(body, Task.class);
+            Task task = GSON.fromJson(body, Task.class);
             try {
                 manager.updateTask(task);
                 writeResponse(exchange, "Задача обновлена", 201);
@@ -250,13 +251,13 @@ public class HttpTaskServer {
         private void handleGetAllEpics(HttpExchange exchange) throws IOException {
             List<Epic> epicList = manager.getEpics();
             if (!epicList.isEmpty()) {
-                writeResponse(exchange, gson.toJson(epicList), 200);
+                writeResponse(exchange, GSON.toJson(epicList), 200);
             } else writeResponse(exchange, "Список эпиков пуст", 204);
         }
 
         private void handleGetEpicById(HttpExchange exchange) throws IOException {
             try {
-                writeResponse(exchange, gson.toJson(manager.getEpicById(taskId)), 200);
+                writeResponse(exchange, GSON.toJson(manager.getEpicById(taskId)), 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, exception.getMessage(), 204);
             }
@@ -264,7 +265,7 @@ public class HttpTaskServer {
 
         private void handlePostEpicById(HttpExchange exchange) throws IOException {
             String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            Epic epic = gson.fromJson(body, Epic.class);
+            Epic epic = GSON.fromJson(body, Epic.class);
             try {
                 manager.updateEpic(epic);
                 writeResponse(exchange, "Эпик обновлен", 201);
@@ -296,13 +297,13 @@ public class HttpTaskServer {
         private void handleGetAllSubtasks(HttpExchange exchange) throws IOException {
             List<Subtask> subtaskList = manager.getSubtasks();
             if (!subtaskList.isEmpty()) {
-                writeResponse(exchange, gson.toJson(subtaskList), 200);
+                writeResponse(exchange, GSON.toJson(subtaskList), 200);
             } else writeResponse(exchange, "Список подзадач пуст", 204);
         }
 
         private void handleGetSubtaskById(HttpExchange exchange) throws IOException {
             try {
-                writeResponse(exchange, gson.toJson(manager.getSubTaskById(taskId)), 200);
+                writeResponse(exchange, GSON.toJson(manager.getSubTaskById(taskId)), 200);
             } catch (IllegalArgumentException exception) {
                 writeResponse(exchange, exception.getMessage(), 204);
             }
@@ -310,7 +311,7 @@ public class HttpTaskServer {
 
         private void handlePostSubtaskById(HttpExchange exchange) throws IOException {
             String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            Subtask subtask = gson.fromJson(body, Subtask.class);
+            Subtask subtask = GSON.fromJson(body, Subtask.class);
             try {
                 manager.updateSubtask(subtask);
                 writeResponse(exchange, "Подзадача обновлена", 201);

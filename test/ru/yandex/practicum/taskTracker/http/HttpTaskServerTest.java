@@ -5,7 +5,9 @@ import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.*;
+import ru.yandex.practicum.taskTracker.service.InMemoryTaskManager;
 import ru.yandex.practicum.taskTracker.service.Managers;
 
 import java.io.IOException;
@@ -22,7 +24,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskServerTest {
-    private KVServer kvServer;
     private HttpTaskServer httpTaskServer;
     private HttpClient client;
     private Gson gson;
@@ -32,15 +33,16 @@ class HttpTaskServerTest {
     private Epic secondEpic;
     private Subtask firstSubtask;
     private Subtask secondSubtask;
-    private final URI uriTask = URI.create("http://localhost:8080/tasks/task");
-    private final URI uriEpic = URI.create("http://localhost:8080/tasks/epic");
-    private final URI uriSubtask = URI.create("http://localhost:8080/tasks/subtask");
+    private final URI SERVER_URI = URI.create("http://localhost:8080/tasks");
+    private final String TASK_ENDPOINT = "/task";
+    private final String EPIC_ENDPOINT = "/epic";
+    private final String SUBTASK_ENDPOINT = "/subtask";
+    private final String PARAMETER_ID = "?id=";
 
     @BeforeEach
     void BeforeEach() throws IOException, URISyntaxException {
-        kvServer = new KVServer();
-        kvServer.start();
-        httpTaskServer = new HttpTaskServer();
+        TaskManager taskManager = new InMemoryTaskManager();
+        httpTaskServer = new HttpTaskServer(taskManager);
         httpTaskServer.start();
         client = HttpClient.newHttpClient();
         gson = Managers.getGson();
@@ -78,14 +80,13 @@ class HttpTaskServerTest {
 
     @AfterEach
     void afterEach() {
-        kvServer.stop();
         httpTaskServer.stop();
     }
 
-    private void addObjectOnServer(Task task, URI url) throws IOException, InterruptedException {
+    private void addObjectOnServer(Task task, URI uri) throws IOException, InterruptedException {
         String json = gson.toJson(task);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(url)
+                .uri(uri)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -134,7 +135,7 @@ class HttpTaskServerTest {
 
     private Task getTaskById(int id) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uriTask + "?id=" + id))
+                .uri(URI.create(SERVER_URI + TASK_ENDPOINT + PARAMETER_ID + id))
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -143,7 +144,7 @@ class HttpTaskServerTest {
 
     private Epic getEpicById(int id) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uriEpic + "?id=" + id))
+                .uri(URI.create(SERVER_URI + EPIC_ENDPOINT + PARAMETER_ID + id))
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -152,17 +153,16 @@ class HttpTaskServerTest {
 
     private Subtask getSubtaskById(int id) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uriSubtask + "?id=" + id))
+                .uri(URI.create(SERVER_URI + SUBTASK_ENDPOINT + PARAMETER_ID + id))
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return gson.fromJson(response.body(), Subtask.class);
     }
 
-
     private void deleteObjectById(URI uri, Task task) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri.toString() + "?id=" + task.getId()))
+                .uri(URI.create(uri + PARAMETER_ID + task.getId()))
                 .DELETE()
                 .build();
         client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -175,24 +175,24 @@ class HttpTaskServerTest {
         List<Task> prioritizedList = getTaskList(uriPrioritizedTasks);
         assertNull(prioritizedList, "Список не должен быть возвращен.");
         // проверка состояния списка
-        addObjectOnServer(firstTask, uriTask);
-        addObjectOnServer(secondTask, uriTask);
-        addObjectOnServer(firstEpic, uriEpic);
-        addObjectOnServer(secondEpic, uriEpic);
-        addObjectOnServer(firstSubtask, uriSubtask);
-        addObjectOnServer(secondSubtask, uriSubtask);
+        addObjectOnServer(firstTask, URI.create(SERVER_URI + TASK_ENDPOINT));
+        addObjectOnServer(secondTask, URI.create(SERVER_URI + TASK_ENDPOINT));
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
+        addObjectOnServer(secondEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
+        addObjectOnServer(firstSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
+        addObjectOnServer(secondSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         int expectedListSize = 4;
         prioritizedList = getTaskList(uriPrioritizedTasks);
         assertEquals(expectedListSize, prioritizedList.size(), "Неверная длинна списка.");
         assertTrue(prioritizedList.contains(firstTask), "Задача в списке получена некорректно.");
         // удаление Tasks
-        deleteObjectsOfType(uriTask);
+        deleteObjectsOfType(URI.create(SERVER_URI + TASK_ENDPOINT));
         prioritizedList = getTaskList(uriPrioritizedTasks);
         expectedListSize = 2;
         assertEquals(expectedListSize, prioritizedList.size(), "Списки не совпадают.");
         assertFalse(prioritizedList.contains(firstTask), "Список не должен содержать " + firstTask);
         // удаление всех задач
-        deleteObjectsOfType(uriSubtask);
+        deleteObjectsOfType(URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         prioritizedList = getTaskList(uriPrioritizedTasks);
         assertNull(prioritizedList, "Список не должен быть возвращен.");
     }
@@ -204,9 +204,9 @@ class HttpTaskServerTest {
         List<Task> historyList = getTaskList(uriHistory);
         assertNull(historyList, "Список не должен быть возвращен.");
         // проверка состояния списка
-        addObjectOnServer(firstTask, uriTask);
-        addObjectOnServer(firstEpic, uriEpic);
-        addObjectOnServer(secondSubtask, uriSubtask);
+        addObjectOnServer(firstTask, URI.create(SERVER_URI + TASK_ENDPOINT));
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
+        addObjectOnServer(secondSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         List<Task> expectedList = new ArrayList<>();
         expectedList.add(getSubtaskById(secondSubtask.getId()));
         expectedList.add(getTaskById(firstTask.getId()));
@@ -215,7 +215,7 @@ class HttpTaskServerTest {
         assertEquals(expectedList.size(), historyList.size(), "Списки не совпадают.");
         assertEquals(expectedList.get(1), historyList.get(1), "Порядок задач не совпадает.");
         // удаление подзадачи
-        deleteObjectsOfType(uriSubtask);
+        deleteObjectsOfType(URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         expectedList.remove(secondSubtask);
         historyList = getTaskList(uriHistory);
         assertEquals(expectedList.size(), historyList.size(), "Списки не совпадают.");
@@ -227,27 +227,27 @@ class HttpTaskServerTest {
         URI uriSubtasksFromEpic = URI.create("http://localhost:8080/tasks/subtask/epic?id=" + firstEpic.getId());
         // пустой список
         List<Subtask> subtaskList = getSubtaskList(uriSubtasksFromEpic);
-        List<Epic> epicList = getEpicList(uriEpic);
+        List<Epic> epicList = getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT));
         assertNull(epicList);
         assertNull(subtaskList, "Список не должен быть возвращен.");
         // проверка состояния списка
-        addObjectOnServer(firstEpic, uriEpic);
-        addObjectOnServer(firstSubtask, uriSubtask);
-        addObjectOnServer(secondSubtask, uriSubtask);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
+        addObjectOnServer(firstSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
+        addObjectOnServer(secondSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         subtaskList = getSubtaskList(uriSubtasksFromEpic);
         int expectedListSize = 2;
         assertEquals(expectedListSize, subtaskList.size(), "Неверная длинна списка.");
         assertTrue(subtaskList.contains(firstSubtask), "Задача в списке получена некорректно.");
         Thread.sleep(100);
         // удаление подзадачи
-        deleteObjectById(uriSubtask, firstSubtask);
+        deleteObjectById(URI.create(SERVER_URI + SUBTASK_ENDPOINT), firstSubtask);
         expectedListSize = 1;
         subtaskList = getSubtaskList(uriSubtasksFromEpic);
         assertEquals(expectedListSize, subtaskList.size(), "Списки не совпадают.");
         assertFalse(subtaskList.contains(firstSubtask), "Список не должен содержать " + firstSubtask);
         Thread.sleep(100); // Тест без задержки не проходит (видимо из-за пинга)
         // удаление эпика
-        deleteObjectsOfType(uriEpic);
+        deleteObjectsOfType(URI.create(SERVER_URI + EPIC_ENDPOINT));
         subtaskList = getSubtaskList(uriSubtasksFromEpic);
         assertNull(subtaskList, "Список не должен быть возвращен.");
     }
@@ -255,19 +255,19 @@ class HttpTaskServerTest {
     @Test
     void handleGetAllTasks() throws IOException, InterruptedException {
         // пустой список
-        List<Task> taskList = getTaskList(uriTask);
+        List<Task> taskList = getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT));
         assertNull(taskList, "Список не должен быть возвращен.");
         // проверка состояния списка
-        addObjectOnServer(firstTask, uriTask);
-        addObjectOnServer(secondTask, uriTask);
+        addObjectOnServer(firstTask, URI.create(SERVER_URI + TASK_ENDPOINT));
+        addObjectOnServer(secondTask, URI.create(SERVER_URI + TASK_ENDPOINT));
         int expectedListSize = 2;
-        taskList = getTaskList(uriTask);
+        taskList = getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT));
         assertEquals(expectedListSize, taskList.size(), "Неверная длинна списка.");
         assertTrue(taskList.contains(firstTask), "Задача в списке получена некорректно.");
         assertTrue(taskList.contains(secondTask), "Задача в списке получена некорректно.");
         // удаление задач
-        deleteObjectsOfType(uriTask);
-        taskList = getTaskList(uriTask);
+        deleteObjectsOfType(URI.create(SERVER_URI + TASK_ENDPOINT));
+        taskList = getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT));
         assertNull(taskList, "Список не должен быть возвращен.");
     }
 
@@ -277,11 +277,11 @@ class HttpTaskServerTest {
         Task task = getTaskById(firstTask.getId());
         assertNull(task, "Задача не должна существовать.");
         // получение задачи
-        addObjectOnServer(firstTask, uriTask);
+        addObjectOnServer(firstTask, URI.create(SERVER_URI + TASK_ENDPOINT));
         task = getTaskById(firstTask.getId());
         assertEquals(firstTask, task, "Задачи не совпадают.");
         // удаление задачи
-        deleteObjectById(uriTask, firstTask);
+        deleteObjectById(URI.create(SERVER_URI + TASK_ENDPOINT), firstTask);
         task = getTaskById(firstTask.getId());
         assertNull(task, "Задача не удалена.");
     }
@@ -289,7 +289,7 @@ class HttpTaskServerTest {
     @Test
     void handlePostTaskById() throws IOException, InterruptedException {
         // отправка задачи на сервер
-        addObjectOnServer(firstTask, uriTask);
+        addObjectOnServer(firstTask, URI.create(SERVER_URI + TASK_ENDPOINT));
         Task task = getTaskById(firstTask.getId());
         assertEquals(firstTask, task, "Задача создана некорректно");
         // обновление задачи
@@ -297,58 +297,58 @@ class HttpTaskServerTest {
                 secondTask.getTaskName(),
                 secondTask.getDescription(),
                 firstTask.getId());
-        addObjectOnServer(updateTask, uriTask);
+        addObjectOnServer(updateTask, URI.create(SERVER_URI + TASK_ENDPOINT));
         assertNotEquals(task, getTaskById(firstTask.getId()), "Задача не обновлена.");
         assertEquals(updateTask, getTaskById(firstTask.getId()), "Задача не обновлена.");
         // удаление задачи
-        deleteObjectById(uriTask, firstTask);
+        deleteObjectById(URI.create(SERVER_URI + TASK_ENDPOINT), firstTask);
         assertNull(getTaskById(firstTask.getId()), "Задача не удалена.");
     }
 
     @Test
     void handleDeleteAllTasks() throws IOException, InterruptedException {
         // нет задач
-        assertNull(getTaskList(uriTask), "Список задач должен быть пустым.");
+        assertNull(getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT)), "Список задач должен быть пустым.");
         // удаление задач
-        addObjectOnServer(firstTask, uriTask);
-        addObjectOnServer(secondTask, uriTask);
+        addObjectOnServer(firstTask, URI.create(SERVER_URI + TASK_ENDPOINT));
+        addObjectOnServer(secondTask, URI.create(SERVER_URI + TASK_ENDPOINT));
         final int expectedSize = 2;
-        assertEquals(expectedSize, getTaskList(uriTask).size(), "Списки задач не совпадают.");
-        deleteObjectsOfType(uriTask);
-        assertNull(getTaskList(uriTask), "Задачи не удалены.");
+        assertEquals(expectedSize, getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT)).size(), "Списки задач не совпадают.");
+        deleteObjectsOfType(URI.create(SERVER_URI + TASK_ENDPOINT));
+        assertNull(getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT)), "Задачи не удалены.");
     }
 
     @Test
     void handleDeleteTaskById() throws IOException, InterruptedException {
         // нет задач
-        assertNull(getTaskList(uriTask), "Список задач должен быть пустым.");
+        assertNull(getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT)), "Список задач должен быть пустым.");
         // удаление задачи по Id
-        addObjectOnServer(firstTask, uriTask);
-        addObjectOnServer(secondTask, uriTask);
-        assertTrue(getTaskList(uriTask).contains(firstTask), "Задача не добавлена.");
-        deleteObjectById(uriTask, firstTask);
-        assertFalse(getTaskList(uriTask).contains(firstTask), "Задача не удалена.");
-        assertTrue(getTaskList(uriTask).contains(secondTask), "Задача не должна быть удалена.");
-        deleteObjectById(uriTask, secondTask);
-        assertNull(getTaskList(uriTask), "Задача не удалена.");
+        addObjectOnServer(firstTask, URI.create(SERVER_URI + TASK_ENDPOINT));
+        addObjectOnServer(secondTask, URI.create(SERVER_URI + TASK_ENDPOINT));
+        assertTrue(getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT)).contains(firstTask), "Задача не добавлена.");
+        deleteObjectById(URI.create(SERVER_URI + TASK_ENDPOINT), firstTask);
+        assertFalse(getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT)).contains(firstTask), "Задача не удалена.");
+        assertTrue(getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT)).contains(secondTask), "Задача не должна быть удалена.");
+        deleteObjectById(URI.create(SERVER_URI + TASK_ENDPOINT), secondTask);
+        assertNull(getTaskList(URI.create(SERVER_URI + TASK_ENDPOINT)), "Задача не удалена.");
     }
 
     @Test
     void handleGetAllEpics() throws IOException, InterruptedException {
         // пустой список
-        List<Epic> epicList = getEpicList(uriEpic);
+        List<Epic> epicList = getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT));
         assertNull(epicList, "Список не должен быть возвращен.");
         // проверка состояния списка
-        addObjectOnServer(firstEpic, uriEpic);
-        addObjectOnServer(secondEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
+        addObjectOnServer(secondEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         int expectedListSize = 2;
-        epicList = getEpicList(uriEpic);
+        epicList = getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT));
         assertEquals(expectedListSize, epicList.size(), "Неверная длинна списка.");
         assertTrue(epicList.contains(firstEpic), "Задача в списке получена некорректно.");
         assertTrue(epicList.contains(secondEpic), "Задача в списке получена некорректно.");
         // удаление задач
-        deleteObjectsOfType(uriEpic);
-        epicList = getEpicList(uriEpic);
+        deleteObjectsOfType(URI.create(SERVER_URI + EPIC_ENDPOINT));
+        epicList = getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT));
         assertNull(epicList, "Список не должен быть возвращен.");
     }
 
@@ -358,11 +358,11 @@ class HttpTaskServerTest {
         Epic epic = getEpicById(firstEpic.getId());
         assertNull(epic, "Задача не должна существовать.");
         // получение задачи
-        addObjectOnServer(firstEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         epic = getEpicById(firstEpic.getId());
         assertEquals(firstEpic, epic, "Задачи не совпадают.");
         // удаление задачи
-        deleteObjectById(uriEpic, firstEpic);
+        deleteObjectById(URI.create(SERVER_URI + EPIC_ENDPOINT), firstEpic);
         epic = getEpicById(firstEpic.getId());
         assertNull(epic, "Задача не удалена.");
     }
@@ -370,7 +370,7 @@ class HttpTaskServerTest {
     @Test
     void handlePostEpicById() throws IOException, InterruptedException {
         // отправка задачи на сервер
-        addObjectOnServer(firstEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         Epic epic = getEpicById(firstEpic.getId());
         assertEquals(firstEpic, epic, "Задача создана некорректно");
         // обновление задачи
@@ -378,83 +378,83 @@ class HttpTaskServerTest {
                 secondEpic.getTaskName(),
                 secondEpic.getDescription(),
                 firstEpic.getId());
-        addObjectOnServer(updateEpic, uriEpic);
+        addObjectOnServer(updateEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         assertNotEquals(epic, getEpicById(firstEpic.getId()), "Задача не обновлена.");
         assertEquals(updateEpic, getEpicById(firstEpic.getId()), "Задача не обновлена.");
         // удаление задачи
-        deleteObjectById(uriEpic, firstEpic);
+        deleteObjectById(URI.create(SERVER_URI + EPIC_ENDPOINT), firstEpic);
         assertNull(getEpicById(firstEpic.getId()), "Задача не удалена.");
     }
 
     @Test
     void handleDeleteAllEpics() throws IOException, InterruptedException {
         // нет задач
-        assertNull(getEpicList(uriEpic), "Список задач должен быть пустым.");
+        assertNull(getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT)), "Список задач должен быть пустым.");
         // удаление задач
-        addObjectOnServer(firstEpic, uriEpic);
-        addObjectOnServer(secondEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
+        addObjectOnServer(secondEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         final int expectedSize = 2;
-        assertEquals(expectedSize, getEpicList(uriEpic).size(), "Списки задач не совпадают.");
-        deleteObjectsOfType(uriEpic);
-        assertNull(getEpicList(uriEpic), "Задачи не удалены.");
+        assertEquals(expectedSize, getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT)).size(), "Списки задач не совпадают.");
+        deleteObjectsOfType(URI.create(SERVER_URI + EPIC_ENDPOINT));
+        assertNull(getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT)), "Задачи не удалены.");
     }
 
     @Test
     void handleDeleteEpicById() throws IOException, InterruptedException {
         // нет задач
-        assertNull(getEpicList(uriEpic), "Список задач должен быть пустым.");
+        assertNull(getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT)), "Список задач должен быть пустым.");
         // удаление задачи по Id
-        addObjectOnServer(firstEpic, uriEpic);
-        addObjectOnServer(secondEpic, uriEpic);
-        assertTrue(getEpicList(uriEpic).contains(firstEpic), "Задача не добавлена.");
-        deleteObjectById(uriEpic, firstEpic);
-        assertFalse(getEpicList(uriEpic).contains(firstEpic), "Задача не удалена.");
-        assertTrue(getEpicList(uriEpic).contains(secondEpic), "Задача не должна быть удалена.");
-        deleteObjectById(uriEpic, secondEpic);
-        assertNull(getEpicList(uriEpic), "Задача не удалена.");
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
+        addObjectOnServer(secondEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
+        assertTrue(getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT)).contains(firstEpic), "Задача не добавлена.");
+        deleteObjectById(URI.create(SERVER_URI + EPIC_ENDPOINT), firstEpic);
+        assertFalse(getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT)).contains(firstEpic), "Задача не удалена.");
+        assertTrue(getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT)).contains(secondEpic), "Задача не должна быть удалена.");
+        deleteObjectById(URI.create(SERVER_URI + EPIC_ENDPOINT), secondEpic);
+        assertNull(getEpicList(URI.create(SERVER_URI + EPIC_ENDPOINT)), "Задача не удалена.");
     }
 
     @Test
     void handleGetAllSubtasks() throws IOException, InterruptedException {
-        addObjectOnServer(firstEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         // пустой список
-        List<Subtask> subtaskList = getSubtaskList(uriSubtask);
+        List<Subtask> subtaskList = getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         assertNull(subtaskList, "Список не должен быть возвращен.");
         // проверка состояния списка
-        addObjectOnServer(firstSubtask, uriSubtask);
-        addObjectOnServer(secondSubtask, uriSubtask);
+        addObjectOnServer(firstSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
+        addObjectOnServer(secondSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         int expectedListSize = 2;
-        subtaskList = getSubtaskList(uriSubtask);
+        subtaskList = getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         assertEquals(expectedListSize, subtaskList.size(), "Неверная длинна списка.");
         assertTrue(subtaskList.contains(firstSubtask), "Задача в списке получена некорректно.");
         assertTrue(subtaskList.contains(secondSubtask), "Задача в списке получена некорректно.");
         // удаление задач
-        deleteObjectsOfType(uriSubtask);
-        subtaskList = getSubtaskList(uriSubtask);
+        deleteObjectsOfType(URI.create(SERVER_URI + SUBTASK_ENDPOINT));
+        subtaskList = getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         assertNull(subtaskList, "Список не должен быть возвращен.");
     }
 
     @Test
     void handleGetSubtaskById() throws IOException, InterruptedException {
-        addObjectOnServer(firstEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         // задача не существует
         Subtask subtask = getSubtaskById(firstSubtask.getId());
         assertNull(subtask, "Задача не должна существовать.");
         // получение задачи
-        addObjectOnServer(firstSubtask, uriSubtask);
+        addObjectOnServer(firstSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         subtask = getSubtaskById(firstSubtask.getId());
         assertEquals(firstSubtask, subtask, "Задачи не совпадают.");
         // удаление задачи
-        deleteObjectById(uriSubtask, firstSubtask);
+        deleteObjectById(URI.create(SERVER_URI + SUBTASK_ENDPOINT), firstSubtask);
         subtask = getSubtaskById(firstSubtask.getId());
         assertNull(subtask, "Задача не удалена.");
     }
 
     @Test
     void handlePostSubtaskById() throws IOException, InterruptedException {
-        addObjectOnServer(firstEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         // отправка задачи на сервер
-        addObjectOnServer(firstSubtask, uriSubtask);
+        addObjectOnServer(firstSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         Subtask subtask = getSubtaskById(firstSubtask.getId());
         assertEquals(firstSubtask, subtask, "Задача создана некорректно");
         // обновление задачи
@@ -463,41 +463,41 @@ class HttpTaskServerTest {
                 secondSubtask.getDescription(),
                 firstSubtask.getId(),
                 firstEpic.getId());
-        addObjectOnServer(updateSubtask, uriSubtask);
+        addObjectOnServer(updateSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         assertNotEquals(subtask, getSubtaskById(firstSubtask.getId()), "Задача не обновлена.");
         assertEquals(updateSubtask, getSubtaskById(firstSubtask.getId()), "Задача не обновлена.");
         // удаление задачи
-        deleteObjectById(uriSubtask, firstSubtask);
+        deleteObjectById(URI.create(SERVER_URI + SUBTASK_ENDPOINT), firstSubtask);
         assertNull(getSubtaskById(firstSubtask.getId()), "Задача не удалена.");
     }
 
     @Test
     void handleDeleteAllSubtasks() throws IOException, InterruptedException {
-        addObjectOnServer(firstEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         // нет задач
-        assertNull(getSubtaskList(uriSubtask), "Список задач должен быть пустым.");
+        assertNull(getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT)), "Список задач должен быть пустым.");
         // удаление задач
-        addObjectOnServer(firstSubtask, uriSubtask);
-        addObjectOnServer(secondSubtask, uriSubtask);
+        addObjectOnServer(firstSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
+        addObjectOnServer(secondSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
         final int expectedSize = 2;
-        assertEquals(expectedSize, getSubtaskList(uriSubtask).size(), "Списки задач не совпадают.");
-        deleteObjectsOfType(uriSubtask);
-        assertNull(getSubtaskList(uriSubtask), "Задачи не удалены.");
+        assertEquals(expectedSize, getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT)).size(), "Списки задач не совпадают.");
+        deleteObjectsOfType(URI.create(SERVER_URI + SUBTASK_ENDPOINT));
+        assertNull(getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT)), "Задачи не удалены.");
     }
 
     @Test
     void handleDeleteSubtaskById() throws IOException, InterruptedException {
-        addObjectOnServer(firstEpic, uriEpic);
+        addObjectOnServer(firstEpic, URI.create(SERVER_URI + EPIC_ENDPOINT));
         // нет задач
-        assertNull(getSubtaskList(uriSubtask), "Список задач должен быть пустым.");
+        assertNull(getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT)), "Список задач должен быть пустым.");
         // удаление задачи по Id
-        addObjectOnServer(firstSubtask, uriSubtask);
-        addObjectOnServer(secondSubtask, uriSubtask);
-        assertTrue(getSubtaskList(uriSubtask).contains(firstSubtask), "Задача не добавлена.");
-        deleteObjectById(uriSubtask, firstSubtask);
-        assertFalse(getSubtaskList(uriSubtask).contains(firstSubtask), "Задача не удалена.");
-        assertTrue(getSubtaskList(uriSubtask).contains(secondSubtask), "Задача не должна быть удалена.");
-        deleteObjectById(uriSubtask, secondSubtask);
-        assertNull(getSubtaskList(uriSubtask), "Задача не удалена.");
+        addObjectOnServer(firstSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
+        addObjectOnServer(secondSubtask, URI.create(SERVER_URI + SUBTASK_ENDPOINT));
+        assertTrue(getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT)).contains(firstSubtask), "Задача не добавлена.");
+        deleteObjectById(URI.create(SERVER_URI + SUBTASK_ENDPOINT), firstSubtask);
+        assertFalse(getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT)).contains(firstSubtask), "Задача не удалена.");
+        assertTrue(getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT)).contains(secondSubtask), "Задача не должна быть удалена.");
+        deleteObjectById(URI.create(SERVER_URI + SUBTASK_ENDPOINT), secondSubtask);
+        assertNull(getSubtaskList(URI.create(SERVER_URI + SUBTASK_ENDPOINT)), "Задача не удалена.");
     }
 }
