@@ -1,7 +1,6 @@
 package ru.yandex.practicum.taskTracker.service;
 
 import org.junit.jupiter.api.*;
-import ru.yandex.practicum.taskTracker.http.HttpTaskServer;
 import ru.yandex.practicum.taskTracker.http.KVServer;
 import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 
@@ -14,18 +13,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     private static KVServer kvServer;
-    private static HttpTaskServer httpTaskServer;
 
     public HttpTaskManagerTest() throws URISyntaxException {
         super(new HttpTaskManager(new URI("http://localhost:8078")));
     }
 
     @BeforeAll
-    static void beforeAll() throws IOException, URISyntaxException {
+    static void beforeAll() throws IOException {
         kvServer = new KVServer();
         kvServer.start();
-        httpTaskServer = new HttpTaskServer(Managers.getDefault());
-        httpTaskServer.start();
     }
 
     @AfterEach
@@ -38,7 +34,6 @@ class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     @AfterAll
     static void afterAll() {
         kvServer.stop();
-        httpTaskServer.stop();
     }
 
     @Test
