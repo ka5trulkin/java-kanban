@@ -24,18 +24,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         backupFile = new File("");
     }
 
-    private void save() {
-        if (backupFile.isFile()) {
-            try (BufferedWriter bufferedWriter
-                         = new BufferedWriter(new FileWriter(backupFile.toString(), StandardCharsets.UTF_8))) {
-                bufferedWriter.write(tasksToString());
-                bufferedWriter.write(historyToString(this.historyManager));
-            } catch (IOException e) {
-                throw new ManagerSaveException("Ошибка записи в файл");
-            }
-        }
-    }
-
     private String tasksToString() {
         StringBuilder stringBuilder = new StringBuilder();
         String infoLine = "id,type,name,status,description,startTime,endTime,epic";
@@ -92,6 +80,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 return result;
             default:
                 throw new IllegalStateException("Неизвестный тип задачи: " + type);
+        }
+    }
+
+    protected void save() {
+        if (backupFile.isFile()) {
+            try (BufferedWriter bufferedWriter
+                         = new BufferedWriter(new FileWriter(backupFile.toString(), StandardCharsets.UTF_8))) {
+                bufferedWriter.write(tasksToString());
+                bufferedWriter.write(historyToString(this.historyManager));
+            } catch (IOException e) {
+                throw new ManagerSaveException("Ошибка записи в файл");
+            }
         }
     }
 

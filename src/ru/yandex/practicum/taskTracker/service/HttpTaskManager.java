@@ -3,11 +3,9 @@ package ru.yandex.practicum.taskTracker.service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import ru.yandex.practicum.taskTracker.http.KVTaskClient;
-import ru.yandex.practicum.taskTracker.interfaces.TaskManager;
 import ru.yandex.practicum.taskTracker.model.Epic;
 import ru.yandex.practicum.taskTracker.model.Subtask;
 import ru.yandex.practicum.taskTracker.model.Task;
-import ru.yandex.practicum.taskTracker.model.Type;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -22,25 +20,12 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
     public HttpTaskManager(URI uri) {
         this.client = new KVTaskClient(uri);
+        this.loadDataFromServer();
     }
 
-    private void save(Type type) {
-        switch (type) {
-            case TASK:
-                String tasksGson = gson.toJson(new ArrayList<>(tasks.values()));
-                client.save("tasks", tasksGson);
-                break;
-            case EPIC:
-                String epicsGson = gson.toJson(new ArrayList<>(epics.values()));
-                client.save("epics", epicsGson);
-                break;
-            case SUBTASK:
-                String subtaskGson = gson.toJson(new ArrayList<>(subtasks.values()));
-                client.save("subtasks", subtaskGson);
-                break;
-            case HISTORY:
-                String historyGson = gson.toJson(new ArrayList<>(historyToInteger()));
-                client.save("history", historyGson);
+    private void checkId(int id) {
+        if (idCounter < id) {
+            idCounter = id;
         }
     }
 
@@ -48,145 +33,61 @@ public class HttpTaskManager extends FileBackedTasksManager {
         return getHistory().stream().map(Task::getId).collect(Collectors.toList());
     }
 
-    public static TaskManager loadFromURI(URI uri) {
-        final HttpTaskManager manager = new HttpTaskManager(uri);
-        final KVTaskClient loadClient = new KVTaskClient(uri);
-        List<Task> tasksList = gson.fromJson(loadClient.load("tasks"), new TypeToken<ArrayList<Task>>() {}.getType());
+    private void loadDataFromServer() {
+        loadTasksFromServer();
+        loadEpicsFromServer();
+        loadSubtasksFromServer();
+        loadHistoryFromServer();
+    }
+
+    private void loadTasksFromServer() {
+        List<Task> tasksList
+                = gson.fromJson(client.load(TASK.toLowerCase()), new TypeToken<ArrayList<Task>>() {}.getType());
         if (tasksList != null) {
-            tasksList.forEach(manager::addNewTask);
+            tasksList.forEach(task -> {
+                tasks.put(task.getId(), task);
+                checkId(task.getId());
+            });
         }
-        List<Epic> epicsList = gson.fromJson(loadClient.load("epics"), new TypeToken<ArrayList<Epic>>() {}.getType());
+    }
+
+    private void loadEpicsFromServer() {
+        List<Epic> epicsList
+                = gson.fromJson(client.load(EPIC.toLowerCase()), new TypeToken<ArrayList<Epic>>() {}.getType());
         if (epicsList != null) {
-            epicsList.forEach(manager::addNewEpic);
+            epicsList.forEach(epic -> {
+                epics.put(epic.getId(), epic);
+                checkId(epic.getId());
+            });
         }
-        List<Subtask> subtasksList = gson.fromJson(loadClient.load("subtasks"), new TypeToken<ArrayList<Subtask>>() {}.getType());
+    }
+
+    private void loadSubtasksFromServer() {
+        List<Subtask> subtasksList
+                = gson.fromJson(client.load(SUBTASK.toLowerCase()), new TypeToken<ArrayList<Subtask>>() {}.getType());
         if (subtasksList != null) {
-            subtasksList.forEach(manager::addNewSubtask);
+            subtasksList.forEach(subtask -> {
+                subtasks.put(subtask.getId(), subtask);
+                checkId(subtask.getId());
+            });
         }
-        List<Integer> historyList = gson.fromJson(loadClient.load("history"), new TypeToken<>() {});
+    }
+
+    private void loadHistoryFromServer() {
+        List<Integer> historyList = gson.fromJson(client.load(HISTORY.toLowerCase()), new TypeToken<>() {});
         if (historyList != null) {
-            manager.fillHistoryManager(historyList);
+            this.fillHistoryManager(historyList);
         }
-        return manager;
     }
 
-    @Override
-    public List<Task> getTasks() {
-        List<Task> result = super.getTasks();
-        save(HISTORY);
-        return result;
-    }
-
-    @Override
-    public List<Epic> getEpics() {
-        List<Epic> result = super.getEpics();
-        save(HISTORY);
-        return result;
-    }
-
-    @Override
-    public List<Subtask> getSubtasks() {
-        List<Subtask> result = super.getSubtasks();
-        save(HISTORY);
-        return result;
-    }
-
-    @Override
-    public void deleteAllTasks() {
-        super.deleteAllTasks();
-        save(TASK);
-    }
-
-    @Override
-    public void deleteAllEpics() {
-        super.deleteAllEpics();
-        save(EPIC);
-    }
-
-    @Override
-    public void deleteAllSubtasks() {
-        super.deleteAllSubtasks();
-        save(SUBTASK);
-    }
-
-    @Override
-    public Task getTaskById(int taskId) {
-        Task result = super.getTaskById(taskId);
-        save(HISTORY);
-        return result;
-    }
-
-    @Override
-    public Epic getEpicById(int epicId) {
-        Epic result = super.getEpicById(epicId);
-        save(HISTORY);
-        return result;
-    }
-
-    @Override
-    public Subtask getSubTaskById(int subtaskId) {
-        Subtask result = super.getSubTaskById(subtaskId);
-        save(HISTORY);
-        return result;
-    }
-
-    @Override
-    public void addNewTask(Task task) {
-        super.addNewTask(task);
-        save(TASK);
-        checkIdCounter(task.getId());
-    }
-
-    @Override
-    public void addNewEpic(Epic epic) {
-        super.addNewEpic(epic);
-        save(EPIC);
-        checkIdCounter(epic.getId());
-    }
-
-    @Override
-    public void addNewSubtask(Subtask subtask) {
-        super.addNewSubtask(subtask);
-        save(SUBTASK);
-        checkIdCounter(subtask.getId());
-    }
-
-    @Override
-    public void updateTask(Task task) {
-        super.updateTask(task);
-        save(TASK);
-    }
-
-    @Override
-    public void updateEpic(Epic epic) {
-        super.updateEpic(epic);
-        save(EPIC);
-    }
-
-    @Override
-    public void updateSubtask(Subtask subtask) {
-        super.updateSubtask(subtask);
-        save(SUBTASK);
-    }
-
-    @Override
-    public void deleteTaskById(int taskId) {
-        super.deleteTaskById(taskId);
-        save(TASK);
-        save(HISTORY);
-    }
-
-    @Override
-    public void deleteEpicById(int epicId) {
-        super.deleteEpicById(epicId);
-        save(EPIC);
-        save(HISTORY);
-    }
-
-    @Override
-    public void deleteSubtaskById(int subtaskId) {
-        super.deleteSubtaskById(subtaskId);
-        save(SUBTASK);
-        save(HISTORY);
+    protected void save() {
+        String tasksGson = gson.toJson(new ArrayList<>(tasks.values()));
+        client.save(TASK.toLowerCase(), tasksGson);
+        String epicsGson = gson.toJson(new ArrayList<>(epics.values()));
+        client.save(EPIC.toLowerCase(), epicsGson);
+        String subtaskGson = gson.toJson(new ArrayList<>(subtasks.values()));
+        client.save(SUBTASK.toLowerCase(), subtaskGson);
+        String historyGson = gson.toJson(new ArrayList<>(historyToInteger()));
+        client.save(HISTORY.toLowerCase(), historyGson);
     }
 }
